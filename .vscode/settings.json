@@ -108,9 +108,23 @@
         "*.liquid": "liquid",
         "*.njk": "nunjucks",
         "*.hbs": "handlebars",
-        // 12. Project Specific (AI Tools, etc.)
+        // 12. Project Specific (AI Tools, Frameworks, etc.)
         ".agent/workflows/*.md": "markdown",
+        ".agent/instructions/**/*.md": "markdown",
+        ".agents/**/*.md": "markdown",
+        ".specify/memory/*.md": "markdown",
+        ".specify/scripts/**/*.sh": "shellscript",
+        ".specify/scripts/**/*.ps1": "powershell",
+        ".specify/templates/*.{md,html,txt}": "markdown",
         ".gemini/antigravity/brain/*.md": "markdown",
-        ".specify/scripts/**/*.sh": "shellscript"
+        ".gemini/antigravity/logs/*.log": "plaintext",
+        ".roo/commands/*.{sh,bash}": "shellscript",
+        ".claude/commands/*.{sh,bash}": "shellscript",
+        ".qwen/commands/*.{sh,bash}": "shellscript",
+        ".cursor/rules/*.md": "markdown",
+        ".windsurf/rules/*.md": "markdown",
+        ".github/workflows/*.yml": "yaml",
+        ".vscode/*.json": "jsonc",
+        "*.agent-flow": "json"
     }
 }
