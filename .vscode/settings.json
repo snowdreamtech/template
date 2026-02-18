@@ -82,7 +82,37 @@
     // Disable confirmation dialog when deleting files (faster workflow with Git)
     "explorer.confirmDelete": false,
     // ------------------------------------------------------------
-    // 4. File Associations
+    // 4. Remote & Search
+    // ------------------------------------------------------------
+    // Use hybrid port forwarding source for better remote development compatibility
+    "remote.autoForwardPortsSource": "hybrid",
+    // Show login terminal for SSH connections to help debug connection issues
+    "remote.SSH.showLoginTerminal": true,
+    // Increase connection timeout to avoid dropped connections on slow networks
+    "remote.SSH.connectTimeout": 60,
+    // Exclude build artifacts and dependencies from search to improve performance
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true
+    },
+    // Exclude certain files from the file explorer (optional, keeping minimal for now)
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true
+    },
+    // ------------------------------------------------------------
+    // 5. File Associations
     // ------------------------------------------------------------
     // Map specific file patterns to language identifiers for syntax highlighting and features
     "files.associations": {
