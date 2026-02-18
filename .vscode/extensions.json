@@ -1,0 +1,24 @@
+{
+    "recommendations": [
+        "ms-ceintl.vscode-language-pack-zh-hans",
+        "file-icons.file-icons",
+        "vscode-icons-team.vscode-icons",
+        "github.github-vscode-theme",
+        "mhutchie.git-graph",
+        "wdhongtw.gpg-indicator",
+        "ms-vscode-remote.remote-ssh",
+        "ms-vscode-remote.remote-ssh-edit",
+        "ms-vscode.remote-explorer",
+        "ms-azuretools.vscode-docker",
+        "github.vscode-github-actions",
+        "redhat.vscode-yaml",
+        "be5invis.toml",
+        "iceyer.toml-formatter",
+        "davidanson.vscode-markdownlint",
+        "shd101wyy.markdown-preview-enhanced",
+        "timonwong.shellcheck",
+        "foxundermoon.shell-format",
+        "ultram4rine.vscode-choosealicense",
+        "minherz.copyright-inserter"
+    ]
+}
