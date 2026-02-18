@@ -1,44 +1,92 @@
 {
+    // ------------------------------------------------------------
+    // 1. Workbench Settings
+    // ------------------------------------------------------------
+    // Disable the "new version" message from vscode-icons to keep the UI clean
     "vsicons.dontShowNewVersionMessage": true,
+    // Disable layout control buttons in the title bar to save space
     "workbench.layoutControl.enabled": false,
+    // Do not show any editor or welcome page on startup
     "workbench.startupEditor": "none",
+    // Set the color theme to Solarized Dark
     "workbench.colorTheme": "Solarized Dark",
+    // Set the icon theme to vscode-icons for better file type recognition
     "workbench.iconTheme": "vscode-icons",
+    // ------------------------------------------------------------
+    // AI Assistant & Terminal Configuration
+    // ------------------------------------------------------------
+    // Configure recommended files for SpecKit to improve context matching in chat
     "chat.promptFilesRecommendations": {
-        "speckit.constitution": true,
-        "speckit.specify": true,
-        "speckit.plan": true,
-        "speckit.tasks": true,
-        "speckit.implement": true
+        "speckit.constitution": true, // Recommend project constitution
+        "speckit.specify": true, // Recommend requirements specification
+        "speckit.plan": true, // Recommend execution plan
+        "speckit.tasks": true, // Recommend task list
+        "speckit.implement": true // Recommend implementation details
     },
+    // Terminal auto-approval: Grant silent execution rights for specific script paths
     "chat.tools.terminal.autoApprove": {
-        ".specify/scripts/bash/": true,
-        ".specify/scripts/powershell/": true
+        ".specify/scripts/bash/": true, // Allow auto-running Bash scripts in .specify
+        ".specify/scripts/powershell/": true // Allow auto-running PowerShell scripts in .specify
     },
+    // ------------------------------------------------------------
     // 2. Editor Behavior & Formatting
-    // ============================================================
-    // Disable minimap to save horizontal screen space; useful for smaller screens
+    // ------------------------------------------------------------
+    // Disable the minimap to maximize horizontal editing space
     "editor.minimap.enabled": false,
-    // Automatically save files after a short delay; prevents data loss
+    // Enable auto-save with a delay to prevent data loss
     "files.autoSave": "afterDelay",
+    // Set auto-save delay to 1000ms (1 second)
     "files.autoSaveDelay": 1000,
-    // Show whitespace characters in logic-heavy files
+    // Show whitespace differences in the diff editor
     "diffEditor.ignoreTrimWhitespace": false,
-    // Enable accessibility features
+    // Enable accessibility support for screen readers
     "editor.accessibilitySupport": "on",
-    // Automatically format code when saving
+    // Automatically format code on save for consistent style across the project
     "editor.formatOnSave": true,
-    // --- Premium Optimizations ---
+    // --- Premium Interaction Optimizations ---
+    // Enable smooth caret animation for a more fluid typing experience
     "editor.cursorSmoothCaretAnimation": "on",
+    // Use smooth cursor blinking to reduce visual fatigue
     "editor.cursorBlinking": "smooth",
+    // Enable colorized bracket pairs to easily match nested scopes
     "editor.bracketPairColorization.enabled": true,
+    // Highlight the active bracket pair guides
     "editor.guides.bracketPairs": "active",
+    // Enable Sticky Scroll to keep scope headers (classes/methods) visible at the top
     "editor.stickyScroll.enabled": true,
+    // Automatically close brackets when typing
     "editor.autoClosingBrackets": "always",
+    // Automatically close quotes when typing
     "editor.autoClosingQuotes": "always",
+    // Customize the window title to show file status, name, and project root
     "window.title": "${dirty}${activeEditorShort}${separator}${rootName}",
+    // ------------------------------------------------------------
+    // 3. UI & Performance Tweaks
+    // ------------------------------------------------------------
+    // Disable compact folders in explorer for a clearer hierarchical view
+    "explorer.compactFolders": false,
+    // Enable smooth scrolling for lists and trees
+    "workbench.list.smoothScrolling": true,
+    // Prioritize recently used items in suggestion lists
+    "editor.suggestSelection": "recentlyUsed",
+    // Enable GPU hardware acceleration in the integrated terminal for better performance
+    "terminal.integrated.gpuAcceleration": "on",
+    // Set terminal scrollback buffer to 10,000 lines
+    "terminal.integrated.scrollback": 10000,
+    // Ensure files end with a newline character (POSIX standard)
+    "files.insertFinalNewline": true,
+    // Automatically trim trailing whitespace on save
+    "files.trimTrailingWhitespace": true,
+    // Disable confirmation dialog when dragging and dropping files in the explorer
+    "explorer.confirmDragAndDrop": false,
+    // Disable confirmation dialog when deleting files (faster workflow with Git)
+    "explorer.confirmDelete": false,
+    // ------------------------------------------------------------
+    // 4. File Associations
+    // ------------------------------------------------------------
+    // Map specific file patterns to language identifiers for syntax highlighting and features
     "files.associations": {
-        // 1. Web / JavaScript / TypeScript
+        // --- Web / JavaScript / TypeScript ---
         "*.js": "javascript",
         "*.jsx": "javascriptreact",
         "*.ts": "typescript",
@@ -50,7 +98,7 @@
         "*.scss": "scss",
         "*.less": "less",
         "*.wasm": "wasm",
-        // 2. Python
+        // --- Python Ecosystem ---
         "*.py": "python",
         "*.pyi": "python",
         "*.pyw": "python",
@@ -58,7 +106,7 @@
         "requirements*.txt": "pip-requirements",
         "Pipfile": "toml",
         "Pipfile.lock": "json",
-        // 3. Go / Rust / Java / Kotlin
+        // --- Static Languages (Go / Rust / Java / Kotlin) ---
         "*.go": "go",
         "go.mod": "go.mod",
         "go.sum": "go.sum",
@@ -66,7 +114,7 @@
         "*.java": "java",
         "*.kt": "kotlin",
         "*.kts": "kotlin",
-        // 4. C / C++ / Objective-C / Swift
+        // --- Low-level & Mobile (C / C++ / Objective-C / Swift) ---
         "*.c": "c",
         "*.h": "cpp",
         "*.cpp": "cpp",
@@ -74,7 +122,7 @@
         "*.m": "objective-c",
         "*.mm": "objective-cpp",
         "*.swift": "swift",
-        // 5. PHP / Ruby / Perl
+        // --- Dynamic Scripting (PHP / Ruby / Perl) ---
         "*.php": "php",
         "*.phtml": "php",
         "*.rb": "ruby",
@@ -82,7 +130,7 @@
         "Rakefile": "ruby",
         "*.pl": "perl",
         "*.pm": "perl",
-        // 6. Shell / PowerShell / Makefile
+        // --- Shell & Automation (Shell / PowerShell / Makefile) ---
         "*.sh": "shellscript",
         ".bash*": "shellscript",
         ".zsh*": "shellscript",
@@ -91,7 +139,7 @@
         "*.psm1": "powershell",
         "Makefile": "makefile",
         "GNUmakefile": "makefile",
-        // 7. DevOps / Infrastructure (Docker, K8s, Terraform, Nginx)
+        // --- Infrastructure & Cloud Native (Docker, K8s, Terraform, Nginx) ---
         "Dockerfile*": "dockerfile",
         "docker-compose*.yml": "yaml",
         "*.tf": "terraform",
@@ -99,7 +147,7 @@
         "*.hcl": "hcl",
         "nginx.conf": "nginx",
         "*.kubeconfig": "yaml",
-        // 8. Config / Data (YAML, JSON, TOML, SQL, XML)
+        // --- Configs & Data (YAML, JSON, TOML, SQL, XML) ---
         "*.yaml": "yaml",
         "*.yml": "yaml",
         "*.json": "json",
@@ -113,49 +161,49 @@
         ".env*": "properties",
         "*.ini": "ini",
         ".editorconfig": "properties",
-        // 9. Git / System
+        // --- Version Control & System (Git / SSH) ---
         ".gitignore": "ignore",
         ".gitconfig": "properties",
         ".gitattributes": "ignore",
         ".gitmodules": "ignore",
         "ssh_config": "ssh_config",
         "known_hosts": "ssh_config",
-        // 10. Documentation
+        // --- Documentation ---
         "*.md": "markdown",
         "*.markdown": "markdown",
         "*.txt": "plaintext",
-        // 11. Template Engines
+        // --- Template Engines ---
         "*.twig": "twig",
         "*.blade.php": "blade",
         "*.liquid": "liquid",
         "*.njk": "nunjucks",
         "*.hbs": "handlebars",
-        // 12. Project Specific (AI Tools, Frameworks, etc.)
-        ".agent/workflows/*.md": "markdown",
-        ".agent/instructions/**/*.md": "markdown",
-        ".agents/**/*.md": "markdown",
-        ".specify/memory/*.md": "markdown",
-        ".specify/scripts/**/*.sh": "shellscript",
-        ".specify/scripts/**/*.ps1": "powershell",
-        ".specify/templates/*.{md,html,txt}": "markdown",
-        ".gemini/antigravity/brain/*.md": "markdown",
-        ".gemini/antigravity/logs/*.log": "plaintext",
-        ".roo/commands/*.{sh,bash}": "shellscript",
-        ".claude/commands/*.{sh,bash}": "shellscript",
-        ".qwen/commands/*.{sh,bash}": "shellscript",
-        ".amazonq/**/*.md": "markdown",
-        ".augment/**/*.md": "markdown",
-        ".bob/**/*.md": "markdown",
-        ".codebuddy/**/*.md": "markdown",
-        ".codex/**/*.md": "markdown",
-        ".kilocode/**/*.md": "markdown",
-        ".opencode/**/*.md": "markdown",
-        ".qoder/**/*.md": "markdown",
-        ".shai/**/*.md": "markdown",
-        ".cursor/rules/*.md": "markdown",
-        ".windsurf/rules/*.md": "markdown",
-        ".github/workflows/*.yml": "yaml",
-        ".vscode/*.json": "jsonc",
-        "*.agent-flow": "json"
+        // --- Project Specific: AI Tools & Frameworks ---
+        ".agent/workflows/*.md": "markdown", // Antigravity workflow docs
+        ".agent/instructions/**/*.md": "markdown", // AI instruction sets
+        ".agents/**/*.md": "markdown", // Agent configuration docs
+        ".specify/memory/*.md": "markdown", // SpecKit memory files
+        ".specify/scripts/**/*.sh": "shellscript", // SpecKit Bash scripts
+        ".specify/scripts/**/*.ps1": "powershell", // SpecKit PowerShell scripts
+        ".specify/templates/*.{md,html,txt}": "markdown", // SpecKit templates
+        ".gemini/antigravity/brain/*.md": "markdown", // Gemini core thinking chains
+        ".gemini/antigravity/logs/*.log": "plaintext", // Gemini logs
+        ".roo/commands/*.{sh,bash}": "shellscript", // Roo Code command scripts
+        ".claude/commands/*.{sh,bash}": "shellscript", // Claude specific scripts
+        ".qwen/commands/*.{sh,bash}": "shellscript", // Qwen specific scripts
+        ".amazonq/**/*.md": "markdown", // Amazon Q mapping docs
+        ".augment/**/*.md": "markdown", // Augment mapping docs
+        ".bob/**/*.md": "markdown", // Bob mapping docs
+        ".codebuddy/**/*.md": "markdown", // CodeBuddy docs
+        ".codex/**/*.md": "markdown", // Codex docs
+        ".kilocode/**/*.md": "markdown", // KiloCode docs
+        ".opencode/**/*.md": "markdown", // OpenCode docs
+        ".qoder/**/*.md": "markdown", // Qoder docs
+        ".shai/**/*.md": "markdown", // SHAI docs
+        ".cursor/rules/*.md": "markdown", // Cursor rules definition
+        ".windsurf/rules/*.md": "markdown", // Windsurf rules definition
+        ".github/workflows/*.yml": "yaml", // GitHub Actions workflows
+        ".vscode/*.json": "jsonc", // VS Code local configs (support comments)
+        "*.agent-flow": "json" // Agent Flow resource files
     }
 }
