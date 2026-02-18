@@ -167,7 +167,23 @@
     "terminal.integrated.cursorBlinking": true,
 
     // ------------------------------------------------------------
-    // 8. File Associations
+    // 8. Expert Tweaks (Terminal, Scrolling, Indentation)
+    // ------------------------------------------------------------
+    // [Terminal] Increase font size for better readability
+    "terminal.integrated.fontSize": 14,
+    // [Terminal] Set line height to 1.2 for comfortable spacing
+    "terminal.integrated.lineHeight": 1.2,
+    // [Editor] Enable smooth scrolling for code editor (matches list scrolling)
+    "editor.smoothScrolling": true,
+    // [Editor] Render whitespace only on selected text to reduce visual noise
+    "editor.renderWhitespace": "selection",
+    // [Editor] Enable breadcrumbs for better navigation context
+    "breadcrumbs.enabled": true,
+    // [Editor] Show indentation guides for active block
+    "editor.guides.indentation": true,
+
+    // ------------------------------------------------------------
+    // 9. File Associations
     // ------------------------------------------------------------
     // Map specific file patterns to language identifiers for syntax highlighting and features
     "files.associations": {
