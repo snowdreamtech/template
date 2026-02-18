@@ -1,4 +1,5 @@
 {
+      "workbench.iconTheme": "vscode-icons",
     "chat.promptFilesRecommendations": {
         "speckit.constitution": true,
         "speckit.specify": true,
