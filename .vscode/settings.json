@@ -15,6 +15,28 @@
         ".specify/scripts/bash/": true,
         ".specify/scripts/powershell/": true
     },
+    // 2. Editor Behavior & Formatting
+    // ============================================================
+    // Disable minimap to save horizontal screen space; useful for smaller screens
+    "editor.minimap.enabled": false,
+    // Automatically save files after a short delay; prevents data loss
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    // Show whitespace characters in logic-heavy files
+    "diffEditor.ignoreTrimWhitespace": false,
+    // Enable accessibility features
+    "editor.accessibilitySupport": "on",
+    // Automatically format code when saving
+    "editor.formatOnSave": true,
+    // --- Premium Optimizations ---
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorBlinking": "smooth",
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": "active",
+    "editor.stickyScroll.enabled": true,
+    "editor.autoClosingBrackets": "always",
+    "editor.autoClosingQuotes": "always",
+    "window.title": "${dirty}${activeEditorShort}${separator}${rootName}",
     "files.associations": {
         // 1. Web / JavaScript / TypeScript
         "*.js": "javascript",
