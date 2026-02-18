@@ -165,7 +165,6 @@
     "debug.console.fontSize": 14,
     // [Terminal] Customize cursor blinking in terminal
     "terminal.integrated.cursorBlinking": true,
-
     // ------------------------------------------------------------
     // 8. Expert Tweaks (Terminal, Scrolling, Indentation)
     // ------------------------------------------------------------
@@ -181,9 +180,31 @@
     "breadcrumbs.enabled": true,
     // [Editor] Show indentation guides for active block
     "editor.guides.indentation": true,
-
     // ------------------------------------------------------------
-    // 9. File Associations
+    // 10. Code Intelligence & Refactoring
+    // ------------------------------------------------------------
+    // [Refactoring] Automatically organize imports on save (crucial for clean code)
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    // [Inlay Hints] Show type hints for parameters and variables (like IntelliJ)
+    "editor.inlayHints.enabled": "on",
+    "editor.inlayHints.parameterNames.enabled": "all",
+    // [Suggestions] Show ghost text for inline completions
+    "editor.suggest.preview": true,
+    // [Snippets] Place snippets at the bottom of the suggestion list
+    "editor.snippetSuggestions": "bottom",
+    // ------------------------------------------------------------
+    // 11. Diff & Merge Enhancements
+    // ------------------------------------------------------------
+    // [Diff] Render side-by-side diffs by default
+    "diffEditor.renderSideBySide": true,
+    // [Diff] Hide unchanged regions to focus on what matters
+    "diffEditor.hideUnchangedRegions.enabled": true,
+    // [Merge] Use the smart experimental merge algorithm
+    "mergeEditor.diffAlgorithm": "smart",
+    // ------------------------------------------------------------
+    // 12. File Associations
     // ------------------------------------------------------------
     // Map specific file patterns to language identifiers for syntax highlighting and features
     "files.associations": {
