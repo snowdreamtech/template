@@ -112,7 +112,41 @@
         "**/Thumbs.db": true
     },
     // ------------------------------------------------------------
-    // 5. File Associations
+    // 5. Language Specific Settings
+    // ------------------------------------------------------------
+    // [Markdown] Enable word wrap and disable quick suggestions for distraction-free writing
+    "[markdown]": {
+        "editor.wordWrap": "on",
+        "editor.quickSuggestions": {
+            "comments": "off",
+            "strings": "off",
+            "other": "off"
+        },
+        "editor.unicodeHighlight.ambiguousCharacters": false
+    },
+    // [JSON/JSONC] Use built-in formatter
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    // [YAML] Standardize tab size to 2 spaces
+    "[yaml]": {
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced"
+    },
+    // ------------------------------------------------------------
+    // 6. Git & Automation
+    // ------------------------------------------------------------
+    // Automatically fetch commits from remote (keep local graph up-to-date)
+    "git.autofetch": true,
+    // Disable confirmation dialog when syncing code (push/pull)
+    "git.confirmSync": false,
+    // Auto-detect tasks from scripts (npm, gulp, etc.)
+    "task.autoDetect": "on",
+    // ------------------------------------------------------------
+    // 7. File Associations
     // ------------------------------------------------------------
     // Map specific file patterns to language identifiers for syntax highlighting and features
     "files.associations": {
