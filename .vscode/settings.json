@@ -146,7 +146,28 @@
     // Auto-detect tasks from scripts (npm, gulp, etc.)
     "task.autoDetect": "on",
     // ------------------------------------------------------------
-    // 7. File Associations
+    // 7. Security, Privacy & Advanced Performance
+    // ------------------------------------------------------------
+    // [Privacy] Disable telemetry to respect user privacy and save network bandwidth
+    "telemetry.telemetryLevel": "off",
+    // [Security] Enable Workspace Trust to restrict execution in untrusted folders
+    "security.workspace.trust.enabled": true,
+    // [Performance] Exclude high-volume folders from file watching to reduce CPU usage
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true,
+        "**/dist/**": true,
+        "**/build/**": true,
+        "**/.hg/store/**": true
+    },
+    // [Debug] Increase debug console font size for better readability
+    "debug.console.fontSize": 14,
+    // [Terminal] Customize cursor blinking in terminal
+    "terminal.integrated.cursorBlinking": true,
+
+    // ------------------------------------------------------------
+    // 8. File Associations
     // ------------------------------------------------------------
     // Map specific file patterns to language identifiers for syntax highlighting and features
     "files.associations": {
