@@ -202,7 +202,7 @@
     // [Diff] Hide unchanged regions to focus on what matters
     "diffEditor.hideUnchangedRegions.enabled": true,
     // [Merge] Use the smart experimental merge algorithm
-    "mergeEditor.diffAlgorithm": "smart",
+    "mergeEditor.diffAlgorithm": "advanced",
     // ------------------------------------------------------------
     // 12. Zen Mode & Editor Management
     // ------------------------------------------------------------
@@ -250,7 +250,7 @@
     "markdown.preview.scrollPreviewWithEditor": true,
     // [Shell] Use 'foxundermoon.shell-format' as the default formatter for shell scripts
     "[shellscript]": {
-        "editor.defaultFormatter": "foxundermoon.shell-format"
+        "editor.defaultformatter": "foxundermoon.shell-format"
     },
     // ------------------------------------------------------------
     // 16. File Associations
