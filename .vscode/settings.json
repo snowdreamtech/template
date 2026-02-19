@@ -220,7 +220,15 @@
     "timeline.excludeSources": [],
 
     // ------------------------------------------------------------
-    // 13. File Associations
+    // 13. Debug & Terminal Enhancements
+    // ------------------------------------------------------------
+    // [Debug] Show variable values inline during debugging
+    "debug.inlineValues": "on",
+    // [Terminal] Linux specific: Copy text on selection (X11 style)
+    "terminal.integrated.copyOnSelection": true,
+
+    // ------------------------------------------------------------
+    // 14. File Associations
     // ------------------------------------------------------------
     // Map specific file patterns to language identifiers for syntax highlighting and features
     "files.associations": {
