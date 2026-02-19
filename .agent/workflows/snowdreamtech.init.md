@@ -44,3 +44,4 @@ You **MUST** consider the user input before proceeding (if not empty).
      - `npx skills add https://github.com/jeffallan/claude-skills --skill kubernetes-specialist`
      - `npx skills add https://github.com/wshobson/agents --skill postgresql-table-design`
      - `npx skills add https://github.com/redis/agent-skills --skill redis-development`
+     - `npx skills add https://github.com/wshobson/agents --skill bash-defensive-patterns`
