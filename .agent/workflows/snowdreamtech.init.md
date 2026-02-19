@@ -15,10 +15,11 @@ You **MUST** consider the user input before proceeding (if not empty).
 1. **Initialize Environment and Skills**
    - Ensure the development environment supports the following tools and languages: `nodejs`, `python`.
    - Ensure the IDE installs recommended extensions and plugins based on the project configuration files.
-   <!-- - Review `$ARGUMENTS`, the project structure, and existing code to determine which skills are necessary, optional, or recommended.
+   - Review `$ARGUMENTS`, the project structure, and existing code to determine which skills are necessary, optional, or recommended.
    - Based on the analysis, install the following skills. You should determine the installation priority:
 
    ### 1. Minimal Runtime (Mandatory)
+   - `npx skills add https://github.com/vercel-labs/skills --skill find-skills`
    - `npx skills add filesystem`
    - `npx skills add git`
    - `npx skills add shell`
@@ -34,7 +35,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - `npx skills add ini`
    - `npx skills add csv`
    - `npx skills add html`
-   
+
    - `npx skills add process`
    - `npx skills add sqlite`
    - `npx skills add openapi`
@@ -58,4 +59,4 @@ You **MUST** consider the user input before proceeding (if not empty).
    - `npx skills add protobuf`
    - `npx skills add graphql`
    - `npx skills add dotenv`
-   - `npx skills add properties` -->
+   - `npx skills add properties`
