@@ -204,7 +204,23 @@
     // [Merge] Use the smart experimental merge algorithm
     "mergeEditor.diffAlgorithm": "smart",
     // ------------------------------------------------------------
-    // 12. File Associations
+    // 12. Zen Mode & Editor Management
+    // ------------------------------------------------------------
+    // [Zen Mode] Hide everything for pure code focus (but keep line numbers)
+    "zenMode.hideLineNumbers": false,
+    "zenMode.hideStatusBar": true,
+    "zenMode.fullScreen": true,
+    // [Editor Limit] Limit open tabs to 10 to save memory and mental load
+    "workbench.editor.limit.enabled": true,
+    "workbench.editor.limit.value": 10,
+    "workbench.editor.limit.perEditorGroup": true,
+    // [Search] Smart case matching (case-insensitive unless capital letters used)
+    "search.smartCase": true,
+    // [Timeline] Filter out noisy Git history for build files
+    "timeline.excludeSources": [],
+
+    // ------------------------------------------------------------
+    // 13. File Associations
     // ------------------------------------------------------------
     // Map specific file patterns to language identifiers for syntax highlighting and features
     "files.associations": {
