@@ -73,6 +73,26 @@
     // ------------------------------------------------------------
     // Disable compact folders in explorer for a clearer hierarchical view
     "explorer.compactFolders": false,
+    // [File Nesting] Enable file nesting to keep the explorer clean
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "tsconfig.json": "tsconfig.*.json, env.d.ts",
+        "vite.config.*": "jsconfig*, tsconfig*, vitest.config.*, index.html",
+        "vue.config.*": "jsconfig*, tsconfig*, .eslintrc*, .prettierrc*, .babelrc*, package.json, package-lock.json",
+        "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .npmrc",
+        "go.mod": "go.sum",
+        "gemfile": "gemfile.lock",
+        "composer.json": "composer.lock",
+        "cargo.toml": "cargo.lock",
+        "mix.exs": "mix.lock",
+        "pubspec.yaml": "pubspec.lock",
+        "*.ts": "${capture}.js, ${capture}.d.ts, ${capture}.js.map",
+        "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
+        "*.jsx": "${capture}.js",
+        "*.tsx": "${capture}.ts",
+        "*.vue": "${capture}.js, ${capture}.ts, ${capture}.css, ${capture}.scss, ${capture}.less"
+    },
     // Increase tree indentation for better readability
     "workbench.tree.indent": 16,
     // Open files in new tab by default (disable preview mode)
@@ -115,7 +135,13 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "**/Thumbs.db": true
+        "**/Thumbs.db": true,
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true,
+        "**/.pytest_cache": true,
+        "**/__pycache__": true
     },
     // Exclude certain files from the file explorer (optional, keeping minimal for now)
     "files.exclude": {
@@ -180,6 +206,8 @@
     // ------------------------------------------------------------
     // [Privacy] Disable telemetry to respect user privacy and save network bandwidth
     "telemetry.telemetryLevel": "off",
+    // [Privacy] Disable RedHat telemetry (affects YAML, Ansible, XML extensions)
+    "redhat.telemetry.enabled": false,
     // [Security] Enable Workspace Trust to restrict execution in untrusted folders
     "security.workspace.trust.enabled": true,
     // [Performance] Exclude high-volume folders from file watching to reduce CPU usage
@@ -189,7 +217,9 @@
         "**/node_modules/*/**": true,
         "**/dist/**": true,
         "**/build/**": true,
-        "**/.hg/store/**": true
+        "**/.hg/store/**": true,
+        "**/.pytest_cache/**": true,
+        "**/__pycache__/**": true
     },
     // [Debug] Increase debug console font size for better readability
     "debug.console.fontSize": 14,
@@ -253,6 +283,10 @@
     "search.smartCase": true,
     // [Timeline] Filter out noisy Git history for build files
     "timeline.excludeSources": [],
+    // [Git Graph] Show signature status in the graph
+    "git.graph.repository.commits.showSignatureStatus": true,
+    // [Copyright] Set default copyright holder
+    "copyright.holder": "Snowdream Tech",
     // ------------------------------------------------------------
     // 13. Debug & Terminal Enhancements
     // ------------------------------------------------------------
