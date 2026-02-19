@@ -58,6 +58,8 @@
     "editor.bracketPairColorization.enabled": true,
     // Highlight the active bracket pair guides
     "editor.guides.bracketPairs": "active",
+    // Enable horizontal bracket pair guides for better scope visualization
+    "editor.guides.bracketPairsHorizontal": "active",
     // Enable Sticky Scroll to keep scope headers (classes/methods) visible at the top
     "editor.stickyScroll.enabled": true,
     // Automatically close brackets when typing
@@ -144,11 +146,24 @@
     "[jsonc]": {
         "editor.defaultFormatter": "vscode.json-language-features"
     },
+    // [Dockerfile] Use docker extension for formatting
+    "[dockerfile]": {
+        "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+    },
     // [YAML] Standardize tab size to 2 spaces
     "[yaml]": {
         "editor.tabSize": 2,
         "editor.autoIndent": "advanced"
     },
+    // [Ansible] Enable linting
+    "ansible.validation.lint.enabled": true,
+    // [Spell Checker] Enable and configure
+    "cSpell.enabled": true,
+    "cSpell.language": "en,en-US",
+    // [Todo Highlight] Enable
+    "todohighlight.isEnable": true,
+    // [Better Comments] Configuration placeholder (uses default tags)
+    "better-comments.multilineComments": true,
     // ------------------------------------------------------------
     // 6. Git & Automation
     // ------------------------------------------------------------
@@ -191,6 +206,8 @@
     "editor.smoothScrolling": true,
     // [Editor] Render whitespace only on selected text to reduce visual noise
     "editor.renderWhitespace": "selection",
+    // [Editor] Highlight the entire active line
+    "editor.renderLineHighlight": "all",
     // [Editor] Enable breadcrumbs for better navigation context
     "breadcrumbs.enabled": true,
     // [Editor] Show indentation guides for active block
