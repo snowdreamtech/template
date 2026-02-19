@@ -20,6 +20,20 @@ You **MUST** consider the user input before proceeding (if not empty).
 
    ### 1. Minimal Runtime (Mandatory)
    - `npx skills add https://github.com/vercel-labs/skills --skill find-skills`
+   - `npx skills add https://github.com/anthropics/skills --skill skill-creator`
+   - `npx skills add https://github.com/anthropics/skills --skill docx`
+   - `npx skills add https://github.com/anthropics/skills --skill xlsx`
+   - `npx skills add https://github.com/anthropics/skills --skill pptx`
+   - `npx skills add https://github.com/anthropics/skills --skill pdf`
+   - `npx skills add https://github.com/anthropics/skills --skill frontend-design`
+   - `npx skills add https://github.com/anthropics/skills --skill webapp-testing`
+   - `npx skills add https://github.com/anthropics/skills --skill mcp-builder`
+   - `npx skills add https://github.com/anthropics/skills --skill canvas-design`
+   - `npx skills add https://github.com/anthropics/skills --skill algorithmic-art`
+   - `npx skills add https://github.com/anthropics/skills --skill web-artifacts-builder`
+   - `npx skills add https://github.com/anthropics/skills --skill theme-factory`
+   - `npx skills add https://github.com/anthropics/skills --skill internal-comms`
+   - `npx skills add https://github.com/anthropics/skills --skill doc-coauthoring`
    - `npx skills add filesystem`
    - `npx skills add git`
    - `npx skills add shell`
