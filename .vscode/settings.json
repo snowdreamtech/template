@@ -272,6 +272,13 @@
         // Check shell scripts on save with shellcheck
         "shellcheck.run": "onSave"
     },
+    // [ESLint] Validate JS/TS files
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
     // [Markdown] specific linting rules
     "markdownlint.config": {
         "default": true,
