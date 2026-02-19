@@ -218,7 +218,6 @@
     "search.smartCase": true,
     // [Timeline] Filter out noisy Git history for build files
     "timeline.excludeSources": [],
-
     // ------------------------------------------------------------
     // 13. Debug & Terminal Enhancements
     // ------------------------------------------------------------
@@ -226,7 +225,6 @@
     "debug.inlineValues": "on",
     // [Terminal] Linux specific: Copy text on selection (X11 style)
     "terminal.integrated.copyOnSelection": true,
-
     // ------------------------------------------------------------
     // 14. File Integrity & Visual Guides
     // ------------------------------------------------------------
@@ -242,9 +240,20 @@
     // [History] Limit local history to keep the .history folder manageable
     "workbench.localHistory.maxFileEntries": 50,
     "workbench.localHistory.mergeWindow": 10,
-
     // ------------------------------------------------------------
-    // 15. File Associations
+    // 15. Extension Specific & Testing
+    // ------------------------------------------------------------
+    // [Testing] Automatically open the peek view on test failure
+    "testing.automaticallyOpenPeekView": "failureInVisibleDocument",
+    // [Markdown] Sync scroll between editor and preview
+    "markdown.preview.scrollEditorWithPreview": true,
+    "markdown.preview.scrollPreviewWithEditor": true,
+    // [Shell] Use 'foxundermoon.shell-format' as the default formatter for shell scripts
+    "[shellscript]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+    // ------------------------------------------------------------
+    // 16. File Associations
     // ------------------------------------------------------------
     // Map specific file patterns to language identifiers for syntax highlighting and features
     "files.associations": {
