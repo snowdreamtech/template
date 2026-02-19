@@ -48,6 +48,12 @@
     "editor.cursorSmoothCaretAnimation": "on",
     // Use smooth cursor blinking to reduce visual fatigue
     "editor.cursorBlinking": "smooth",
+    // Enable linked editing (auto-rename tags) for HTML/XML
+    "editor.linkedEditing": true,
+    // Enable tab completion for snappier coding
+    "editor.tabCompletion": "on",
+    // Disable suggestions from word based providers (keeps suggestions clean)
+    "editor.suggest.showWords": false,
     // Enable colorized bracket pairs to easily match nested scopes
     "editor.bracketPairColorization.enabled": true,
     // Highlight the active bracket pair guides
@@ -65,6 +71,10 @@
     // ------------------------------------------------------------
     // Disable compact folders in explorer for a clearer hierarchical view
     "explorer.compactFolders": false,
+    // Increase tree indentation for better readability
+    "workbench.tree.indent": 16,
+    // Open files in new tab by default (disable preview mode)
+    "workbench.editor.enablePreview": false,
     // Enable smooth scrolling for lists and trees
     "workbench.list.smoothScrolling": true,
     // Prioritize recently used items in suggestion lists
@@ -73,6 +83,10 @@
     "terminal.integrated.gpuAcceleration": "on",
     // Set terminal scrollback buffer to 10,000 lines
     "terminal.integrated.scrollback": 10000,
+    // Set default terminal profile for Linux to Bash
+    "terminal.integrated.defaultProfile.linux": "bash",
+    // Disable warning when pasting multiple lines into terminal
+    "terminal.integrated.enableMultiLinePasteWarning": false,
     // Ensure files end with a newline character (POSIX standard)
     "files.insertFinalNewline": true,
     // Automatically trim trailing whitespace on save
@@ -85,7 +99,6 @@
     // 4. Remote & Search
     // ------------------------------------------------------------
     // Use hybrid port forwarding source for better remote development compatibility
-    "remote.autoForwardPortsSource": "hybrid",
     // Show login terminal for SSH connections to help debug connection issues
     "remote.SSH.showLoginTerminal": true,
     // Increase connection timeout to avoid dropped connections on slow networks
@@ -143,6 +156,8 @@
     "git.autofetch": true,
     // Disable confirmation dialog when syncing code (push/pull)
     "git.confirmSync": false,
+    // Commit all changes when there are no staged changes
+    "git.enableSmartCommit": true,
     // Auto-detect tasks from scripts (npm, gulp, etc.)
     "task.autoDetect": "on",
     // ------------------------------------------------------------
@@ -180,6 +195,9 @@
     "breadcrumbs.enabled": true,
     // [Editor] Show indentation guides for active block
     "editor.guides.indentation": true,
+    // ------------------------------------------------------------
+    // 9. Unassigned Section (Placeholder)
+    // ------------------------------------------------------------
     // ------------------------------------------------------------
     // 10. Code Intelligence & Refactoring
     // ------------------------------------------------------------
@@ -250,7 +268,44 @@
     "markdown.preview.scrollPreviewWithEditor": true,
     // [Shell] Use 'foxundermoon.shell-format' as the default formatter for shell scripts
     "[shellscript]": {
-        "editor.defaultformatter": "foxundermoon.shell-format"
+        "editor.defaultFormatter": "foxundermoon.shell-format",
+        // Check shell scripts on save with shellcheck
+        "shellcheck.run": "onSave"
+    },
+    // [Markdown] specific linting rules
+    "markdownlint.config": {
+        "default": true,
+        "MD013": false, // Disable line length rule
+        "MD033": false // Allow inline HTML
+    },
+    // [Python] formatting and linting
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    // [Go] formatting
+    "[go]": {
+        "editor.defaultFormatter": "golang.go",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    // [Web] formatting
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[scss]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[less]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     // ------------------------------------------------------------
     // 16. File Associations
