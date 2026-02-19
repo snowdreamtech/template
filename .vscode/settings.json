@@ -228,7 +228,23 @@
     "terminal.integrated.copyOnSelection": true,
 
     // ------------------------------------------------------------
-    // 14. File Associations
+    // 14. File Integrity & Visual Guides
+    // ------------------------------------------------------------
+    // [Encoding] Enforce UTF-8 for cross-platform consistency
+    "files.encoding": "utf8",
+    // [EOL] Enforce LF (Linux/Mac style) line endings
+    "files.eol": "\n",
+    // [Rulers] Show vertical rulers at 80 and 120 characters to guide line length
+    "editor.rulers": [
+        80,
+        120
+    ],
+    // [History] Limit local history to keep the .history folder manageable
+    "workbench.localHistory.maxFileEntries": 50,
+    "workbench.localHistory.mergeWindow": 10,
+
+    // ------------------------------------------------------------
+    // 15. File Associations
     // ------------------------------------------------------------
     // Map specific file patterns to language identifiers for syntax highlighting and features
     "files.associations": {
