@@ -307,6 +307,21 @@
     "[less]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    // [Vue] formatting
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    // [React] formatting
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
     // ------------------------------------------------------------
     // 16. File Associations
     // ------------------------------------------------------------

@@ -16,6 +16,8 @@
         "ms-python.python",
         "ms-python.black-formatter",
         "golang.go",
+        "Vue.volar",
+        "dsznajder.es7-react-js-snippets",
         "redhat.vscode-yaml",
         "be5invis.toml",
         "iceyer.toml-formatter",
