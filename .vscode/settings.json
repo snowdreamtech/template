@@ -283,6 +283,8 @@
     "search.smartCase": true,
     // [Timeline] Filter out noisy Git history for build files
     "timeline.excludeSources": [],
+    // [Source Control] View changes as a tree instead of a list
+    "scm.defaultViewMode": "tree",
     // [Git Graph] Show signature status in the graph
     "git.graph.repository.commits.showSignatureStatus": true,
     // [Copyright] Set default copyright holder
