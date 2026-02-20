@@ -23,7 +23,8 @@ You **MUST** consider the user input before proceeding (if not empty).
      - `npx --yes skills add ${github_proxy}https://github.com/anthropics/skills --all`
      - `npx --yes skills add ${github_proxy}https://github.com/antfu/skills --all`
      - `npx --yes skills add ${github_proxy}https://github.com/github/awesome-copilot --all`
-     - `npx --yes skills add ${github_proxy} https://github.com/browser-use/browser-use --all`
+     - `npx --yes skills add ${github_proxy}https://github.com/browser-use/browser-use --all`
+     - `npx --yes skills add ${github_proxy}https://github.com/coreyhaines31/marketingskills --all`
      - `npx --yes skills add ${github_proxy}https://github.com/wshobson/agents --skill postgresql-table-design`
      - `npx --yes skills add ${github_proxy}https://github.com/redis/agent-skills --skill redis-development`
      - `npx --yes skills add ${github_proxy}https://github.com/wshobson/agents --skill bash-defensive-patterns`
@@ -34,7 +35,6 @@ You **MUST** consider the user input before proceeding (if not empty).
      - `npx --yes skills add ${github_proxy}https://github.com/wshobson/agents --skill rust-async-patterns`
      - `npx --yes skills add ${github_proxy}https://github.com/apollographql/skills --skill rust-best-practices`
      - `npx --yes skills add ${github_proxy}https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max`
-     - `npx --yes skills add ${github_proxy}https://github.com/coreyhaines31/marketingskills --skill seo-audit`
      - `npx --yes skills add ${github_proxy}https://github.com/squirrelscan/skills --skill audit-website`
      - `npx --yes skills add ${github_proxy}https://github.com/obra/superpowers --skill brainstorming`
      - `npx --yes skills add ${github_proxy}https://github.com/obra/superpowers --skill systematic-debugging`
