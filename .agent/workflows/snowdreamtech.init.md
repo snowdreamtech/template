@@ -17,8 +17,8 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Ensure the IDE installs recommended extensions and plugins based on the project configuration files.
    - Review `$ARGUMENTS`, the project structure, and existing code to determine which skills are necessary, optional, or recommended.
    - Based on the analysis, install the following skills. You should determine the installation priority:
-     - `npx skills add https://github.com/vercel-labs/skills --all`
-     - `npx skills add https://github.com/vercel-labs/next-skills --all`
-     - `npx skills add https://github.com/anthropics/skills --all`
-     - `npx skills add https://github.com/antfu/skills --all`
-     - `npx skills add https://github.com/github/awesome-copilot --all`
+     - `npx --yes skills add ${github_proxy}https://github.com/vercel-labs/skills --all`
+     - `npx --yes skills add ${github_proxy}https://github.com/vercel-labs/next-skills --all`
+     - `npx --yes skills add ${github_proxy}https://github.com/anthropics/skills --all`
+     - `npx --yes skills add ${github_proxy}https://github.com/antfu/skills --all`
+     - `npx --yes skills add ${github_proxy}https://github.com/github/awesome-copilot --all`
