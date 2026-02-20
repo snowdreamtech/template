@@ -1,6 +1,16 @@
 {
   "version": 1,
   "skills": {
+    "ab-test-setup": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "ba045a5195bb6b2a084b0daa10fa364f942f6121ffc568e4ab5ca01da6a09c30"
+    },
+    "ad-creative": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "1df12a926edaaf35751828d43f36e036d8519c4af0cc06221baebf1aebee0228"
+    },
     "agent-governance": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
@@ -11,10 +21,20 @@
       "sourceType": "github",
       "computedHash": "40771d7d389c1542e6cb995d75e516893466f01c3b66bc040b158ceb793d4bed"
     },
+    "ai-seo": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "33af140df6f3040b5f89e352c9f49a623f5049abb80ae3195cd47d578616e139"
+    },
     "algorithmic-art": {
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "5c2804e8f0d4944c7ce6939a2e4afdcf0cb69c966a505481ed8b96e20bb32eee"
+    },
+    "analytics-tracking": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "96c10fd21185cf403b34f9a3af87c9e778708c25db8c6e006ed896afdf2cc8d5"
     },
     "antfu": {
       "source": "antfu/skills",
@@ -61,6 +81,11 @@
       "sourceType": "github",
       "computedHash": "4aa754f4f7fc54ac3e7f6e2fb55c0e2fb14b7d70da077b41a86bd1889ff9094c"
     },
+    "browser-use": {
+      "source": "browser-use/browser-use",
+      "sourceType": "github",
+      "computedHash": "409117e97ea4689e138a2080bfa94893e31ea216fbd0220d834dbdb791ecbe0e"
+    },
     "canvas-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
@@ -70,6 +95,26 @@
       "source": "github/awesome-copilot",
       "sourceType": "github",
       "computedHash": "85d9c4ef94e00ddfc937d50aab72a307e80b98bc7e6744ec6e239ef68819c2d7"
+    },
+    "churn-prevention": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "b3d61eac3dcb6553c5fdb1f379c7d6864f37d4c0217f9dd4aea478eb172bf329"
+    },
+    "cold-email": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "f406fe65455983eb6446c6dd5572a2235d1099f92a5cac38293e71267c84141f"
+    },
+    "competitor-alternatives": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "f29cc163c4ac65d4b412529d82459ea5128278043aacd4881e5339ddbe902a99"
+    },
+    "content-strategy": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "256d326fbdfbb234c2e61bb9fbbed923c474a7e08b666747e590e3cf84f8742a"
     },
     "copilot-cli-quickstart": {
       "source": "github/awesome-copilot",
@@ -86,6 +131,16 @@
       "sourceType": "github",
       "computedHash": "ea89ea2c92405c84c51afff99cf1af8f47965459dcb5b785b14f9560ac2f6a26"
     },
+    "copy-editing": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "1027f9ec618a1f02ddb41c89fa08512e1979985f8914c6237732654cbf238737"
+    },
+    "copywriting": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "39b7a636c7e254a2f08dee43db6b9f6faf6723de999a6bbce2eb5ac95a130207"
+    },
     "create-web-form": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
@@ -100,6 +155,11 @@
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "8e582fc228f15d80126e2e10be07304b7c320f398d2cf529339642a8a06ebfdf"
+    },
+    "email-sequence": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "8a5a64f0f64c14e026d59e74aeb06722ea49ef48b3a70679163ed2e660d1ac25"
     },
     "excalidraw-diagram-generator": {
       "source": "github/awesome-copilot",
@@ -125,6 +185,16 @@
       "source": "github/awesome-copilot",
       "sourceType": "github",
       "computedHash": "54d30fd8565a8787fa7dfe6bc13e10c4c9139a3d32343a84b49bba6d5f547caf"
+    },
+    "form-cro": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "7f412794d281f26faae0d79161f8287e7be97fb6c88b74e118165903936fb77a"
+    },
+    "free-tool-strategy": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "371e1b44d0060bd1780246dd3e8d18811a8d6fcb23d48aa8437017a7bcba614a"
     },
     "frontend-design": {
       "source": "anthropics/skills",
@@ -156,6 +226,11 @@
       "sourceType": "github",
       "computedHash": "b36b333bee983462008af46d74689ae5832c2f79ae5f2c18680ee82f6e6bef56"
     },
+    "launch-strategy": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "c7254a1e9288c1adb6897c0c8ef0b0f82759894fe21c7971f9d5b62362f416d5"
+    },
     "legacy-circuit-mockups": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
@@ -175,6 +250,16 @@
       "source": "github/awesome-copilot",
       "sourceType": "github",
       "computedHash": "fc87b1a02397a9dbcfdff39cdcf627659d433608bafbd347c60049dd2766a227"
+    },
+    "marketing-ideas": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "06ad6731a3bb329218ad88ee364551db6cce8835d0646b60def8432c5f45e804"
+    },
+    "marketing-psychology": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "1f9527f4b69799e8acd05966ea1f57798890948a1c8446016593c9b485e3e86d"
     },
     "mcp-builder": {
       "source": "anthropics/skills",
@@ -236,6 +321,26 @@
       "sourceType": "github",
       "computedHash": "9e8237ec92083db9a6f4c77d5e5bf4b1d9873d670671235bc75455ee1ca39c74"
     },
+    "onboarding-cro": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "ac591b22280ebc4bf893eddb4655355337b15cf0d38c8940c6449faf55b78602"
+    },
+    "page-cro": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "ac4bc45f538c8804ddf5ffe9757ef746197f33d9fde198bbb49885a98e03100a"
+    },
+    "paid-ads": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "e212dd0b3aa01fd5d42092767cf818938c3ed78d12bd5023cd7ec6a1719d9c03"
+    },
+    "paywall-upgrade-cro": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "fe2dee2b0d171f93c3c574130de1b699530911b8397e0982881bc95bd0bd90d0"
+    },
     "pdf": {
       "source": "anthropics/skills",
       "sourceType": "github",
@@ -271,6 +376,11 @@
       "sourceType": "github",
       "computedHash": "35005c66ca8cb64c09064c27e1d05faff06caa0564f3df3b6f013642aa61e7c4"
     },
+    "popup-cro": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "8047da67ca79acbb8767167428fe8caa8f00922b514c9fa20ac3a5d70eda1bcd"
+    },
     "powerbi-modeling": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
@@ -286,6 +396,21 @@
       "sourceType": "github",
       "computedHash": "1f3e1f005fc40fda85d250ae906c8ee4f7e8e833e23adfeca6542c19609fd7cd"
     },
+    "pricing-strategy": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "9316806c2d2479b0006189432b32cf749cab0879d04237e8b72164431ce648d9"
+    },
+    "product-marketing-context": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "dc38de01e0af8422124cebe45ec1043ff83d2ce7f61d9a99575a415526861652"
+    },
+    "programmatic-seo": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "aae6ed1dda8bacf4980860e3ee2cc3c181f31e31d6b524cfd452015930d16a1f"
+    },
     "quasi-coder": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
@@ -296,10 +421,35 @@
       "sourceType": "github",
       "computedHash": "87789a786b96f99ba0680e89345a975106e10e7db1071c7cdc2e76d507c449d6"
     },
+    "referral-program": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "82b3aa762c7cee814eb864978e7ef67911b078abfaeb690cbe3fc034754d6f2b"
+    },
+    "remote-browser": {
+      "source": "browser-use/browser-use",
+      "sourceType": "github",
+      "computedHash": "117e178039f161c955f5f0f412cd70e9ced99bfca2d6e9e215c921338ad50c89"
+    },
+    "schema-markup": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "691aca0ac4d419c806a1d13a3ce8ca565a7e6ed791bd14cd4d79e91d713e82de"
+    },
     "scoutqa-test": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
       "computedHash": "67633b5abb6e9f6b1ee4e7ef347300df0f931cf07d5cabc347b523570f36e7ef"
+    },
+    "seo-audit": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "6bd4cde58bb701b5dc90a0fae2f0ea3efc7c3e6fd2ae754083fa659930e7d39f"
+    },
+    "signup-flow-cro": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "6439d733383da6307724ac5fc49311449ffbe18e4891ad874cdd5be0fd2e1cfa"
     },
     "skill-creator": {
       "source": "anthropics/skills",
@@ -320,6 +470,11 @@
       "source": "github/awesome-copilot",
       "sourceType": "github",
       "computedHash": "42d1bf4bd7a1edd92e0637ae3189ec21edb052dca9de06f0501926c567bb48b2"
+    },
+    "social-content": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "aaffbb6e301984ac94feb67f4eae29ad1936ecd1992e97db59dd03528ef20fd8"
     },
     "sponsor-finder": {
       "source": "github/awesome-copilot",
