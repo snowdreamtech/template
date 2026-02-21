@@ -23,16 +23,67 @@
 
 ```text
 project-root/
-├── .agent/           # AI agent configuration
-│   ├── rules/        # Unified AI rules (Single Source of Truth)
-│   ├── skills/       # AI skills (symlinks, auto-managed)
-│   └── workflows/    # AI workflows (project-owned)
-├── .agents/          # AI agent skills source (auto-managed)
-│   └── skills/       # Skills source code (downloaded packages)
-├── .github/          # GitHub-specific configuration
-├── .vscode/          # VS Code settings
-├── src/              # Source code
-├── tests/            # Test files
-├── docs/             # Documentation
-└── scripts/          # Build and utility scripts
+├── .agent/              # AI agent configuration (primary)
+│   ├── rules/           # Unified AI rules (Single Source of Truth)
+│   ├── skills/          # AI skills (symlinks, auto-managed)
+│   └── workflows/       # AI workflows (project-owned)
+├── .agents/             # AI agent skills source (auto-managed)
+│   └── skills/          # Skills source code (downloaded packages)
+├── .github/             # GitHub-specific configuration (Copilot)
+├── .vscode/             # VS Code settings
+├── src/                 # Source code
+├── tests/               # Test files
+├── docs/                # Documentation
+└── scripts/             # Build and utility scripts
 ```
+
+## 5. AI IDE Configuration Files
+
+This project uses a **redirect pattern** to maintain a Single Source of Truth:
+all AI IDE config files point to `.agent/rules/` for actual rules.
+
+### Root-level redirect files
+
+| File | AI IDE |
+|------|--------|
+| `CLAUDE.md` | Claude Code |
+| `AGENTS.md` | OpenAI Codex / Generic agents |
+| `CONVENTIONS.md` | Generic convention readers |
+| `codex.md` | OpenAI Codex |
+| `.cursorrules` | Cursor (legacy) |
+| `.clinerules` | Cline (legacy) |
+| `.windsurfrules` | Windsurf (legacy) |
+| `.replit.agent.md` | Replit Agent |
+| `.aider.conf.yml` | Aider (YAML format) |
+
+### IDE-specific directories
+
+Each directory contains a redirect rules file:
+
+| Directory | Rules File | AI IDE |
+|-----------|-----------|--------|
+| `.claude/` | `CLAUDE.md` | Claude Code |
+| `.cursor/` | `rules/rules.md`, `rules/rules.mdc` | Cursor |
+| `.windsurf/` | `rules/rules.md` | Windsurf |
+| `.github/` | `copilot-instructions.md`, `instructions/rules.instructions.md` | GitHub Copilot |
+| `.gemini/` | `GEMINI.md` | Gemini |
+| `.cline/` | `rules/rules.md` | Cline |
+| `.roo/` | `rules/rules.md` | Roo Code |
+| `.augment/` | `rules/rules.md` | Augment |
+| `.amazonq/` | `rules/rules.md` | Amazon Q |
+| `.continue/` | `rules/rules.md` | Continue |
+| `.trae/` | `rules/project_rules.md` | Trae |
+| `.kiro/` | `steering/rules.md` | Kiro |
+| `.goose/` | `.goosehints` | Goose |
+| `.junie/` | `guidelines.md` | Junie |
+| `.codex/` | `rules.md` | OpenAI Codex |
+| `.void/` | `rules.md` | Void IDE |
+| `.aide/` | `rules.md` | Aide IDE |
+| `.devin/` | `settings.md` | Devin AI |
+| `.kilocode/` | `rules/rules.md` | Kilocode |
+| `.openhands/` | `microagents/rules.md` | OpenHands |
+| `.bob/` | `rules.md` | Bob AI |
+| `.cortex/` | `rules.md` | Cortex |
+| `.zencoder/` | `rules/rules.md` | Zencoder |
+| `.opencode/` | `rules.md` | OpenCode |
+| + 15 more | `rules.md` | Various AI IDEs |

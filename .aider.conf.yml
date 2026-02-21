@@ -1,0 +1,19 @@
+# Aider Configuration
+# See: https://aider.chat/docs/config/aider_conf.html
+#
+# IMPORTANT: This project uses a unified AI rule system.
+# Please read .agent/rules/ directory for all coding standards.
+#
+# Convention description for Aider:
+convention: |
+  Read and strictly follow ALL rules defined in .agent/rules/ directory:
+  1. .agent/rules/01-general.md — Core principles (language, compatibility, security)
+  2. .agent/rules/02-coding-style.md — Coding conventions and commit standards
+  3. .agent/rules/03-architecture.md — Project structure and cross-platform patterns
+
+  Key rules:
+  - Use Simplified Chinese for communication and documentation
+  - Code and comments MUST be in English
+  - Git commit messages MUST be in English (Conventional Commits)
+  - Must support Linux, macOS, and Windows
+  - Follow DRY, KISS, YAGNI principles
