@@ -18,7 +18,8 @@ Read the files in numerical order:
 
 This project uses a **unified rule system** to ensure consistent AI behavior
 across all AI-powered IDEs and tools (Cursor, Windsurf, GitHub Copilot,
-Cline, Claude, Gemini, etc.). This file is a redirect entry point —
+Cline, Claude, Gemini, Trae, Roo Code, Augment, Amazon Q, Kiro,
+Continue, Junie, etc.). This file is a redirect entry point —
 the actual rules live in `.agent/rules/` as the Single Source of Truth.
 
 > **Failure to follow the rules inside `.agent/rules/` is completely unacceptable.**
