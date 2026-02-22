@@ -1,1 +1,1 @@
-/Users/snowdream/Workspace/template/.agents/commands/speckit.constitution.md
+../../.agents/commands/speckit.constitution.md

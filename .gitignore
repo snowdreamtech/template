@@ -387,7 +387,8 @@ fabric.properties
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -1263,4 +1264,5 @@ FodyWeavers.xsd
 
 ### Custom Project Rules ###
 skills/
-
+.agents/skills/
+.agent/skills/
