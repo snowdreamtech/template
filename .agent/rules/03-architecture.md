@@ -57,10 +57,17 @@ All AI IDE directories follow a **hybrid symlink pattern** to maintain a Single 
 **Rationale:**
 
 - `rules/` files are real — each IDE may need slightly different redirect content
-- `commands/` files are symlinks — 9 speckit files are identical across all IDEs; updates to `.agents/commands/` auto-propagate
+- `commands/` files are symlinks — 10 command files (1 init + 9 speckit) are identical across all IDEs; updates to `.agents/commands/` auto-propagate
 - `skills/` is a directory symlink — 120 skills are identical; directory-level is simpler than 120 individual symlinks
 
-**Adding a new command:** Edit only `.agents/commands/` — all 52 IDE dirs automatically reflect the change.
+**Exception — `.gemini/commands/`:** Gemini CLI requires TOML format. This directory contains both:
+
+- `.md` file-level symlinks → `.agents/commands/` (standard pattern)
+- `.toml` companion files (embedded full prompt content, Gemini CLI format)
+
+Both `.md` and `.toml` must exist for each command in `.gemini/commands/`.
+
+**Adding a new command:** Edit only `.agents/commands/` — all IDE dirs automatically reflect the change via symlinks. Also add a `.toml` file to `.gemini/commands/`.
 
 **Adding a new IDE:** Create `.newIDE/rules/rules.md` (real), `.newIDE/commands/` (real dir with file symlinks), `.newIDE/skills/` (dir symlink to `.agents/skills/`).
 
@@ -119,6 +126,7 @@ Each directory contains a redirect `rules/rules.md` file, plus `commands/` (file
 | `.zencoder/`    | `rules/rules.md`                                                | Zencoder               |
 | `.opencode/`    | `rules/rules.md`                                                | OpenCode               |
 | `.pearai/`      | `rules/rules.md`                                                | PearAI                 |
+| `.specify/`     | `rules/rules.md`                                                | Specify                |
 | `.melty/`       | `rules/rules.md`                                                | Melty                  |
 | `.zed/`         | `agent/rules.md`                                                | Zed IDE                |
 | `.codeium/`     | `rules/rules.md`                                                | Codeium                |
@@ -130,7 +138,6 @@ Each directory contains a redirect `rules/rules.md` file, plus `commands/` (file
 | `.bito/`        | `rules/rules.md`                                                | Bito                   |
 | `.aiassistant/` | `rules/project_rules.md`                                        | JetBrains AI Assistant |
 | `.adal/`        | `rules/rules.md`                                                | ADAL                   |
-| `.bob/`         | `rules/rules.md`                                                | Bob AI                 |
 | `.commandcode/` | `rules/rules.md`                                                | CommandCode            |
 | `.codebuddy/`   | `rules/rules.md`                                                | CodeBuddy              |
 | `.crush/`       | `rules/rules.md`                                                | Crush                  |
@@ -145,5 +152,4 @@ Each directory contains a redirect `rules/rules.md` file, plus `commands/` (file
 | `.qoder/`       | `rules/rules.md`                                                | Qoder                  |
 | `.qwen/`        | `rules/rules.md`                                                | Qwen                   |
 | `.shai/`        | `rules/rules.md`                                                | Shai                   |
-| `.specify/`     | `rules/rules.md`                                                | Specify                |
 | `.vibe/`        | `rules/rules.md`                                                | Vibe                   |
