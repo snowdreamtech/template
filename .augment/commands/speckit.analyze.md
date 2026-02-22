@@ -1,1 +1,1 @@
-/Users/snowdream/Workspace/template/.agents/commands/speckit.analyze.md
+../../.agents/commands/speckit.analyze.md

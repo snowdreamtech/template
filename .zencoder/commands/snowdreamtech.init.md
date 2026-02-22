@@ -1,1 +1,1 @@
-/Users/snowdream/Workspace/template/.agents/commands/snowdreamtech.init.md
+../../.agents/commands/snowdreamtech.init.md

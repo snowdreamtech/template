@@ -1,1 +1,1 @@
-/Users/snowdream/Workspace/template/.agents/commands/speckit.tasks.md
+../../.agents/commands/speckit.tasks.md

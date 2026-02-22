@@ -1,1 +1,1 @@
-/Users/snowdream/Workspace/template/.agents/commands/speckit.clarify.md
+../../.agents/commands/speckit.clarify.md

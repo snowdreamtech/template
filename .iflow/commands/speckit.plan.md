@@ -1,1 +1,1 @@
-/Users/snowdream/Workspace/template/.agents/commands/speckit.plan.md
+../../.agents/commands/speckit.plan.md

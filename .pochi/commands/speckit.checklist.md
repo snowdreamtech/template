@@ -1,1 +1,1 @@
-/Users/snowdream/Workspace/template/.agents/commands/speckit.checklist.md
+../../.agents/commands/speckit.checklist.md

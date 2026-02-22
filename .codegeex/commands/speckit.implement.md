@@ -1,1 +1,1 @@
-/Users/snowdream/Workspace/template/.agents/commands/speckit.implement.md
+../../.agents/commands/speckit.implement.md
