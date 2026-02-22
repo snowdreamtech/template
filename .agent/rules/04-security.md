@@ -1,31 +1,29 @@
-```markdown
-# 安全与合规规范
+# Security & Compliance Guidelines
 
-> 目标：定义敏感信息、凭证与审计的处理规则，降低泄露与合规风险。
+> Objective: Define rules for handling sensitive information, credentials, and auditing to reduce leakage and compliance risks.
 
-## 1. 凭证与密钥管理
+## 1. Credential & Key Management
 
-- 所有密钥、令牌、密码**不得**出现在仓库中（包括历史提交）。
-- 使用环境变量或秘密管理系统（例如：Vault、GitHub Secrets、Azure Key Vault）。
-- 提供 `.env.example` 但绝不提交真实 `.env`。
+- All keys, tokens, and passwords **MUST NOT** appear in the repository (including commit history).
+- Use environment variables or secret management systems (e.g., Vault, GitHub Secrets, Azure Key Vault).
+- Provide a `.env.example` but NEVER commit a real `.env`.
 
-## 2. 访问与审计
+## 2. Access & Auditing
 
-- 对关键操作（发布、秘钥创建、权限变更）保留审计日志并记录执行者。
-- 最小权限原则：按需赋权，定期审查权限。
+- Retain audit logs and record the executor for critical operations (publishing, key creation, permission changes).
+- Principle of least privilege: grant permissions on an as-needed basis and review permissions regularly.
 
-## 3. 加密与传输
+## 3. Encryption & Transmission
 
-- 传输层必须使用 TLS/HTTPS。内部通信推荐 mTLS 或加密信道。
-- 对于静态敏感数据（备份、导出），使用强加密并记录密钥来源。
+- The transport layer MUST use TLS/HTTPS. mTLS or encrypted channels are recommended for internal communication.
+- For static sensitive data (backups, exports), use strong encryption and record the source of the keys.
 
-## 4. 安全扫描与依赖
+## 4. Security Scanning & Dependencies
 
-- 在 CI 中启用依赖漏洞扫描（例如：Dependabot、Snyk、OSS-Fuzz）。
-- 定期运行静态安全扫描（SAST）与基础镜像漏洞扫描。
+- Enable dependency vulnerability scanning in CI (e.g., Dependabot, Snyk, OSS-Fuzz).
+- Regularly run Static Application Security Testing (SAST) and base image vulnerability scanning.
 
-## 5. 响应与披露
+## 5. Response & Disclosure
 
-- 建立安全事件响应流程与负责人名单（含联系渠道）。
-- 指定公开/私下漏洞披露流程与时间窗口。
-```
+- Establish a security incident response process and a list of responsible persons (including contact channels).
+- Specify the process and time window for public/private vulnerability disclosure.

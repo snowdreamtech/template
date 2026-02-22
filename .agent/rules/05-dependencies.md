@@ -1,24 +1,22 @@
-```markdown
-# 依赖与发布规范
+# Dependency & Release Guidelines
 
-> 目标：确保依赖可复现、可审计并定义发布流程。
+> Objective: Ensure dependencies are reproducible and auditable, and define the release process.
 
-## 1. 锁定与版本
+## 1. Locking & Versioning
 
-- 必须提交锁文件（`package-lock.json` / `poetry.lock` / `Pipfile.lock` 等）。
-- 依赖版本优先使用精确版本（不使用宽泛的 `^`/`~` 作模糊策略除非有明确理由）。
+- Lock files (`package-lock.json` / `poetry.lock` / `Pipfile.lock`, etc.) MUST be committed.
+- Prefer exact versions for dependencies (do not use broad `^`/`~` fuzzy strategies unless there is a clear reason).
 
-## 2. 依赖来源
+## 2. Dependency Sources
 
-- 优先使用官方注册表，必要时使用内部代理/缓存（例如：Nexus、Artifactory）。
-- 下载外部资源需带重试机制与校验（checksum/signature）。
+- Prioritize official registries. Use internal proxies/caches (e.g., Nexus, Artifactory) when necessary.
+- Downloading external resources requires a retry mechanism and verification (checksum/signature).
 
-## 3. 发布流程
+## 3. Release Process
 
-- 明确发布分支策略（例如：main=生产, develop=预发布）。
-- 发布必须经过 CI 测试和批准（至少一位代码审查者）。
+- Clearly define the release branch strategy (e.g., main=production, develop=pre-release).
+- Releases MUST pass CI testing and approval (at least one code reviewer).
 
-## 4. 依赖审查
+## 4. Dependency Review
 
-- 对关键依赖进行定期审查，禁止引入未经审查的运行时代码（wheel、prebuilt 二进制需核验来源）。
-```
+- Regularly review critical dependencies. Introducing unreviewed runtime code is prohibited (wheel and prebuilt binaries must have verified sources).

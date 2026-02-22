@@ -1,24 +1,22 @@
-```markdown
-# CI 与测试规范
+# CI & Testing Guidelines
 
-> 目标：统一测试范围、质量门槛与 CI 行为。
+> Objective: Unify test scope, quality thresholds, and CI behavior.
 
-## 1. 测试类型与覆盖
+## 1. Test Types & Coverage
 
-- 必须包含单元测试（unit）与集成测试（integration）。
-- 对关键路径设定覆盖率目标（例如：关键模块不低于 80%），但覆盖率不是唯一质量指标。
+- MUST include unit tests and integration tests.
+- Set coverage targets for critical paths (e.g., core modules no less than 80%), but coverage is not the only quality metric.
 
-## 2. CI 行为
+## 2. CI Behavior
 
-- 所有 PR 都必须通过 CI（lint、单元测试、静态检查、安全扫描）。
-- CI 失败时禁止合并；重大测试失败需要标注并通知相关负责人。
+- All PRs MUST pass CI (lint, unit tests, static analysis, security scanning).
+- Merging is prohibited when CI fails; major test failures require flagging and notifying relevant personnel.
 
-## 3. 测试数据与环境
+## 3. Test Data & Environments
 
-- 使用可复现的测试数据（fixtures、factories），避免对生产数据的直接依赖。
-- 为跨平台兼容，在 CI 中至少在 Linux 与 macOS（或 Windows）上运行关键流水线。
+- Use reproducible test data (fixtures, factories) and avoid direct dependence on production data.
+- For cross-platform compatibility, run critical pipelines on at least Linux and macOS (or Windows) in CI.
 
-## 4. 快速反馈策略
+## 4. Fast Feedback Strategy
 
-- 将快速、轻量检查放在 PR 的第一阶段（lint、快速单元），耗时较长的集成/端到端测试可并行运行。
-```
+- Place fast, lightweight checks in the first phase of the PR (lint, fast unit tests). Longer-running integration/end-to-end tests can run in parallel.

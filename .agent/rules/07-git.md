@@ -1,24 +1,22 @@
-```markdown
-# Git 与提交/PR 规范
+# Git, Commit & PR Guidelines
 
-> 目标：统一提交历史、PR 流程与审查标准，提高可追溯性与协作效率。
+> Objective: Unify commit history, PR workflows, and review standards to improve traceability and collaboration efficiency.
 
-## 1. 提交信息
+## 1. Commit Messages
 
-- 使用 Conventional Commits 格式：`<type>(<scope>): <description>`（类型：feat, fix, docs, style, refactor, test, chore）。
-- 提交信息必须为英文。
+- Use the Conventional Commits format: `<type>(<scope>): <description>` (Types: feat, fix, docs, style, refactor, test, chore).
+- Commit messages MUST be in English.
 
-## 2. 分支策略
+## 2. Branching Strategy
 
-- 推荐使用 feature branches（`feature/*`）、`develop` 与 `main`（或 `release/*`）。
-- 合并到 `main` 前必须通过 CI 并至少一名审查者批准。
+- Recommend using feature branches (`feature/*`), `develop`, and `main` (or `release/*`).
+- Before merging into `main`, it MUST pass CI and get approval from at least one reviewer.
 
-## 3. PR 要求
+## 3. PR Requirements
 
-- PR 描述应包含变更摘要、验证步骤、相关 issue/任务号、回滚注意事项。
-- 对安全、依赖、数据库迁移相关的 PR 需显式列出影响与回滚步骤并标注 `security` / `db` 标签。
+- PR descriptions should include a summary of changes, validation steps, related issue/task numbers, and rollback precautions.
+- PRs related to security, dependencies, or database migrations must explicitly list impacts and rollback steps, and be tagged with `security` or `db`.
 
-## 4. 清理历史
+## 4. Cleaning History
 
-- 对历史进行有选择的 squash 或 rebase 保持主分支清晰；但合并策略需在团队达成一致。
-```
+- Selectively squash or rebase history to keep the main branch clear; however, the merge strategy requires team consensus.

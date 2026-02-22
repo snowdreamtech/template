@@ -22,7 +22,7 @@
 ## 4. Documentation
 
 - All public APIs and functions should have clear docstrings/comments in **English**.
-- README files and user-facing documentation should be in **Simplified Chinese**.
+- README files and user-facing documentation should be in **Simplified Chinese (简体中文)**.
 - Keep comments up to date when modifying code.
 
 ## 5. Naming Conventions

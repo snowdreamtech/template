@@ -1,18 +1,16 @@
-```markdown
-# Node.js 开发规范
+# Node.js Development Guidelines
 
-> 目标：Node.js 项目约定（格式化、lint、测试与构建）。
+> Objective: Node.js project conventions (formatting, linting, testing, and building).
 
-## 1. 工具链
+## 1. Toolchain
 
-- 推荐使用 `eslint` + `prettier`。提供配置文件：`.eslintrc.js`、`.prettierrc`。
-- 使用 `npm` 或 `pnpm`，并提交相应 lock 文件（`package-lock.json` 或 `pnpm-lock.yaml`）。
+- Recommend using `eslint` + `prettier`. Provide configuration files: `.eslintrc.js`, `.prettierrc`.
+- Use `npm` or `pnpm`, and commit the corresponding lock file (`package-lock.json` or `pnpm-lock.yaml`).
 
-## 2. 包管理
+## 2. Package Management
 
-- 禁止直接在运行时安装依赖（runtime install）。所有依赖应声明在 `package.json`。
+- Runtime install of dependencies is prohibited. All dependencies should be declared in `package.json`.
 
-## 3. 构建与发布
+## 3. Building & Publishing
 
-- 提供明确的构建脚本（`build`）、测试脚本（`test`）、本地运行脚本（`start`）。
-```
+- Provide clear build scripts (`build`), test scripts (`test`), and local start scripts (`start`).
