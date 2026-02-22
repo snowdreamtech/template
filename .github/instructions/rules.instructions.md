@@ -1,3 +1,7 @@
+---
+applyTo: "**"
+---
+
 # 🚨 CRITICAL SYSTEM INSTRUCTION 🚨
 
 Before answering ANY prompt or executing ANY code in this repository,
