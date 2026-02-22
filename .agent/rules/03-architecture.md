@@ -11,7 +11,7 @@
 
 - Always pin dependency versions in lock files (`package-lock.json`, `poetry.lock`, etc.).
 - Lock files MUST be committed to version control.
-- The `node_modules/`, `venv/`, `skills/` directories MUST be in `.gitignore`.
+- The `node_modules/`, `venv/` directories MUST be in `.gitignore`.
 
 ## 3. Configuration Hierarchy
 
@@ -26,16 +26,13 @@ project-root/
 ├── .agent/              # AI agent configuration (primary)
 │   ├── rules/           # Unified AI rules (Single Source of Truth)
 │   └── workflows/       # AI workflows / commands (source of truth)
-├── .agents/             # AI agent skills source (auto-managed)
 │   ├── commands/        # Command files (source of truth for all IDEs)
-│   └── skills/          # Skills source code (downloaded packages)
 ├── .cline/              # Example IDE dir (all IDE dirs follow this pattern)
 │   ├── rules/           # Real folder — IDE-specific rules redirect
 │   │   └── rules.md     # Real file — redirects to .agent/rules/
 │   ├── commands/        # Real folder — contains file-level symlinks
 │   │   ├── speckit.analyze.md  -> .agents/commands/speckit.analyze.md
 │   │   └── ...          # 9 speckit command files as symlinks
-│   └── skills/          -> .agents/skills/  (directory-level symlink)
 ├── .github/             # GitHub-specific configuration (Copilot)
 ├── .vscode/             # VS Code settings
 ├── src/                 # Source code
@@ -52,13 +49,11 @@ All AI IDE directories follow a **hybrid symlink pattern** to maintain a Single 
 | ---------------- | ------------------------------------ | -------------------- |
 | `.IDE/rules/`    | Real folder, real files              | IDE-specific content |
 | `.IDE/commands/` | Real folder, **file-level symlinks** | `.agents/commands/`  |
-| `.IDE/skills/`   | **Directory-level symlink**          | `.agents/skills/`    |
 
 **Rationale:**
 
 - `rules/` files are real — each IDE may need slightly different redirect content
 - `commands/` files are symlinks — 10 command files (1 init + 9 speckit) are identical across all IDEs; updates to `.agents/commands/` auto-propagate
-- `skills/` is a directory symlink — 120 skills are identical; directory-level is simpler than 120 individual symlinks
 
 **Exception — `.gemini/commands/`:** Gemini CLI requires TOML format. This directory contains both:
 
@@ -69,7 +64,7 @@ Both `.md` and `.toml` must exist for each command in `.gemini/commands/`.
 
 **Adding a new command:** Edit only `.agents/commands/` — all IDE dirs automatically reflect the change via symlinks. Also add a `.toml` file to `.gemini/commands/`.
 
-**Adding a new IDE:** Create `.newIDE/rules/rules.md` (real), `.newIDE/commands/` (real dir with file symlinks), `.newIDE/skills/` (dir symlink to `.agents/skills/`).
+**Adding a new IDE:** Create `.newIDE/rules/rules.md` (real), `.newIDE/commands/` (real dir with file symlinks).
 
 ## 6. AI IDE Configuration Files
 
@@ -97,7 +92,7 @@ all AI IDE config files point to `.agent/rules/` for actual rules.
 
 ### IDE-specific directories
 
-Each directory contains a redirect `rules/rules.md` file, plus `commands/` (file symlinks) and `skills/` (dir symlink):
+Each directory contains a redirect `rules/rules.md` file, plus `commands/` (file symlinks):
 
 | Directory       | Rules File                                                      | AI IDE                 |
 | --------------- | --------------------------------------------------------------- | ---------------------- |
