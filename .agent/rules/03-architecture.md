@@ -92,12 +92,12 @@ Each directory contains a redirect rules file:
 | `.pearai/` | `rules.md` | PearAI |
 | `.melty/` | `rules.md` | Melty |
 | `.zed/` | `agent/rules.md` | Zed IDE |
-| `.codeium/` | `rules.md` | Codeium |
-| `.cody/` | `rules.md` | Sourcegraph Cody |
-| `.tabnine/` | `rules.md` | Tabnine |
-| `.supermaven/` | `rules.md` | Supermaven |
-| `.blackbox/` | `rules.md` | Blackbox |
-| `.codegeex/` | `rules.md` | CodeGeeX |
-| `.bito/` | `rules.md` | Bito |
+| `.codeium/` | `rules/rules.md` | Codeium |
+| `.cody/` | `rules/rules.md` | Sourcegraph Cody |
+| `.tabnine/` | `rules/rules.md` | Tabnine |
+| `.supermaven/` | `rules/rules.md` | Supermaven |
+| `.blackbox/` | `rules/rules.md` | Blackbox |
+| `.codegeex/` | `rules/rules.md` | CodeGeeX |
+| `.bito/` | `rules/rules.md` | Bito |
 | `.aiassistant/` | `rules/project_rules.md` | JetBrains AI Assistant |
 | + 15 more | `rules.md` | Various AI IDEs |
