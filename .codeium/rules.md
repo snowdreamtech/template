@@ -1,9 +1,3 @@
----
-description: "Unified AI rules redirect — read .agent/rules/ for actual rules"
-globs: "*"
-alwaysApply: true
----
-
 # 🚨 CRITICAL SYSTEM INSTRUCTION 🚨
 
 Before answering ANY prompt or executing ANY code in this repository,
