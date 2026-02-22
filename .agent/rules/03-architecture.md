@@ -79,6 +79,8 @@ all AI IDE config files point to `.agent/rules/` for actual rules.
 | `codex.md`         | OpenAI Codex                  |
 | `.cursorrules`     | Cursor (legacy)               |
 | `.clinerules`      | Cline (legacy)                |
+| `.roorules`        | Roo Code (legacy)             |
+| `.traerules`       | Trae (legacy)                 |
 | `.windsurfrules`   | Windsurf (legacy)             |
 | `.replit.agent.md` | Replit Agent                  |
 | `.aider.conf.yml`  | Aider (YAML format)           |
@@ -131,6 +133,7 @@ Each directory contains a redirect `rules/rules.md` file, plus `commands/` (file
 | `.bob/`         | `rules/rules.md`                                                | Bob AI                 |
 | `.commandcode/` | `rules/rules.md`                                                | CommandCode            |
 | `.codebuddy/`   | `rules/rules.md`                                                | CodeBuddy              |
+| `.crush/`       | `rules/rules.md`                                                | Crush                  |
 | `.factory/`     | `rules/rules.md`                                                | Factory                |
 | `.iflow/`       | `rules/rules.md`                                                | iFlow                  |
 | `.kode/`        | `rules/rules.md`                                                | Kode                   |
@@ -144,4 +147,3 @@ Each directory contains a redirect `rules/rules.md` file, plus `commands/` (file
 | `.shai/`        | `rules/rules.md`                                                | Shai                   |
 | `.specify/`     | `rules/rules.md`                                                | Specify                |
 | `.vibe/`        | `rules/rules.md`                                                | Vibe                   |
-| `.supermaven/`  | `rules/rules.md`                                                | Supermaven             |
