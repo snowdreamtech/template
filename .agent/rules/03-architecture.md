@@ -55,6 +55,9 @@ all AI IDE config files point to `.agent/rules/` for actual rules.
 | `.windsurfrules` | Windsurf (legacy) |
 | `.replit.agent.md` | Replit Agent |
 | `.aider.conf.yml` | Aider (YAML format) |
+| `.coderabbit.yaml` | CodeRabbit (YAML format) |
+| `sweep.yaml` | Sweep AI (YAML format) |
+| `.pr_agent.toml` | Qodo PR-Agent (TOML format) |
 
 ### IDE-specific directories
 
@@ -86,4 +89,7 @@ Each directory contains a redirect rules file:
 | `.cortex/` | `rules.md` | Cortex |
 | `.zencoder/` | `rules/rules.md` | Zencoder |
 | `.opencode/` | `rules.md` | OpenCode |
+| `.pearai/` | `rules.md` | PearAI |
+| `.melty/` | `rules.md` | Melty |
+| `.zed/` | `agent/rules.md` | Zed IDE |
 | + 15 more | `rules.md` | Various AI IDEs |

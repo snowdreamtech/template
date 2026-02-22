@@ -1,0 +1,15 @@
+# Qodo PR Agent Configuration
+# See: https://qodo-merge-docs.qodo.ai/usage/configuration/
+
+[pr_reviewer]
+extra_instructions = """
+# 🚨 CRITICAL SYSTEM INSTRUCTION 🚨
+Please follow the unified rules from `.agent/rules/`:
+1. Use Simplified Chinese (简体中文) for all communication/reviews.
+2. Code and code comments MUST be in English.
+3. Check for cross-platform compatibility (Linux, macOS, Windows).
+4. Enforce DRY, KISS, YAGNI principles.
+"""
+
+[pr_description]
+extra_instructions = "Use Simplified Chinese for the PR description."
