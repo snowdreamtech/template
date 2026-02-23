@@ -26,7 +26,8 @@ project-root/
 ├── .agent/              # AI agent configuration (primary)
 │   ├── rules/           # Unified AI rules (Single Source of Truth)
 │   └── workflows/       # AI workflows / commands (source of truth)
-│   ├── commands/        # Command files (source of truth for all IDEs)
+├── .agents/             # Shared commands source (auto-managed)
+│   └── commands/        # Command files (source of truth for all IDEs)
 ├── .cline/              # Example IDE dir (all IDE dirs follow this pattern)
 │   ├── rules/           # Real folder — IDE-specific rules redirect
 │   │   └── rules.md     # Real file — redirects to .agent/rules/

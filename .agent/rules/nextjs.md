@@ -25,7 +25,7 @@
 - Use `next/image` for all images to get automatic optimization, lazy loading, and correct sizing.
 - Use `next/font` for all fonts to eliminate layout shift and optimize loading.
 - Use **dynamic imports** (`next/dynamic`) to lazy-load heavy Client Components.
-- Measure and target Core Web Vitals (LCP, CLS, INP) using `next/analytics` or a real user monitoring tool.
+- Measure and target Core Web Vitals (LCP, CLS, INP) using `@vercel/analytics` or a real user monitoring tool (e.g., Datadog RUM, Sentry).
 
 ## 5. Environment Variables
 

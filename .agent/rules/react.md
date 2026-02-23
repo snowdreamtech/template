@@ -21,5 +21,5 @@
 
 ## 4. Typing (TypeScript)
 
-- **Interfaces**: Define `Props` interaces for all components.
+- **Interfaces**: Define `Props` interfaces for all components.
 - **Avoid any**: Do not use `any`. Use `unknown` or specific types.

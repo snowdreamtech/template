@@ -12,7 +12,7 @@
 
 - **Ownership**: strictly adhere to Rust's ownership and borrowing rules.
 - **Unsafe Code**: Avoid `unsafe` blocks unless absolutely necessary for FFI or proven, extreme performance bottlenecks. `unsafe` code MUST be heavily documented explaining the safety invariants.
-- **Error Handling**: Use `Result<T, E>` and `Option<T>` for error and absence handling. Use the `?` operator. Avoid `.unwrap()` and `.expect()` in production paths; use them only in tests or prototpyes.
+- **Error Handling**: Use `Result<T, E>` and `Option<T>` for error and absence handling. Use the `?` operator. Avoid `.unwrap()` and `.expect()` in production paths; use them only in tests or prototypes.
 
 ## 3. Testing
 
