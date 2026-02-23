@@ -1,0 +1,36 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+# 4 space indentation for Python, Go, Rust scripts
+[*.{py,go,rs}]
+indent_style = space
+indent_size = 4
+
+# 2 space indentation for web dialects and configs
+[*.{js,ts,jsx,tsx,cjs,mjs,json,jsonc,yaml,yml,html,css,scss,vue,md}]
+indent_style = space
+indent_size = 2
+
+# Tab indentation (no size specified) for Makefiles
+[Makefile]
+indent_style = tab
+
+# Markdown formatting exceptions (allow trailing spaces for strict line breaks)
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Shell and Windows Scripts
+[*.{sh,zsh,bash,ps1}]
+indent_style = space
+indent_size = 2
+end_of_line = lf
