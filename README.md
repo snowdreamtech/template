@@ -47,4 +47,8 @@ If you wish to augment the AI's behavior, please **do not** modify individual ID
 
 ## License
 
-Copyright © Snowdream Tech. All rights reserved.
+This project is licensed under the **MIT License**.
+
+Copyright (c) 2026-present [SnowdreamTech Inc.](https://github.com/snowdreamtech)
+
+See the [LICENSE](./LICENSE) file for the full license text.
