@@ -26,11 +26,11 @@ project-root/
 
 ## Getting Started
 
-1.  **Clone the template**.
-2.  **Initialize the Environment**:
-    Depending on your AI IDE, trigger the initialization command (e.g., typing `snowdreamtech.init` in your IDE's agent chat, or executing the corresponding CLI workflow).
-3.  **Read the Rules**:
-    Before coding, ensure both you and your AI assistant have read the core principles located at `.agent/rules/01-general.md`.
+1. **Clone the template**.
+2. **Initialize the Environment**:
+   Depending on your AI IDE, trigger the initialization command (e.g., typing `snowdreamtech.init` in your IDE's agent chat, or executing the corresponding CLI workflow).
+3. **Read the Rules**:
+   Before coding, ensure both you and your AI assistant have read the core principles located at `.agent/rules/01-general.md`.
 
 ## AI Interaction Guidelines
 
@@ -42,8 +42,8 @@ This repository strictly enforces interaction rules to prevent "AI hallucination
 
 If you wish to augment the AI's behavior, please **do not** modify individual IDE configuration directories directly (e.g., do not edit `.cursorrules` directly if it's a redirect). Instead:
 
-1.  Add or modify markdown files inside `.agent/rules/`.
-2.  The existing symlink topology will automatically apply your new rules to all 50+ AI environments.
+1. Add or modify markdown files inside `.agent/rules/`.
+2. The existing symlink topology will automatically apply your new rules to all 50+ AI environments.
 
 ## License
 
