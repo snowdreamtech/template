@@ -12,7 +12,7 @@
 ## 2. Null Safety
 
 - Avoid the `!!` (not-null assertion) operator in production code. Use safe calls (`?.`), the Elvis operator (`?:`), or `requireNotNull`/`checkNotNull` with clear messages.
-- Design APIs to be null-free where possible; use `Optional` or sealed classes to represent absence explicitly.
+- Design APIs to be null-free where possible; use Kotlin's nullable types (`T?`) to represent absence explicitly. Avoid Java's `Optional` class — it is non-idiomatic in Kotlin.
 
 ## 3. Coroutines
 

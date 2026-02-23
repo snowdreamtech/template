@@ -1,24 +1,32 @@
 # Go Development Guidelines
 
-> Objective: Go-specific project conventions (formatting, structure, concurrency, and testing).
+> Objective: Go-specific project conventions (formatting, structure, error handling, concurrency, and testing).
 
 ## 1. Toolchain & Formatting
 
 - **Formatting**: Use `gofmt` or `goimports` exclusively. All Go code MUST be formatted before committing.
-- **Linting**: Use `golangci-lint` as the standard linter. Address all linter warnings.
+- **Linting**: Use `golangci-lint` as the standard linter. Address all linter warnings (`golangci-lint run ./...`).
+- **Modules**: Use Go modules (`go.mod`). Ensure both `go.mod` and `go.sum` are committed to version control.
 
 ## 2. Project Layout
 
-- **Standard Structure**: Follow the standard Go project layout conventions (e.g., `/cmd` for binaries, `/pkg` for public libraries, `/internal` for private application code).
-- **Modules**: Use Go modules (`go.mod`). Ensure `go.mod` and `go.sum` are committed.
+- Follow the standard Go project layout conventions (`/cmd` for binaries, `/internal` for private application code, `/pkg` for public libraries).
+- Use `internal/` to enforce package boundaries — code in `internal/` cannot be imported by external modules.
 
-## 3. Concurrency & Error Handling
+## 3. Error Handling
 
-- **Errors**: Return errors explicitly (`return x, err`). Do not use `panic` for normal error handling; reserve `panic` for truly unrecoverable program states.
-- **Goroutines**: Never start a goroutine without knowing how it will stop. Use contexts (`context.Context`) for cancellation and timeouts.
-- **Channels**: Prefer communicating over channels over sharing memory, but use mutexes (`sync.Mutex`) when simple state protection is clearer.
+- Return errors explicitly (`return result, err`). Do not use `panic` for expected error conditions.
+- **Wrap errors** with context using `fmt.Errorf("operation failed: %w", err)`. Use `errors.Is()` and `errors.As()` for error inspection — never compare error strings directly.
+- Define custom sentinel errors with `errors.New()` or typed errors for errors that callers need to distinguish.
 
-## 4. Testing
+## 4. Concurrency
 
-- **Table-Driven Tests**: Use table-driven tests for comprehensive unit testing of various inputs and edge cases.
-- **Race Detector**: Always run tests with the race detector enabled (`go test -race`).
+- Never start a goroutine without knowing how and when it will stop. Use `context.Context` for cancellation and timeouts; pass context as the first parameter of every blocking function.
+- Prefer **channels** for communication between goroutines. Use `sync.Mutex` for simple, local shared-state protection.
+- Use `sync.WaitGroup` or `errgroup.Group` (`golang.org/x/sync/errgroup`) to manage goroutine lifecycles and collect errors.
+
+## 5. Testing & Logging
+
+- Use **table-driven tests** (`[]struct{...}`) for testing multiple inputs and edge cases.
+- Always run tests with the race detector: `go test -race ./...`.
+- Use **`log/slog`** (Go 1.21+) for structured logging. Avoid `fmt.Println` for production logging.

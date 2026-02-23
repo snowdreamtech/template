@@ -17,7 +17,7 @@
 ## 3. Selectors
 
 - Prefer class selectors (`.component`) over element selectors (`div`) or ID selectors (`#id`) for styling.
-- Avoid overly specific or deeply nested selectors. Keep nspecificity as low as possible.
+- Avoid overly specific or deeply nested selectors. Keep specificity as low as possible.
 - Do not use `!important` (except to override third-party library styles with a clear comment explaining why).
 
 ## 4. Responsive Design
