@@ -7,20 +7,29 @@
 - **No Blind Refactoring**: AI MUST NOT perform large-scale refactoring unless explicitly requested by the user.
 - **Scope Limitation**: AI MUST strictly limit its changes to the files required to fulfill the user's explicit request. Do not "fix" unrelated code nearby unless it is a critical security issue or breaks the build.
 - **Destructive Operations**: AI MUST ask for explicit confirmation before deleting files, dropping database tables, or modifying production infrastructure configurations.
+- **Reversibility**: Prefer reversible changes over irreversible ones. When a destructive operation is necessary, document a rollback procedure alongside the change.
 
 ## 2. Code Generation & Modification
 
-- **Test-Driven Mentality**: When modifying logic or adding features, the AI MUST proactively update or create corresponding tests. Do not output untested code as final without a warning.
+- **Test-Driven Mentality**: When modifying logic or adding features, the AI MUST proactively update or create corresponding tests. Do not output untested code as final without a clear warning.
 - **Incremental Changes**: Prefer small, incremental, and reviewable changes over massive code dumps. Explain what the code does before outputting large blocks.
-- **Error Handling**: Generated code MUST include robust error handling and logging, adhering to the project's coding style (e.g., catching specific exceptions, not swallowing errors).
+- **Error Handling**: Generated code MUST include robust error handling and logging, adhering to the project's coding style (catching specific exceptions, not swallowing errors).
+- **No Magic Numbers**: Generated code must not contain unexplained constants or hardcoded values. Use named constants with comments.
 
 ## 3. Communication Strategy
 
 - **Ask When Uncertain**: If the user's request is ambiguous, lacks context, or involves undocumented legacy code, the AI MUST ask clarifying questions rather than guessing the implementation.
-- **Acknowledge Mistakes**: If the AI makes an error or a test fails based on its previous suggestion, it must acknowledge the mistake and provide a corrected approach.
+- **Acknowledge Mistakes**: If the AI makes an error or a test fails based on its previous suggestion, it must acknowledge the mistake and provide a corrected approach — never deflect or blame the user's setup.
 - **Concise Reporting**: Keep explanations concise. Avoid overly verbose pleasantries. Get straight to the technical point.
 
 ## 4. Context Handling
 
 - **Read Before Writing**: AI MUST read relevant project documentation, architecture files, and existing code patterns before generating new implementations to ensure architectural consistency.
 - **Artifact Usage**: Utilize designated memory or "brain" directories (if configured) to store and retrieve long-running task context, architectural decisions, and checklists.
+- **Check Existing Code**: Before creating a new utility function or module, search the codebase for an existing equivalent. Avoid duplication.
+
+## 5. Quality & Review
+
+- **Self-Review**: Before presenting generated code, the AI must mentally review it for: correctness, security implications, edge cases, and style consistency with the existing codebase.
+- **Cite Sources**: When recommending a specific library, pattern, or algorithm, briefly justify why it is the best choice for this context (rather than alternatives).
+- **Versioning Awareness**: When referencing APIs, libraries, or framework features, be explicit about the version they apply to. Avoid recommending deprecated APIs.

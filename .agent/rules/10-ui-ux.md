@@ -1,26 +1,37 @@
 # UI/UX & Frontend Guidelines
 
-> Objective: Define standards for frontend development, styling, componentization, and user experience.
+> Objective: Define standards for frontend development, styling, componentization, accessibility, and user experience quality.
 
-## 1. Styling & CSS
+## 1. Styling & CSS Architecture
 
-- **Framework**: Use the project's designated styling framework (e.g., Tailwind CSS, styled-components, or vanilla CSS modules). Avoid mixing inline styles with utility classes unless absolutely necessary for dynamic values.
-- **Variables**: Rely on CSS variables or design system tokens for colors, spacing, and typography to maintain consistency.
-- **Responsive Design**: Follow a mobile-first approach. Ensure UI components adapt gracefully across mobile, tablet, and desktop breakpoints.
+- Use the project's designated styling approach consistently (**Tailwind CSS**, **CSS Modules**, **styled-components**, or vanilla CSS). Never mix approaches within the same project.
+- Rely on **CSS variables** (custom properties) or design system tokens for colors, spacing, typography, border-radius, and shadows. Never hard-code values that belong in the design system.
+- Follow a **mobile-first** approach. Write base styles for the smallest breakpoint, then progressively enhance with `min-width` media queries.
 
-## 2. Componentization
+## 2. Componentization & Architecture
 
-- **Reusability**: Build modular, reusable components (e.g., generic buttons, inputs, modals) rather than duplicating UI elements.
-- **Separation of Concerns**: Keep presentation components (dumb/pure) separate from container components (smart/stateful) where applicable.
-- **Props**: Define clear, typed props for components (using TypeScript interfaces/types or PropTypes).
+- Build **modular, reusable components** with a single, clear responsibility.
+- Separate **presentational (dumb) components** from **container (smart) components**. Presentational components receive data via props and emit events; they contain no data-fetching logic.
+- Define clear, typed **props/interfaces** for every component. Document required vs optional props and their types.
+- Co-locate a component's styles, tests, and story (if using Storybook) in the same directory.
 
 ## 3. Accessibility (a11y)
 
-- **Semantic HTML**: Use semantic HTML tags (`<nav>`, `<main>`, `<article>`, `<button>`) instead of generic `<div>` tags.
-- **ARIA Attributes**: Use ARIA roles and labels (`aria-label`, `aria-hidden`) where semantic HTML is insufficient, especially for complex interactive custom components.
-- **Keyboard Navigation**: Ensure all interactive elements (links, buttons, form fields) are fully accessible via keyboard navigation (`tabindex`, visible focus states).
+- Use **semantic HTML** elements for their intended purpose: `<nav>`, `<main>`, `<article>`, `<button>`, `<label>`. Do not use `<div>` for interactive elements.
+- All interactive elements must be fully operable via **keyboard navigation**. Never remove `outline` without providing a visible custom focus indicator.
+- All `<img>` elements MUST have a descriptive `alt` attribute. Use `alt=""` for decorative images.
+- Use **ARIA roles and attributes** only when semantic HTML is insufficient. Test with a screen reader (VoiceOver, NVDA) for critical flows.
 
 ## 4. Performance & UX
 
-- **Feedback**: Provide immediate visual feedback for user actions (loading spinners, success toasts, error messages, hover states).
-- **Optimization**: Optimize images (use modern formats like WebP), lazy load non-critical components or images, and minimize layout shifts (Core Web Vitals).
+- Provide immediate **visual feedback** for all user actions: loading spinners, success toasts, error messages, disabled states during async operations.
+- Optimize images: use modern formats (WebP, AVIF), specify `width`/`height` to prevent layout shifts, and lazy-load images below the fold.
+- Minimize **Cumulative Layout Shift (CLS)**: always reserve space for dynamic content (images, ads, async-loaded components) before it loads.
+- Lazy-load non-critical components and routes with code splitting (`React.lazy`, dynamic `import()`).
+
+## 5. Design Consistency & Tooling
+
+- Maintain a **design system** or component library as a single source of truth for visual design decisions (colors, typography, spacing scale, component variants).
+- Use **Storybook** (or equivalent) to develop and document UI components in isolation.
+- Run automated **visual regression tests** (Chromatic, Percy) for critical UI components to catch unintended visual changes.
+- Lint styles with **Stylelint** and enforce design token usage to prevent ad-hoc values from accumulating.
