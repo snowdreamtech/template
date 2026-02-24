@@ -12,7 +12,6 @@
 
 ## 2. Standards & Idempotency
 
-- Strictly follow `.aiconfig` conventions where present in the project.
 - Maintain **idempotency** in all scripts, infrastructure, and configuration: running any operation multiple times MUST produce the same result as running it once. Idempotency check: re-run the script/apply and verify state is identical.
 - Prefer **declarative** over imperative configuration (e.g., desired-state IaC over ad-hoc shell scripts). Declarative configs are self-documenting and inherently idempotent.
 - Avoid side effects in initialization code. Setup scripts must be safe to re-run without human intervention.
