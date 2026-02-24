@@ -13,6 +13,7 @@
 ## 2. markdownlint Compliance
 
 - Commit a `.markdownlint.json` (or `.markdownlint.yaml`) at the repository root to enforce consistent rules across all contributors:
+
   ```json
   {
     "default": true,
@@ -21,6 +22,7 @@
     "MD041": true
   }
   ```
+
 - Run **`markdownlint-cli2`** in CI on all `**/*.md` files: `markdownlint-cli2 "**/*.md" "#node_modules"`.
 - Common rules to always keep enabled:
   - **MD001**: Heading levels increment by one only.
@@ -35,6 +37,7 @@
 ## 3. Formatting & Style
 
 - Use **ATX-style headings** (`# Heading`) not Setext-style (underline with `=` or `-`) for consistency. ATX-style works at all levels.
+- Headings MUST NOT contain emojis or decorative symbols. Use plain text only to ensure compatibility with TOC generators, `markdownlint`, and accessibility tools.
 - Use **fenced code blocks** (triple backticks) with an explicit language identifier for all code samples: ` ```python `, ` ```bash `, ` ```json `. Never use indented code blocks (4-space indent).
 - Use **asterisks** (`*`) for unordered lists and `1.` for ordered lists (with auto-increment — all items can use `1.`). Be consistent within a list.
 - Use `**bold**` for important terms and `*italic*` for emphasis. Avoid overusing both.
@@ -52,11 +55,13 @@
 
 - Write in **plain, clear language** — minimize jargon and acronyms. Define domain-specific terms on first use.
 - Table cells MUST have a **header row** and use alignment pipes consistently:
+
   ```markdown
   | Column A | Column B |
   | :------- | -------: |
   | left     |    right |
   ```
+
 - Avoid embedding raw HTML (`<div>`, `<span>`, `<br>`) in Markdown unless the rendering target explicitly requires it. Standard Markdown elements are more portable.
 - Keep individual `.md` files **focused on a single topic**. Split large documents into separate files with clear cross-links.
 - For long documents, add a **Table of Contents** at the top using anchor links or a tool like `markdown-toc`.

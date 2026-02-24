@@ -5,7 +5,7 @@
 ## 1. Idempotency
 
 - All tasks MUST be **idempotent** — running a playbook multiple times must produce the same end state without errors.
-- Use Ansible **modules** (e.g., `ansible.builtin.file`, `ansible.builtin.template`, `ansible.builtin.systemd`) instead of raw `shell` or `command` tasks whenever an appropriate module exists.
+- Use Ansible **modules** (e.g., `ansible.builtin.file`, `ansible.builtin.template`, `ansible.builtin.systemd`) instead of raw `shell` or `command` tasks whenever an appropriate module exists. Module names MUST be **fully qualified** (`ansible.builtin.*`, `community.general.*`, etc.) — never use short-form names (e.g., `copy`, `template`) to avoid ambiguity with collection shadowing.
 - When `shell` or `command` tasks are unavoidable, add `changed_when: false` (if always idempotent) or a proper condition, and `creates`/`removes` guards.
 - Use `ansible.builtin.stat` to check state before acting, rather than relying on error behavior.
 
@@ -14,7 +14,8 @@
 - Organize automation into **roles** using the standard directory layout: `tasks/`, `handlers/`, `defaults/`, `vars/`, `templates/`, `files/`, `meta/`.
 - Use **collections** (`ansible-galaxy collection install`) for shared, reusable roles across projects. Pin collection versions in `requirements.yml`.
 - Follow the standard project layout:
-  ```
+
+  ```text
   inventory/          # Per-environment inventory files or directories
   roles/              # Reusable roles
   playbooks/          # Top-level orchestration playbooks
@@ -36,6 +37,9 @@
 - Give every task a descriptive `name:` field. Never leave a task unnamed — unnamed tasks produce unreadable output.
 - Use `notify` and `handlers` for operations that should run only when a change occurs (e.g., restart a service only after its config file changes).
 - Set `become: true` at the task or play level only where `sudo` escalation is required. Avoid setting `become: true` globally on all plays.
+- `include_role` and `include_tasks` MUST be explicit: always specify the full `name:` (and `tasks_from:` where applicable). Never rely on implicit file resolution.
+- Complex logic MUST NOT be embedded in `when:` conditions. If the condition requires more than a simple boolean test, extract the logic into a `set_fact` task or a custom filter/module. Keep conditions readable.
+- Tasks SHOULD remain **single-purpose** — one task does one thing. Avoid combining multiple state changes into a single `shell` or `command` task.
 - Use **tags** (`tags: [config, service]`) on all tasks to enable targeted playbook runs.
 
 ## 5. Testing & Linting

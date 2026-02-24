@@ -31,6 +31,7 @@
 - Use **dataclasses** (`@dataclass`) or **Pydantic v2** models for structured data. Avoid plain `dict` for typed domain objects.
 - Use `pathlib.Path` instead of `os.path` for all file system operations.
 - Use **context managers** (`with`) for all resources (files, DB connections, locks) to ensure proper cleanup.
+- Use the **`logging`** module for all diagnostic output. Never use `print()` for logging, debugging, or status messages in production code. Configure loggers per module: `logger = logging.getLogger(__name__)`.
 - Write **generators** and use lazy evaluation where possible for large data processing. Avoid loading entire datasets into memory.
 
 ## 5. Testing & CI
