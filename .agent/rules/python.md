@@ -4,31 +4,40 @@
 
 ## 1. Version & Environment
 
-- Target **Python 3.10+** for new projects. Use `python-requires` in `pyproject.toml` to enforce the minimum version.
-- Use **`venv`** (stdlib) or **`poetry`** for dependency isolation. Never install project dependencies into the system Python.
-- Always provide a `pyproject.toml` (preferred) or `requirements.txt` in the project root. Pin all dependencies with lock files (`poetry.lock` or `pip-tools`' `requirements.lock`).
+- Target **Python 3.11+** for new projects. Use `requires-python` in `pyproject.toml` to enforce the minimum version.
+- Use **`uv`** (preferred for speed) or **`poetry`** for dependency management and virtual environment isolation. Never install project dependencies into the system Python.
+- Always provide a `pyproject.toml` in the project root (PEP 517/518). Use `uv lock` or `poetry.lock` for reproducible installs. Commit the lock file.
+- Pin the Python version in `.python-version` (pyenv/mise) so all developers and CI use the same interpreter.
 
 ## 2. Formatting & Linting
 
-- Format all code with **`ruff format`** (or `black`). Enforce formatting in CI (`ruff format --check`).
-- Lint with **`ruff`** for fast, comprehensive static analysis (replaces flake8, isort, pyupgrade, and more).
-- Use **`mypy`** or **`pyright`** for type checking. Run in CI with strict settings.
+- Format all code with **`ruff format`**. Enforce formatting in CI (`ruff format --check .`).
+- Lint with **`ruff`** for fast, comprehensive static analysis — it replaces `flake8`, `isort`, `pyupgrade`, `pyflakes`, and more. Configure via `[tool.ruff]` in `pyproject.toml`.
+- Use **`mypy`** (strict) or **`pyright`** (basic) for type checking. Run in CI. Prefer `pyright` for projects using VS Code.
+- Remove dead code and unused imports automatically with Ruff's autofix (`ruff check --fix`).
 
 ## 3. Type Hints
 
-- Add type annotations to all function signatures and class attributes in new code.
-- Use `from __future__ import annotations` for forward-compatible annotation syntax (Python 3.10+).
-- Prefer `X | None` over `Optional[X]` and `X | Y` over `Union[X, Y]` in Python 3.10+.
+- Add type annotations to **all** function signatures and class attributes in new code. Backfill as you touch legacy code.
+- Use `from __future__ import annotations` for forward-compatible annotation syntax on Python < 3.10.
+- Prefer modern union syntax: `X | None` over `Optional[X]`, `X | Y` over `Union[X, Y]` (Python 3.10+).
+- Use `TypeVar`, `Generic`, `Protocol`, and `TypedDict` for complex typing patterns. Prefer `Protocol` over `ABC` for structural subtyping.
+- Never use `Any` without an explanatory comment. Use `cast()` sparingly and only when the type system genuinely cannot infer the type.
 
-## 4. Code Style
+## 4. Code Style & Patterns
 
-- Follow **PEP 8**. Use `snake_case` for variables/functions, `PascalCase` for classes, `UPPER_SNAKE_CASE` for constants.
-- Prefer f-strings over `%` formatting or `.format()`.
-- Use dataclasses (`@dataclass`) or Pydantic models for structured data. Avoid plain dictionaries for typed domain objects.
+- Follow **PEP 8**. Use `snake_case` for variables/functions/modules, `PascalCase` for classes, `UPPER_SNAKE_CASE` for constants.
+- Prefer **f-strings** over `%` formatting or `.format()`. Use `f"{value!r}"` for debugging output.
+- Use **dataclasses** (`@dataclass`) or **Pydantic v2** models for structured data. Avoid plain `dict` for typed domain objects.
 - Use `pathlib.Path` instead of `os.path` for all file system operations.
+- Use **context managers** (`with`) for all resources (files, DB connections, locks) to ensure proper cleanup.
+- Write **generators** and use lazy evaluation where possible for large data processing. Avoid loading entire datasets into memory.
 
 ## 5. Testing & CI
 
-- Use **`pytest`** for all tests. Use `pytest-cov` for coverage reporting.
-- Aim for high test coverage on business logic. Use `pytest.mark.parametrize` for table-driven tests.
-- In CI, run: `ruff check .`, `ruff format --check .`, `mypy .`, `pytest --cov`.
+- Use **`pytest`** for all tests. Use `pytest-cov` for coverage reporting with minimum threshold enforcement.
+- Aim for ≥ 80% coverage on business logic. Use `pytest.mark.parametrize` for table-driven tests.
+- Use `pytest-asyncio` for async test functions. Configure `asyncio_mode = "auto"` in `pytest.ini` or `pyproject.toml`.
+- Use `pytest-mock` or `unittest.mock` for mocking. Prefer dependency injection for testability over patching globals.
+- **CI pipeline commands**: `ruff check .` → `ruff format --check .` → `mypy .` → `pytest --cov --cov-fail-under=80`.
+- Use **`tox`** or **`nox`** to test against multiple Python versions in isolation.

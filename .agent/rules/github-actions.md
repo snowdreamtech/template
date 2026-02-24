@@ -5,7 +5,7 @@
 ## 1. Workflow Structure
 
 - Store all workflows in `.github/workflows/`. Use descriptive file names: `ci.yml`, `release.yml`, `deploy-production.yml`.
-- Give every workflow a clear `name:` and every job a clear `name:`. This makes failed runs easy to find in the UI.
+- Give every workflow a clear `name:` and every job a clear `name:`. This makes failed runs instantly identifiable in the UI.
 - Use **path filters** and **branch filters** to avoid running expensive workflows unnecessarily:
   ```yaml
   on:
@@ -13,39 +13,53 @@
       branches: [main]
       paths: ["src/**", "package.json"]
   ```
+- Define `concurrency` to cancel in-progress runs for the same ref on new pushes:
+  ```yaml
+  concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+  ```
 
 ## 2. Security
 
-- **Pin actions to a full commit SHA**, not a tag: `uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683`. Tags are mutable; SHAs are not. Use Dependabot to keep them updated.
-- **Never echo secrets** in run steps. GitHub masks known secrets, but avoid constructing strings from secrets that might not be masked.
-- Use **`GITHUB_TOKEN`** with minimal permissions. Declare permissions explicitly at the workflow or job level:
+- **Pin actions to a full commit SHA**, not a tag: `uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683`. Tags are mutable; SHAs are immutable. Use **Dependabot** (`dependabot.yml`) to keep action versions current.
+- **Never echo secrets** in `run:` steps. Reference secrets only via `${{ secrets.NAME }}`, never construct log messages containing secret values.
+- **Declare minimum permissions** at the workflow or job level. Set `permissions: {}` at the workflow level to revoke all defaults, then grant only what each job requires:
   ```yaml
   permissions:
     contents: read
     pull-requests: write
   ```
-- **Validate external input**: any `${{ github.event.* }}` or `${{ inputs.* }}` used in `run:` steps must be treated as untrusted. Use environment variables as an intermediary to prevent script injection.
+- **Prevent injection attacks**: never use `${{ github.event.* }}` or `${{ inputs.* }}` directly in `run:` steps. Use environment variables as intermediaries:
+  ```yaml
+  env:
+    PR_TITLE: ${{ github.event.pull_request.title }}
+  run: echo "$PR_TITLE"
+  ```
 
 ## 3. Reusability & DRY
 
-- Use **Composite Actions** (`.github/actions/my-action/action.yml`) to extract reusable step sequences.
-- Use **Reusable Workflows** (`workflow_call`) for sharing entire job sequences across repositories.
-- Use the **`env:`** key for shared environment variables. Define them at the workflow level for global scope or job level for job scope.
+- Use **Composite Actions** (`.github/actions/my-action/action.yml`) to extract reusable step sequences and share within a repository.
+- Use **Reusable Workflows** (`workflow_call`) for sharing entire job sequences across repositories. Pin external reusable workflows to a SHA.
+- Use the **`env:`** key for shared environment variables at the workflow, job, or step level. Avoid duplicating values across steps.
 
 ## 4. Performance
 
-- Use **`actions/cache`** to cache dependencies (`node_modules`, Go module cache, pip packages) between runs.
-- Run independent jobs **in parallel**. Use `needs:` only to express actual dependencies between jobs.
-- Use **matrix strategies** for cross-platform/cross-version testing:
+- Use **`actions/cache`** for all dependency managers: `node_modules`, Go module cache, pip, Maven `.m2`, Cargo registry.
+- Run independent jobs **in parallel**. Only use `needs:` to express true dependencies between jobs.
+- Use **matrix strategies** for cross-platform/cross-version testing. Use `fail-fast: false` on matrices to see all failures:
   ```yaml
   strategy:
+    fail-fast: false
     matrix:
       os: [ubuntu-latest, macos-latest, windows-latest]
-      node: [18, 20, 22]
+      node: [20, 22]
   ```
 
-## 5. Best Practices
+## 5. Reliability & Operations
 
-- Use `timeout-minutes:` on every job to prevent runaway builds from consuming runner minutes.
-- Use `continue-on-error: true` sparingly and document why a step is allowed to fail.
-- Use **Environments** (Settings → Environments) for production deployments to enforce required reviewers and protection rules.
+- Set `timeout-minutes:` on every job and step to prevent runaway builds from consuming runner minutes (default is 360 minutes).
+- Use `continue-on-error: true` sparingly, and always document with a comment (`# Allowed to fail: this step...`).
+- Use **Environments** (Settings → Environments) for production deployments to enforce required reviewers, secrets, and protection rules.
+- Store structured outputs from jobs using `$GITHUB_OUTPUT` (not deprecated `::set-output`). Use `$GITHUB_STEP_SUMMARY` to write Markdown summaries visible in the Actions UI.
+- Periodically audit workflow run history and prune old workflows. Monitor billing using the `gh` CLI or GitHub API.

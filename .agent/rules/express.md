@@ -11,31 +11,38 @@
   ├── controllers/  # Request handling, input validation
   ├── services/     # Business logic
   ├── middlewares/  # Custom Express middleware
-  ├── models/       # Data models (Mongoose, Sequelize, etc.)
-  └── app.js        # Express app factory (no listen() here)
-  cmd/server.js     # Entry point (calls app.listen())
+  ├── models/       # Data models (Mongoose, Sequelize, Prisma, etc.)
+  ├── config/       # Configuration loading and validation
+  └── app.ts        # Express app factory (no listen() here)
+  cmd/server.ts     # Entry point (calls app.listen())
   ```
-- Separate `app.js` (creates and configures the app) from `server.js` (starts it). This makes the app easily testable.
+- Separate `app.ts` (creates and configures the Express instance) from the server entry point. This makes the app importable for Supertest without starting a real server.
+- Use TypeScript for all Express applications. See `typescript.md`.
 
 ## 2. Routing & Controllers
 
-- Use `express.Router()` to create modular route groups. Mount them with `app.use('/api/v1/users', userRouter)`.
-- Keep route handlers thin. Validate input and delegate to a service function.
-- Always use `async`/`await` in route handlers. Wrap with a `asyncHandler` helper or use `express-async-errors` to automatically forward errors to the error middleware.
+- Use `express.Router()` to create modular route groups. Mount with `app.use('/api/v1/users', userRouter)`.
+- Keep route handlers thin: validate input → call service → serialize response. No business logic in handlers.
+- Use `async`/`await` in route handlers. Either use `express-async-errors` (patches Express to catch async rejections) or wrap handlers with an `asyncHandler` helper.
+- Use **Zod** or **`express-validator`** for request input validation. Validate before calling service logic and return a `400` with a structured error payload on failure.
 
 ## 3. Middleware
 
-- Order matters: register middleware in this sequence: security headers → CORS → body parsing → logging → routes → 404 handler → global error handler.
-- Use **Helmet** for security headers and **cors** package for CORS configuration.
-- Define a centralized error-handling middleware with 4 parameters: `(err, req, res, next)`. Always register it last.
+- Register middleware in the correct order: security headers → CORS → body parsing → request logging → routes → 404 handler → global error handler.
+- Use **Helmet** for security headers. Use the **cors** package with an explicit `origin` allowlist — never use `origin: true` in production.
+- Define a centralized error-handling middleware with 4 parameters: `(err: Error, req, res, next)`. Always register it **last** with `app.use(errorHandler)`.
+- Use **`morgan`** for HTTP request logging to stdout in structured (JSON) format. Forward to an aggregator (Datadog, Loki) in production.
 
 ## 4. Security
 
-- Use **express-rate-limit** to prevent brute-force attacks on auth endpoints.
-- Validate and sanitize all request inputs with **Zod**, **Joi**, or **express-validator**.
-- Never trust `req.body` without validation. Use `express.json({ limit: '10kb' })` to prevent payload attacks.
+- Use **`express-rate-limit`** to throttle brute-force attacks on auth endpoints. Use a Redis store (`rate-limit-redis`) for distributed rate limiting.
+- Use `express.json({ limit: '10kb' })` to prevent large payload attacks. Reject unanticipated `Content-Type` headers.
+- Sanitize all query, body, and path parameters. Never interpolate raw user input into database queries, file paths, or shell commands.
+- Set `HSTS`, `CSP`, and `X-Frame-Options` headers via Helmet. Disable `X-Powered-By` (`app.disable('x-powered-by')`).
 
-## 5. Testing
+## 5. Testing & Observability
 
-- Use **Supertest** with **Jest** or **Vitest** for integration tests. Import the `app` instance (not the server) for testing.
-- Run `npm test` in CI. Use `nodemon` for local development hot-reload.
+- Use **Supertest** + **Vitest** or **Jest** for integration tests. Import the `app` instance directly — no server port required.
+- Mock external dependencies (databases, third-party APIs) using `vitest.mock()` or `nock` for HTTP interception.
+- Use **`pino`** or **`winston`** for structured JSON logging. Never use `console.log` in production.
+- Expose a `/health` and `/ready` endpoint for container orchestrator health checks. Use a metrics endpoint for Prometheus scraping (via `prom-client`).

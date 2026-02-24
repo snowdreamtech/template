@@ -2,34 +2,37 @@
 
 > Objective: Define standards for building reliable, scalable, and maintainable data pipelines and transformations.
 
-## 1. Pipeline Design
+## 1. Pipeline Design Principles
 
-- Design pipelines to be **idempotent**: re-running a pipeline on the same input should produce the same output. This is critical for safe retries.
-- Apply the **medallion architecture** (or equivalent): raw/bronze → cleaned/silver → aggregated/gold. Never write directly to a gold-layer table from raw input.
-- Make **data lineage** traceable. Use tools like dbt or OpenLineage to document how each dataset is derived.
+- Design pipelines to be **idempotent**: re-running a pipeline on the same input must produce the same output without double-counting or data corruption. This is critical for safe retries and backfills.
+- Apply the **medallion architecture**: Raw/Bronze (data as-is from source) → Cleaned/Silver (validated, deduplicated, enriched) → Aggregated/Gold (business-ready aggregates, metrics). Never write directly to Gold from raw input.
+- Make **data lineage** traceable end-to-end. Use tools like **dbt** (for SQL transforms) or **OpenLineage** (for runtime lineage events) to document how each dataset derives from its sources.
+- Design pipelines with **incremental processing**: prefer incremental loads (watermark-based) over full table scans. Full reloads should be exceptional, not the norm.
 
-## 2. dbt (if applicable)
+## 2. dbt (SQL Transformations)
 
-- Every dbt model MUST have a `.yml` file with descriptions for the model and all key columns.
-- Follow the naming convention: `stg_` (staging/source), `int_` (intermediate transforms), `fct_` (facts), `dim_` (dimensions).
-- Write `schema.yml` tests for `not_null` and `unique` on all primary key columns.
-- Run `dbt test` in CI after every `dbt run`.
+- Every dbt model MUST have a `.yml` file with `description` for the model and all key columns. Good descriptions are the documentation.
+- Follow naming conventions strictly: `stg_` (staging/source mirror), `int_` (intermediate, single-domain logic), `fct_` (fact tables), `dim_` (dimension tables), `mart_` (business-facing aggregates).
+- Write `schema.yml` tests for `not_null` and `unique` on **all primary key columns**. Add relationships tests for foreign key integrity.
+- Run `dbt build` (combines `dbt run` + `dbt test`) in CI. Use `dbt source freshness` to alert on stale source data.
 
-## 3. Apache Spark (if applicable)
+## 3. Apache Spark
 
-- Prefer **DataFrame/Dataset API** over RDD API for performance and readability.
-- Cache (`cache()` / `persist()`) DataFrames only when they are used multiple times in a DAG. Always unpersist when done.
-- Avoid using `collect()` on large DataFrames — this brings data to the driver and causes OOM errors.
-- Partition data appropriately. Use `repartition()` before large shuffles and `coalesce()` before writing.
+- Prefer the **DataFrame/Dataset[T] API** over legacy RDD API for performance, query optimization, and readability.
+- Cache (`cache()` / `persist()`) DataFrames only when they are reused multiple times in the same DAG. Always call `unpersist()` when done to release memory.
+- **Never call `.collect()` on large DataFrames** — it transfers all data to the driver and causes OOM errors. Use `.count()`, aggregations, or `.show(n)` for inspection.
+- Partition data appropriately: use `repartition()` before large shuffles; use `coalesce()` before writing to reduce output file count without a full shuffle.
 
-## 4. Streaming (Kafka, Spark Streaming, Flink)
+## 4. Streaming (Kafka, Flink, Spark Streaming)
 
-- Design consumers to be **at-least-once** safe by default. Ensure downstream processing is idempotent.
-- Set explicit schema for Kafka messages (Avro or Protobuf via Schema Registry). Never produce schema-less JSON in production.
-- Monitor consumer lag as the primary health metric for streaming pipelines.
+- Design consumers to be **at-least-once safe**. Ensure all downstream write operations are idempotent or de-duplicated using a deduplication key.
+- Define an explicit **schema** for all Kafka messages using **Avro** or **Protobuf** with a **Schema Registry**. Never produce schema-less JSON in production — it creates fragility and hidden coupling.
+- Monitor **consumer lag** (via Kafka's `__consumer_offsets` or Cruise Control) as the primary health metric for streaming pipelines.
+- Use **dead-letter topics/queues** for messages that consistently fail to process — never silently discard them.
 
-## 5. Data Quality & Testing
+## 5. Data Quality & Governance
 
-- Validate data quality at pipeline boundaries using tools like **Great Expectations** or **dbt tests**.
-- Alert on data quality failures before they silently corrupt downstream datasets.
-- Never delete raw source data. Archive it instead, with clear retention policies.
+- Validate data quality at every pipeline stage boundary using **dbt tests**, **Great Expectations**, or **Soda Core**. Fail fast on unexpected nulls, duplicates, and schema drift.
+- Alert on data quality failures before they silently propagate to downstream consumers and dashboards.
+- **Never delete raw source data.** Archive it to low-cost object storage (S3 Glacier, GCS Archive) with a documented retention policy.
+- Implement **data access control**: apply row-level security and column masking for PII fields in data warehouse (BigQuery row-level security, Snowflake dynamic data masking).

@@ -4,36 +4,53 @@
 
 ## 1. Project Structure
 
-- Use the same domain-driven layout as `gin.md`:
+- Use the same domain-driven layout:
   ```
-  cmd/server/main.go
-  internal/handler/, service/, repository/, middleware/, model/
+  cmd/server/main.go          # Entry point — minimal, bootstraps dependencies
+  internal/
+  ├── handler/                # HTTP handlers (thin controllers)
+  ├── service/                # Business logic
+  ├── repository/             # Data access
+  ├── middleware/             # Echo middleware
+  └── model/                  # Domain models & DTOs
   ```
 - Initialize Echo in `main.go` or an `app.go` factory function. Inject dependencies via constructor injection into handlers.
+- Wire dependencies in `main.go` using manual DI or a container (`fx`, `wire`). Avoid `init()` functions.
 
 ## 2. Routing & Handlers
 
-- Use `e.Group()` to group routes by path prefix and apply middleware at the group level.
-- Handler functions must have the signature `func(c echo.Context) error`.
-- Bind and validate with `c.Bind(&req)` followed by `c.Validate(&req)`. Register a custom validator (e.g., `go-playground/validator`) on `e.Validator`.
-- Return JSON with `c.JSON(code, payload)`. Return errors with `c.JSON(code, echo.Map{"error": msg})` or by returning an `*echo.HTTPError`.
+- Use `e.Group()` to group routes by path prefix. Apply group-level middleware (auth, logging) at the group — not per-route.
+- Handler signature MUST be: `func(c echo.Context) error`. Always return an error from handlers — never `nil` after calling `c.JSON()` on an error path.
+- Bind and validate with `c.Bind(&req)` followed by `c.Validate(&req)`. Register a custom validator using `go-playground/validator` on `e.Validator` at startup.
+- Respond with `c.JSON(http.StatusOK, payload)`. Use `*echo.HTTPError` for structured HTTP error responses.
 
 ## 3. Middleware
 
-- Use Echo's built-in middleware package (`middleware.Logger()`, `middleware.Recover()`, `middleware.CORS()`) for standard concerns.
+- Use Echo's built-in middleware: `middleware.Logger()`, `middleware.Recover()`, `middleware.CORS()`, `middleware.RateLimiter()`.
 - Apply global middleware with `e.Use()`. Use `g.Use()` for group-scoped middleware.
-- Use `c.Set(key, value)` / `c.Get(key)` to share authenticated user info between middleware and handlers.
+- Use `c.Set(key, value)` / `c.Get(key)` to pass values (authenticated user, request ID) between middleware and handlers within a request scope.
+- Add a **request ID** middleware to generate and propagate a unique ID for each request for logging correlation.
 
 ## 4. Error Handling
 
-- Define a custom `HTTPErrorHandler` on the Echo instance to centralize error formatting:
+- Define a custom `HTTPErrorHandler` on the Echo instance for centralized error formatting:
   ```go
-  e.HTTPErrorHandler = customErrorHandler
+  e.HTTPErrorHandler = func(err error, c echo.Context) {
+      // map domain errors to HTTP status codes
+      // return structured JSON error response
+  }
   ```
-- Return errors from handlers (do not call `c.JSON` and `return nil` for errors). Let the global handler format the response.
+- Return errors from handlers — let the global error handler format the response. Do not call `c.JSON` for errors and then return `nil`.
+- Map domain errors (not-found, forbidden, conflict) to appropriate HTTP status codes in the centralized handler.
 
 ## 5. Performance & Testing
 
-- Echo is one of the fastest Go frameworks. Avoid unnecessary allocations in hot paths (middleware, response encoding).
-- Use `e.Server.ReadTimeout` and `e.Server.WriteTimeout` — always configure timeouts in production.
-- Test handlers with `httptest` recorder or Echo's `echo.New()` + `rec := httptest.NewRecorder()` pattern.
+- Configure server timeouts always in production to prevent connection exhaustion:
+  ```go
+  e.Server.ReadTimeout = 5 * time.Second
+  e.Server.WriteTimeout = 10 * time.Second
+  e.Server.IdleTimeout = 30 * time.Second
+  ```
+- Use `GracefulShutdown` (`e.Shutdown(ctx)`) with a context timeout to allow in-flight requests to complete.
+- Test handlers with `httptest.NewRecorder()` + `httptest.NewRequest()` without starting a real server. Use **Testify** for assertions.
+- Use `GIN_MODE=release` equivalent: run Echo in production without debug output. Set `Logger` to a no-op for benchmarks.

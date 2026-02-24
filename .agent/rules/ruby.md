@@ -4,31 +4,37 @@
 
 ## 1. Style & Conventions
 
-- Follow the **Ruby Style Guide** (rubocop default config). Enforce with RuboCop in CI.
+- Follow the **Ruby Style Guide**. Enforce with **RuboCop** in CI. Commit `.rubocop.yml` to the repository with explicit enabled/disabled cops.
 - Use 2-space indentation. Use `snake_case` for methods and variables, `PascalCase` for classes/modules, `SCREAMING_SNAKE_CASE` for constants.
-- Prefer single quotes for strings that do not require interpolation.
+- Prefer single quotes for strings that do not require interpolation. Use double-quoted strings only when interpolation or escape sequences are required.
+- Use **StandardRB** (an opinionated RuboCop config) for projects that prefer zero-configuration style enforcement.
 
 ## 2. Language Features
 
-- Prefer `&&`/`||` for boolean logic in conditions and `and`/`or` only for control flow (sparingly).
-- Use `Enumerable` methods (`map`, `select`, `reject`, `reduce`) over `for` loops.
-- Avoid `rescue Exception`; rescue specific exception classes instead.
-- Use `frozen_string_literal: true` magic comment at the top of files for performance and safety.
+- Use `Enumerable` methods (`map`, `select`, `reject`, `reduce`, `group_by`, `flat_map`) over imperative `for` loops for collection transformations.
+- Avoid `rescue Exception` — rescue specific exception classes (`StandardError` or its subclasses) to avoid catching system signals.
+- Add `# frozen_string_literal: true` magic comment at the top of all files for performance and immutability.
+- Prefer `&&`/`||` for boolean expressions in conditions. Use `and`/`or` only for control flow and only when the precedence is intentional and clearly understood.
+- Use `Struct` or a dedicated `Value Object` class for simple data carriers instead of plain hashes for structured data.
 
-## 3. Rails (if applicable)
+## 3. Architecture & Rails Patterns
 
-- Follow the **Convention over Configuration** principle. Use Rails generators.
-- Keep controllers thin: delegate business logic to service objects or concerns.
-- Use **ActiveRecord** validations and callbacks judiciously. Avoid callbacks for side effects that belong in service objects.
-- Use **Strong Parameters** in controllers. Never permit all parameters with `permit!`.
+- Keep **controllers thin**: delegate all business logic to service objects, use cases, or form objects. A controller action should be ≤ 10 lines.
+- Use **ActiveRecord** validations for data integrity at the model layer. Use **Strong Parameters** in controllers (`permit` specific attributes — never use `permit!`).
+- Avoid **ActiveRecord callbacks** for side effects (emails, jobs, external calls) — they make behavior implicit and hard to test. Use service objects or event publishing instead.
+- Use **background jobs** (Sidekiq, GoodJob) for any work that takes > 100ms or involves external services.
 
 ## 4. Testing
 
-- Use **RSpec** for unit, integration, and feature specs.
-- Use **FactoryBot** for test data and **Shoulda-Matchers** for concise validation specs.
-- Run specs with `bundle exec rspec` in CI.
+- Use **RSpec** for all test types (unit, integration, request, feature specs). Organize specs using `describe`, `context`, and `it` blocks with descriptive strings.
+- Use **FactoryBot** for test data generation. Prefer `create` only when persistence is required; use `build` or `build_stubbed` for unit tests.
+- Use **VCR** or **WebMock** to stub external HTTP calls in tests. Never make real network calls in CI.
+- Run `bundle exec rspec --format progress --format RspecJunitFormatter` in CI for JUnit XML output.
 
-## 5. Security
+## 5. Security & Tooling
 
-- Use `bundler-audit` in CI to check for vulnerable dependencies.
-- Sanitize user output in views. In Rails, prefer `html_escape` (the default) over `raw` or `html_safe`.
+- Run `bundle audit update && bundle audit check` in CI to check for known vulnerable gem versions.
+- Use `brakeman` (static analysis security scanner for Rails apps) in CI. Fix all high-confidence findings.
+- Sanitize user output in views. In Rails, prefer the default HTML escaping — avoid `raw`, `html_safe`, and `sanitize` with permissive options.
+- Pin **Ruby version** in `.ruby-version` (rbenv/rvm/mise). Specify `ruby "~> 3.3"` in `Gemfile`.
+- Use `rubocop-performance` and `rubocop-rspec` extensions for additional linting coverage.

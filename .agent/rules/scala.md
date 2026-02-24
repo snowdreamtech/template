@@ -1,34 +1,41 @@
 # Scala Development Guidelines
 
-> Objective: Define standards for idiomatic, safe, and maintainable Scala code.
+> Objective: Define standards for idiomatic, safe, and maintainable Scala code (Scala 2 and Scala 3).
 
-## 1. Style & Conventions
+## 1. Style & Tooling
 
-- Follow the [Scala Style Guide](https://docs.scala-lang.org/style/). Enforce with **Scalafmt** for formatting and **Scalafix** for linting/refactoring.
-- Use `camelCase` for values and methods, `PascalCase` for classes and objects, `UPPER_SNAKE_CASE` for constants.
-- Prefer `val` (immutable) over `var` (mutable). Treat mutability as a last resort.
+- Follow the [Scala Style Guide](https://docs.scala-lang.org/style/). Enforce automatic formatting with **Scalafmt** (configuration in `.scalafmt.conf` committed to the repo).
+- Use **Scalafix** for automated linting, refactoring, and migration rules between Scala versions.
+- Use `camelCase` for values, variables, and methods. `PascalCase` for classes, traits, and objects. `UPPER_SNAKE_CASE` for constants.
+- Prefer `val` (immutable) over `var` (mutable). Treat mutability as a deliberate, documented exception.
+- Use **sbt** or **Mill** as the build tool. Commit `build.sbt` and the sbt wrapper (`sbt` shim) for reproducibility.
 
 ## 2. Functional Programming
 
-- Prefer **pure functions**: no side effects, same input always produces the same output.
+- Prefer **pure functions**: no side effects, deterministic output for the same input. Push side effects to the boundaries of the system.
 - Use **immutable data structures** by default (`List`, `Map`, `Set` from `scala.collection.immutable`).
-- Use **pattern matching** (`match { case ... }`) for control flow involving algebraic data types, instead of `if/else` chains.
+- Use **pattern matching** (`match { case ... }`) for control flow with algebraic data types and sealed hierarchies.
 - Model absence and failure with `Option[T]`, `Either[Error, T]`, or `Try[T]` instead of throwing exceptions or returning `null`.
+- Use **for-comprehensions** to chain monadic operations (Option, Either, Future, IO) for readable sequential logic.
 
-## 3. Type System
+## 3. Type System & Scala 3 Features
 
-- Leverage the type system to make illegal states unrepresentable: use sealed traits + case classes for algebraic data types (ADTs).
-- Avoid using `Any` or `AnyRef` as a type; be explicit.
-- Use `implicit`s (or Scala 3's `given`/`using`) sparingly and document them clearly — implicit resolution can be difficult to debug.
+- Leverage the type system to make illegal states unrepresentable: use **sealed traits + case classes** for algebraic data types (ADTs).
+- Avoid `Any` or `AnyRef` as a type; be explicit and use upper type bounds.
+- In **Scala 3**, prefer `given`/`using` (implicit parameters) over Scala 2's implicit mechanism. Use `extension` methods for adding functionality to types.
+- Use **opaque types** for type-safe domain wrappers (e.g., `opaque type UserId = Long`).
+- Use `enum` (Scala 3 enums) for algebraic data types and enumerations instead of sealed class hierarchies where appropriate.
 
-## 4. Apache Spark (if applicable)
+## 4. Concurrency & Effects
 
-- Use the **Dataset[T]** API for type-safe transformations over untyped `DataFrame` where performance allows.
-- Define schemas explicitly with `Encoders` or `StructType` rather than relying on schema inference.
-- Avoid actions (`.collect()`, `.show()`) in loops — structure code to minimize Spark job submissions.
+- For pure functional effect systems, use **cats-effect** (`IO`) or **ZIO** for managing concurrency, resource lifecycle, and side effects in a composable, testable way.
+- For general async, use **Futures** (`scala.concurrent.Future`) with appropriate `ExecutionContext`. Never block a Future thread pool with `Await.result` in production.
+- For reactive streams, use **Akka Streams**, **FS2**, or **ZIO Streams** — choose based on the project's effect system.
+- For data parallelism with Apache Spark, use the **Dataset[T]** API for type safety over untyped `DataFrame`. Avoid `.collect()` in loops.
 
 ## 5. Testing
 
-- Use **ScalaTest** or **MUnit** for unit tests.
-- For Spark jobs, use **Spark testing base** or run tests against a local `SparkSession`.
-- Run tests with `sbt test` in CI.
+- Use **MUnit** (for Scala 2 & 3) or **ScalaTest** for unit tests.
+- Use **ScalaCheck** for property-based testing — generate random inputs to discover edge cases automatically.
+- For cats-effect or ZIO code, use their respective testing utilities (`munit-cats-effect`, `zio-test`) for fiber-aware test execution.
+- Run tests with `sbt test` in CI. Add `scalafmt --check` and `scalafix --check` as CI steps.

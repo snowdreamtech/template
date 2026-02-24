@@ -5,23 +5,38 @@
 ## 1. Dockerfile Best Practices
 
 - **Multi-Stage Builds**: Always use multi-stage builds to separate build-time and runtime dependencies, minimizing the final image size.
-- **Minimal Base Images**: Use minimal, official base images (e.g., `alpine`, `distroless`, `slim` variants). Pin to a specific version tag or digest — never use `latest` in production.
-- **Layer Caching**: Order instructions from least to most frequently changed. Copy dependency manifests (`package.json`, `requirements.txt`) and install before copying source code.
-- **Non-Root User**: Create and switch to a dedicated non-root user before the `CMD`/`ENTRYPOINT`.
+- **Minimal Base Images**: Use minimal, official base images (`alpine`, `distroless`, `slim` variants). Pin to a specific SHA digest in production: `FROM golang:1.22-alpine@sha256:<digest>`. Never use `latest`.
+- **Layer Caching**: Order instructions from least to most frequently changed. Copy dependency manifests (`package.json`, `go.mod`, `requirements.txt`) and install before copying source code.
+- **Non-Root User**: Create and switch to a dedicated non-root user (UID ≥ 1000) before `CMD`/`ENTRYPOINT`. Use `USER $UID:$GID` form.
 
 ## 2. Security
 
-- **Secrets**: Never `COPY` secrets, credentials, or `.env` files into an image. Use build secrets (`--secret`) or inject at runtime.
-- **Scan Images**: Run vulnerability scans (e.g., `docker scout`, Trivy, Snyk) on all images in CI before pushing.
-- **`.dockerignore`**: Always maintain a `.dockerignore` file to exclude `.git`, `node_modules`, `.env`, and other unnecessary files from the build context.
+- **Secrets**: Never `COPY` secrets, credentials, SSH keys, or `.env` files into an image. Use BuildKit secrets (`--secret`) for build-time secrets.
+- **Scan Images**: Run vulnerability scans (**Trivy**, `docker scout`, Snyk) on all images in CI before pushing. Fail CI on `CRITICAL` or `HIGH` CVEs beyond the SLA threshold.
+- **`.dockerignore`**: Always maintain a `.dockerignore` to exclude `.git`, `node_modules`, `.env`, `dist`, and IDE files from the build context. A missing `.dockerignore` can leak sensitive files.
+- **Read-only filesystem**: Set `readOnlyRootFilesystem: true` in the Kubernetes/Compose `securityContext` where possible. Mount writable volumes only where required.
 
 ## 3. Runtime Configuration
 
-- Externalize all configuration via environment variables. Do not bake configuration into the image.
-- Define a `HEALTHCHECK` instruction in every production Dockerfile.
-- Use `CMD ["executable", "arg"]` (exec form) instead of `CMD "executable arg"` (shell form) to ensure signals are handled correctly.
+- Externalize all configuration via environment variables. Do not bake environment-specific configuration into the image.
+- Define a **`HEALTHCHECK`** instruction in every production Dockerfile: `HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost:8080/health || exit 1`.
+- Use **`CMD ["executable", "arg"]`** (exec form) instead of shell form. This ensures the process receives signals (SIGTERM) correctly for graceful shutdown.
+- Set `WORKDIR` explicitly. Avoid running commands from `/` or a default directory.
 
-## 4. Image Tagging
+## 4. Image Tagging & Metadata
 
-- Tag images with both a specific version (e.g., `myapp:1.2.3`) and a rolling tag (e.g., `myapp:latest`) in production pipelines.
-- Include the Git commit SHA as an image label for traceability: `LABEL git-commit="$GIT_SHA"`.
+- Tag images with a specific **semantic version** (e.g., `myapp:1.2.3`) and optionally a rolling `latest` tag for development registries.
+- Use **`LABEL`** instructions for traceability metadata:
+  ```dockerfile
+  LABEL org.opencontainers.image.revision="$GIT_SHA" \
+        org.opencontainers.image.source="https://github.com/org/repo" \
+        org.opencontainers.image.version="$VERSION"
+  ```
+- Generate a **SBOM** (Software Bill of Materials) for every published image using `docker sbom` or Syft.
+
+## 5. Build & Registry
+
+- Use **BuildKit** (`DOCKER_BUILDKIT=1`) for all builds. It enables parallel builds, better caching, and `--secret` support.
+- Use **`docker build --build-arg BUILDKIT_INLINE_CACHE=1`** and push the cache to the registry for CI reuse: `--cache-from`.
+- Prefer **multi-arch builds** (`docker buildx build --platform linux/amd64,linux/arm64`) for images consumed on Apple Silicon or ARM servers.
+- Use a dedicated, access-controlled container registry (GHCR, ECR, GCR). Never push production images to Docker Hub public repositories.

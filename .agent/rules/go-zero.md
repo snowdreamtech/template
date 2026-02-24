@@ -2,38 +2,43 @@
 
 > Objective: Define standards for building high-concurrency Go microservices with go-zero.
 
-## 1. Overview
+## 1. Overview & Philosophy
 
-- **go-zero** is a cloud-native microservices framework from Good Lord (好未来/tal-tech) with built-in code generation (`goctl`), API gateway, service discovery, and adaptive circuit-breaking. It is widely adopted for high-concurrency production systems.
-- The core philosophy: **generate boilerplate, focus on business logic**. Use `goctl` for all scaffolding — do not write repetitive transport code by hand.
+- **go-zero** is a cloud-native microservices framework with built-in code generation (`goctl`), API gateway, service discovery, adaptive circuit-breaking, rate limiting, and load shedding. It is designed for high-concurrency production systems.
+- Core philosophy: **generate boilerplate, focus on business logic.** Use `goctl` for all service scaffolding. Do not write repetitive transport, routing, or middleware code by hand.
+- Keep `goctl` version pinned in the project (`go.mod` dependency + CI setup). Mismatched `goctl` and `go-zero` versions can cause generation incompatibilities.
 
-## 2. Project Structure (goctl generated)
+## 2. Project Structure (goctl Generated)
 
-- Use `goctl api new` and `goctl rpc new` to scaffold services. The generated layout:
+- Use `goctl api new` for HTTP API services and `goctl rpc new` for gRPC services:
   ```
   service/
-  ├── api/              # HTTP API gateway definition (.api files)
-  │   ├── internal/
-  │   │   ├── config/   # Config struct
-  │   │   ├── handler/  # HTTP handlers (generated, thin)
-  │   │   ├── logic/    # Business logic (YOU write this)
-  │   │   └── svc/      # Service context (dependency injection)
-  ├── rpc/              # gRPC service (.proto + generated code)
-  │   └── internal/logic/  # Business logic
+  ├── api/                    # HTTP API layer
+  │   └── internal/
+  │       ├── config/         # Config struct (YAML deserialization)
+  │       ├── handler/        # HTTP handlers (generated — do not edit)
+  │       ├── logic/          # Business logic (YOU write this)
+  │       └── svc/            # ServiceContext (dependency injection root)
+  └── rpc/                    # gRPC layer
+      └── internal/logic/     # Business logic for RPC methods
   ```
+- Treat generated files (`handler/`, router registration) as read-only — regenerate when the `.api` or `.proto` spec changes.
 
-## 3. API Definition
+## 3. API & RPC Definition
 
-- Define HTTP APIs in `.api` files (go-zero's DSL). Run `goctl api go` to regenerate handlers when the API spec changes.
-- Define RPC services in `.proto` files. Run `goctl rpc protoc` to regenerate.
-- Keep `.api` and `.proto` files as the contract — treat generated code as read-only.
+- Define HTTP APIs in `.api` files (go-zero's DSL). Run `goctl api go --api ...` to regenerate handlers.
+- Define RPC services in `.proto` files. Run `goctl rpc protoc --proto ...` to regenerate.
+- Keep `.api` and `.proto` files as the **single source of truth** for the service contract. Review them carefully in code review.
 
 ## 4. Service Context & Dependency Injection
 
-- Use the **`ServiceContext`** struct (`svc/servicecontext.go`) to hold all shared dependencies (DB connections, RPCs, caches, config). Pass it to every `Logic` struct via constructor.
+- Use the **`ServiceContext`** struct (`svc/servicecontext.go`) as the dependency injection root. Wire all shared dependencies here: DB connections, caches, downstream RPC clients, config.
+- Pass `ServiceContext` to every `Logic` struct via the constructor. Never use global variables for dependencies.
+- Use `goctl`-generated `main.go` as the entry point. Inject configuration from `config.yaml` using `conf.MustLoad()`.
 
-## 5. Built-in Resilience Features
+## 5. Resilience & Observability
 
-- go-zero includes **adaptive circuit breaking**, **rate limiting**, **timeout**, and **load shedding** by default. Configure them in `config.yaml` — do not implement these from scratch.
-- Use go-zero's built-in **cache** (`core/stores/cache`) with Redis for consistent, single-flight cache patterns.
-- Monitor services with go-zero's built-in Prometheus metrics endpoint and integrate with Grafana.
+- go-zero provides **adaptive circuit breaking, rate limiting, timeout, and load shedding** by default. Configure them in `config.yaml` — never reimplement these mechanisms.
+- Use go-zero's built-in `cache` (`core/stores/cache`) with Redis for single-flight cache-aside patterns to prevent cache stampedes.
+- Expose Prometheus metrics via go-zero's built-in `/metrics` endpoint. Integrate with Grafana for SLO dashboards.
+- Use `logx` for structured logging. Configure it with `logx.SetUp(logConf)` in `main.go`.

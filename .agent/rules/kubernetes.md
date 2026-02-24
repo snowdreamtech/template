@@ -2,33 +2,38 @@
 
 > Objective: Define standards for writing safe, observable, and maintainable Kubernetes manifests.
 
-## 1. Resource Design
+## 1. Resource Design & Scheduling
 
-- Always specify `requests` and `limits` for CPU and memory on every container. Never deploy without resource constraints.
-- Set `readinessProbe` and `livenessProbe` on every long-running container.
-- Never run containers as root. Set `securityContext.runAsNonRoot: true` and specify a non-root `runAsUser`.
+- Always specify `resources.requests` and `resources.limits` for CPU and memory on every container. Never deploy without resource constraints — it risks node starvation.
+- Set `readinessProbe` (traffic control) and `livenessProbe` (restart control) on every long-running container. Configure appropriate `initialDelaySeconds`, `periodSeconds`, and `failureThreshold`.
+- Never run containers as root. Set `securityContext.runAsNonRoot: true`, specify a non-root `runAsUser` (e.g., `1000`), and set `allowPrivilegeEscalation: false`.
+- Set `PodDisruptionBudget` resources for critical services to ensure minimum availability during node drains and rolling updates.
 
 ## 2. Configuration & Secrets
 
-- Use `ConfigMap` for non-sensitive configuration and `Secret` for sensitive data.
-- Never hardcode sensitive values in Pod specs or manifests. Reference them via `valueFrom.secretKeyRef`.
-- Encrypt Secrets at rest (enable `EncryptionConfiguration` in the API server, or use an external vault).
+- Use `ConfigMap` for non-sensitive configuration. Use `Secret` for sensitive data — reference them via `valueFrom.secretKeyRef` or `envFrom.secretRef`.
+- Never hardcode sensitive values directly in Pod specs or manifests.
+- **Encrypt Secrets at rest**: enable `EncryptionConfiguration` on the API server, or integrate with an external vault (**HashiCorp Vault**, **AWS Secrets Manager**) via a CSI driver.
+- Use **External Secrets Operator** or **Vault Agent Sidecar** to sync secrets from an external vault into Kubernetes Secrets automatically.
 
-## 3. Manifest Structure
+## 3. Manifest Structure & Conventions
 
-- Use **namespaces** to isolate environments and teams.
-- Always specify `apiVersion`, `kind`, `metadata.name`, and `metadata.labels` on every resource.
-- Use `Deployment` (not bare `Pod`) for stateless applications. Use `StatefulSet` for stateful workloads (databases, etc.).
-- Set `strategy.type: RollingUpdate` for zero-downtime deployments.
+- Always specify `apiVersion`, `kind`, `metadata.name`, and `metadata.labels` on every resource. Use `metadata.namespace` explicitly.
+- Use **`Deployment`** (not bare `Pod`) for stateless applications. Use **`StatefulSet`** for stateful workloads requiring stable identities and persistent storage.
+- Set `strategy.type: RollingUpdate` with `maxSurge` and `maxUnavailable` for zero-downtime deployments.
+- Use **`HorizontalPodAutoscaler`** (HPA) for traffic-driven autoscaling. Define `minReplicas` and `maxReplicas` conservatively and scale based on CPU utilization or custom metrics.
 
-## 4. Labels & Selectors
+## 4. Labels, Selectors & Observability
 
-- Apply consistent labels to all resources: `app.kubernetes.io/name`, `app.kubernetes.io/version`, `app.kubernetes.io/component`.
-- Do not change label selectors on existing Deployments (it requires deletion and recreation).
+- Apply consistent labels on all resources using standard Kubernetes labels: `app.kubernetes.io/name`, `app.kubernetes.io/version`, `app.kubernetes.io/component`, `app.kubernetes.io/part-of`.
+- Do not change label selectors on existing Deployments (it requires deletion and recreation with a disruption).
+- Define **liveness and readiness probes** that reflect true application health. Do not use a trivial HTTP 200 healthcheck if the app has upstream dependencies.
+- Export Prometheus metrics from every service and create Grafana dashboards and AlertManager rules for SLO monitoring.
 
-## 5. Tooling & Safety
+## 5. Security & Tooling
 
-- Manage manifests with **Helm** or **Kustomize** for templating and environment-specific overrides.
-- Lint manifests with **kubeval** or **kubeconform**.
-- Use **RBAC** with least-privilege principles. Avoid using `cluster-admin` for application service accounts.
-- Apply **NetworkPolicies** to restrict traffic between pods by default (deny-all, then allow explicitly).
+- Apply **NetworkPolicies** for all namespaces with a default-deny-all rule, then explicitly allow required traffic. Never leave network policies unset in production.
+- Use **RBAC** with the principle of least privilege. Never use `cluster-admin` for application service accounts. Audit RBAC bindings with `kubectl auth can-i --list`.
+- Manage manifests with **Helm** (versioned charts) or **Kustomize** (overlay-based). Lint manifests with **kubeconform** against the appropriate schema version.
+- Use **Kyverno** or **OPA/Gatekeeper** for admission policy enforcement (require labels, prohibit latest tags, enforce resource limits).
+- Run **Trivy** or **Kubescape** in CI to scan Kubernetes manifests for misconfigurations and CVEs before deploying.

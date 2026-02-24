@@ -1,32 +1,41 @@
 # Swift Development Guidelines
 
-> Objective: Define standards for safe, idiomatic, and performant Swift development (iOS/macOS).
+> Objective: Define standards for safe, idiomatic, and performant Swift development (iOS/macOS/visionOS).
 
-## 1. Language Features
+## 1. Language Features & Style
 
-- Use `let` by default. Only use `var` when mutation is necessary.
+- Use `let` by default for all declarations. Only use `var` when mutation is genuinely necessary.
 - Use `guard` for early exit and to unwrap optionals at function entry points, reducing nesting.
-- Prefer `struct` over `class` for value types. Use `class` only when reference semantics or inheritance are required.
-- Use `enum` with associated values to model states and results clearly.
+- Prefer `struct` (value semantics) over `class` (reference semantics). Use `class` only when identity, inheritance, or reference semantics are explicitly required.
+- Use `enum` with associated values to model states and results clearly: `enum Result<T> { case success(T); case failure(Error) }`.
+- Follow the **Swift API Design Guidelines**: use clear, expressive names. Prefer method names that read as grammatical phrases at the call site.
 
-## 2. Optionals
+## 2. Optionals & Error Handling
 
-- Never force-unwrap optionals (`!`) in production code. Use optional binding (`if let`, `guard let`) or the nil-coalescing operator (`??`) instead.
-- Use `Optional.map` and `flatMap` for chaining operations on optionals cleanly.
+- Never force-unwrap optionals (`!`) in production code. Use optional binding (`if let`, `guard let`), nil-coalescing (`??`), or `Optional.map`/`flatMap` instead.
+- Use `throws`/`try`/`catch` for recoverable errors. Use `Result<T, E>` for APIs where callers decide when to handle errors.
+- Define domain-specific error enums conforming to the `Error` protocol with descriptive cases.
+- Avoid returning `nil` to indicate failure — distinguish between "value not found" and "operation failed" using the appropriate error mechanism.
 
 ## 3. Concurrency (Swift Concurrency)
 
-- Use `async`/`await` and Swift's structured concurrency (`Task`, `TaskGroup`) for all asynchronous work. Avoid legacy completion-handler-based APIs where modern alternatives exist.
-- Mark data shared across actors with `@MainActor` for UI updates or use custom actors for isolated state.
-- Prefer `AsyncStream` for converting delegate/callback patterns to async sequences.
+- Use **`async`/`await`** and Swift's structured concurrency (`Task`, `TaskGroup`, `async let`) for all asynchronous work.
+- Mark types and functions shared across actors with `@MainActor` for UI updates. Define custom actors for isolated state.
+- Prefer `AsyncStream` or `AsyncThrowingStream` for converting delegate/callback patterns to async sequences.
+- Avoid data races: use actors, `@Sendable` constraints, and value types. Run with Thread Sanitizer enabled in CI.
+- Never create an unstructured `Task { }` from actor-isolated code without understanding its cancellation lifecycle.
 
-## 4. Architecture
+## 4. Architecture & Patterns
 
-- Follow a clear UI architecture (e.g., MV, MVVM with Combine/Swift Observation, or TCA).
-- Keep `UIViewController` / SwiftUI `View` code thin. Business logic belongs in ViewModels or domain objects.
+- Choose and document an explicit UI architecture: **MVVM** with Combine/Swift Observation, **TCA** (The Composable Architecture), or plain MV for simple screens.
+- Keep `UIViewController` / SwiftUI `View` code thin — no business logic, no network calls. Business logic belongs in ViewModels, UseCases, or domain objects.
+- Use **Swift Package Manager (SPM)** as the primary dependency manager. Avoid CocoaPods or Carthage for new projects unless required by a dependency.
+- Prefer **protocol-oriented design**: define capabilities via protocols, provide default implementations via extensions.
 
-## 5. Testing
+## 5. Testing & Tooling
 
-- Use **XCTest** for unit and UI tests.
-- Use `XCTAssertEqual`, `XCTAssertNotNil`, and `XCTUnwrap` for assertions.
-- Run `xcodebuild test` in CI for automated verification.
+- Use **XCTest** for unit and UI tests. Use **Swift Testing** framework (Xcode 16+) for new test targets — it offers better async support and expressive macros.
+- Use `withDependencies` (TCA) or manual dependency injection for testability. Avoid global singletons in testable code.
+- Run `xcodebuild test -scheme <Scheme> -destination 'platform=iOS Simulator,name=iPhone 16'` in CI.
+- Lint with **SwiftLint** (configurable rules committed in `.swiftlint.yml`). Use **SwiftFormat** for auto-formatting.
+- Enable Thread Sanitizer and Address Sanitizer in the CI test scheme to catch runtime memory issues.

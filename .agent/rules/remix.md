@@ -1,32 +1,37 @@
 # Remix Development Guidelines
 
-> Objective: Define standards for building full-stack React web applications with Remix.
+> Objective: Define standards for building full-stack React web applications with Remix / React Router v7.
 
 ## 1. Data Loading (Loaders)
 
-- Use **`loader`** functions (exported from route modules) for all server-side data fetching. Loaders run only on the server and their data is passed to the route component via `useLoaderData()`.
-- Return data from loaders using the `json()` utility. Throw `Response` objects (or use `redirect()`) for redirects and error states.
-- Never fetch data inside a React component if it can be fetched in a `loader`.
+- Use **`loader`** functions exported from route modules for all server-side data fetching. Loaders run only on the server; their data is accessed in the route component via `useLoaderData()`.
+- Return data from loaders using the `json()` utility or native `Response` objects. Throw `Response` objects (or use `redirect()`) for redirects and early returns.
+- **Never fetch data inside a React component** if it can be fetched in a `loader`. This is the most common Remix anti-pattern — loaders are the preferred data-fetching mechanism.
+- Use `defer()` + `<Suspense>` + `<Await>` for streaming slow, non-critical data so the page shell renders immediately.
 
 ## 2. Mutations (Actions)
 
-- Use **`action`** functions for all data mutations (form submissions, POST/PUT/DELETE). Actions replace the need for most `useState` + `fetch` patterns.
-- Forms are the primary mutation mechanism in Remix. Use `<Form>` (Remix's component) or `useFetcher()` for non-navigating mutations.
-- After an action completes, Remix automatically re-validates and reloads loader data — do not manually refetch.
+- Use **`action`** functions for all data mutations (form submissions, POST/PUT/DELETE/PATCH operations). Actions are the preferred replacement for `useState` + `fetch` patterns.
+- Use Remix's `<Form>` component (or `useFetcher()` for non-navigating mutations) for all form-based actions.
+- After an action completes, Remix **automatically re-validates and re-runs loaders** on the current page — do not manually trigger refetches.
+- Validate action input server-side using Zod or similar. Return `json({ errors }, { status: 400 })` for validation failures and surface them via `useActionData()`.
 
 ## 3. Routing & File Structure
 
-- Remix uses **file-based routing** in the `app/routes/` directory. File name conventions determine URL structure and nesting.
-- Use **Nested Routes** for shared layouts. Render child routes with `<Outlet />` in the parent layout route.
-- Use **`handle` export** on routes to pass metadata (breadcrumbs, page titles) up to parent layouts.
+- Remix uses **file-based routing** in `app/routes/`. File names determine URL structure and nesting.
+- Use **Nested Routes** for shared layouts. Parent routes render `<Outlet />` where child routes should appear.
+- Use the **`handle`** export on routes to pass route-level metadata (breadcrumbs, page titles) to parent layouts via `useMatches()`.
+- Use **route-level `ErrorBoundary`** exports to catch loader/action errors and render contextual error UI. Use `isRouteErrorResponse()` to distinguish HTTP responses (404, 403) from unexpected runtime errors.
 
-## 4. Error Boundaries
+## 4. TypeScript & Validation
 
-- Export an **`ErrorBoundary`** component from every route that makes data requests. This catches loader/action errors and renders a contextual error UI without crashing the whole page.
-- Use `isRouteErrorResponse()` in `ErrorBoundary` to distinguish HTTP errors (404, 403) from unexpected errors.
+- Use **`typeof loader`** for `useLoaderData()` typing: `useLoaderData<typeof loader>()`. This eliminates manual type annotations.
+- Validate all action payloads and loader params with **Zod**. Use `zod.parse()` inside loaders/actions.
+- Use Remix's built-in `params` object for route parameters, always validate and coerce types before use.
 
-## 5. Performance & SEO
+## 5. Performance & Deployment
 
-- Remix provides **streaming** with `defer()` + `<Suspense>` for non-critical, slow data. Use it for optional page sections.
-- Manage document `<head>` with the **`meta`** and **`links`** exports on route modules for per-page SEO metadata.
-- Run `remix build` and test with `remix-serve` in CI. Use Playwright or Cypress for e2e browser tests.
+- Enable Remix's built-in **prefetching** for routes: `<Link prefetch="intent">` preloads the route when the user hovers.
+- Use the **`meta`** and **`links`** exports on route modules for per-page SEO metadata and CSS preloading.
+- Run `remix build` (or `react-router build`) and test with the adapter server (e.g., `@remix-run/express`) in CI.
+- Use **Playwright** or **Cypress** for E2E tests. Test route interactions, form submissions, and error boundaries.

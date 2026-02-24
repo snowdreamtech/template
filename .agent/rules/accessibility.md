@@ -1,37 +1,40 @@
 # Accessibility (a11y) Guidelines
 
-> Objective: Define standards for building universally accessible digital products that meet WCAG 2.1 AA compliance.
+> Objective: Define standards for building universally accessible digital products meeting WCAG 2.2 AA compliance.
 
 ## 1. Semantic Structure
 
-- Use correct semantic HTML elements for their intended purpose: `<button>` for actions, `<a>` for navigation, `<h1>`–`<h6>` for headings in logical hierarchy, `<nav>` for navigation landmarks, `<main>` for primary content.
-- Each page MUST have exactly one `<h1>`. Heading levels must not be skipped (e.g., do not jump from `<h1>` to `<h3>`).
-- Use `<ul>`/`<ol>` for lists of items, not `<div>` with manual bullet characters.
+- Use the correct semantic HTML element for its intended purpose: `<button>` for actions, `<a href>` for navigation, `<h1>`–`<h6>` for headings in a logical hierarchy, `<nav>` for navigation landmarks, `<main>` for primary content, `<footer>`, `<aside>`.
+- Each page MUST have **exactly one `<h1>`**. Heading levels must not be skipped (never jump from `<h1>` directly to `<h3>`).
+- Use `<ul>` / `<ol>` for lists of items, `<table>` with `<thead>`, `<tbody>`, `<th scope="col/row">` for tabular data.
+- Avoid `<div>` and `<span>` elements for interactive controls — always use semantic elements. They provide implicit roles, keyboard behavior, and state management for free.
 
 ## 2. Color & Contrast
 
-- Text and interactive elements must meet **WCAG AA contrast ratios**:
-  - Normal text: minimum **4.5:1** contrast ratio.
-  - Large text (18pt+ or 14pt+ bold): minimum **3:1**.
-  - UI components and graphical objects: minimum **3:1**.
-- Never convey information through color alone. Always pair color with a text label, icon, or pattern.
+- Text and interactive elements MUST meet **WCAG 2.2 AA** minimum contrast ratios:
+  - Normal text (< 18pt / 14pt bold): **4.5:1** minimum.
+  - Large text (≥ 18pt or ≥ 14pt bold): **3:1** minimum.
+  - UI components (input borders, focus indicators, graphical objects): **3:1** minimum.
+- **Never convey information through color alone.** Always pair color with a text label, icon, shape, or pattern. This is critical for color-blind users.
+- Dark mode MUST maintain the same contrast ratios as light mode.
 
 ## 3. Keyboard Navigation
 
-- Every interactive element (links, buttons, form inputs, modals, dropdowns) MUST be fully operable via keyboard alone.
-- The tab order must follow a logical reading order in the DOM.
-- Provide a visible focus indicator (`:focus-visible` style). Never use `outline: none` without providing a custom visible alternative.
-- Implement **focus trapping** inside modals and dialogs: focus must not escape to the background while the modal is open.
+- Every interactive element (links, buttons, form inputs, custom dropdowns, date pickers, modals) MUST be fully operable via keyboard alone (Tab, Shift+Tab, Enter, Space, Escape, Arrow Keys).
+- Tab order must follow a **logical, predictable reading order** matching the visual layout.
+- Provide a **visible focus indicator** using `:focus-visible`. Never use `outline: none` or `outline: 0` without providing a highly visible alternative.
+- Implement **focus trapping** inside modal dialogs: focus must not escape to the background content while the modal is open. Return focus to the trigger element when the modal closes.
 
 ## 4. ARIA
 
-- Prefer native HTML semantics over ARIA roles. Use ARIA only when semantic HTML cannot express the widget's role.
-- Every interactive custom component (custom dropdown, slider, modal, tab panel) must have the correct ARIA role, state (`aria-expanded`, `aria-selected`, `aria-checked`), and property (`aria-label`, `aria-labelledby`, `aria-describedby`).
-- Dynamic content updates must be announced to screen readers using `aria-live` regions (`polite` or `assertive`).
+- **Prefer native HTML semantics over ARIA.** The first rule of ARIA is: if you can use a native HTML element, do.
+- When building custom interactive components (carousel, combobox, tab panel, custom select), implement the correct **ARIA design pattern** from the [ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/).
+- Add appropriate ARIA attributes: `aria-expanded`, `aria-selected`, `aria-checked`, `aria-disabled`, `aria-label`, `aria-labelledby`, `aria-describedby`.
+- Use `aria-live="polite"` for non-critical dynamic content updates. Use `aria-live="assertive"` for errors and urgent alerts. Avoid overusing `assertive` — it interrupts screen reader speech.
 
 ## 5. Testing & Compliance
 
-- Run **automated accessibility scans** using **axe-core** (via `@axe-core/react`, `cypress-axe`, or browser extensions) in CI.
-- Perform **manual keyboard-only testing** on all interactive flows before release.
-- Perform **screen reader testing** with at least one of: NVDA (Windows), JAWS (Windows), VoiceOver (macOS/iOS).
-- Target **WCAG 2.1 Level AA** compliance as the minimum standard for all user-facing products.
+- Run **automated accessibility scans** using **axe-core** (`@axe-core/playwright`, `@axe-core/react`, browser DevTools) in CI. Automated tools catch ~30–40% of issues — they are necessary but not sufficient.
+- Perform **manual keyboard-only testing** of all interactive flows before release. Walk through the entire user journey without a mouse.
+- Perform **screen reader testing** with: NVDA + Firefox (Windows), JAWS + Chrome (Windows), VoiceOver + Safari (macOS/iOS), TalkBack (Android).
+- Target **WCAG 2.2 Level AA** as the minimum compliance standard for all user-facing products. Document known exceptions with remediation plans.
