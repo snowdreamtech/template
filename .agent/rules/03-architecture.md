@@ -1,25 +1,29 @@
 # Architecture & Project Structure
 
+> Objective: Define structural, organizational, and design standards to ensure a consistent, maintainable, and cross-platform codebase.
+
 ## 1. Cross-Platform Design
 
 - **Path Handling**: Always use `path.join()` or equivalent cross-platform path functions. Never hard-code `/` or `\` separators.
-- **Line Endings**: Configure `.gitattributes` to normalize line endings (`* text=auto`).
-- **Shell Scripts**: When shell scripts are necessary, provide both `.sh` (Unix) and `.ps1` or `.cmd` (Windows) variants, or use cross-platform runners (e.g., `npx`, `python`).
-- **Environment Variables**: Use `.env` files with a `.env.example` template. Never commit actual `.env` files.
+- **Line Endings**: Configure `.gitattributes` to normalize line endings (`* text=auto`). This prevents CRLF/LF conflicts across platforms.
+- **Shell Scripts**: When shell scripts are necessary, provide both `.sh` (Unix/POSIX) and `.ps1` or `.cmd` (Windows) variants, or use cross-platform runners (e.g., `npx`, `python`, `node`).
+- **Environment Variables**: Use `.env` files with a `.env.example` template. Never commit actual `.env` files. Support `HTTP_PROXY`/`HTTPS_PROXY`/`NO_PROXY` for network operations.
+- **OS Detection**: Detect the operating system at runtime for conditional logic. Use `process.platform` (Node.js), `sys.platform` (Python), `runtime.GOOS` (Go), or `std::env::consts::OS` (Rust). Never hard-code OS-specific command paths.
 
-## 2. Dependency Management
+## 2. Project Organization & Configuration
 
-- Always pin dependency versions in lock files (`package-lock.json`, `poetry.lock`, etc.).
-- Lock files MUST be committed to version control.
-- The `node_modules/`, `venv/` directories MUST be in `.gitignore`.
+### Dependency Management
 
-## 3. Configuration Hierarchy
+- Always pin dependency versions in lock files (`package-lock.json`, `poetry.lock`, `go.sum`, `Cargo.lock`, etc.).
+- Lock files MUST be committed to version control. The `node_modules/`, `venv/`, `.venv/`, `target/` directories MUST be in `.gitignore`.
+
+### Configuration Hierarchy
 
 - Project-level configuration takes precedence over global configuration.
-- Environment-specific overrides (dev, staging, production) should use environment variables or dedicated config files.
-- Sensitive values (API keys, passwords, tokens) MUST be stored in environment variables or secret management systems, never in source code.
+- Environment-specific overrides (dev, staging, production) MUST use environment variables or dedicated config files (e.g., `.env.production`).
+- Sensitive values (API keys, passwords, tokens, certificates) MUST be stored in environment variables or secret management systems, never in source code or config files committed to the repository.
 
-## 4. Project File Organization
+### Standard Project Layout
 
 ```text
 project-root/
@@ -31,18 +35,16 @@ project-root/
 ├── .cline/              # Example IDE dir (all IDE dirs follow this pattern)
 │   ├── rules/           # Real folder — IDE-specific rules redirect
 │   │   └── rules.md     # Real file — redirects to .agent/rules/
-│   ├── commands/        # Real folder — contains file-level symlinks
-│   │   ├── speckit.analyze.md  -> .agents/commands/speckit.analyze.md
-│   │   └── ...          # 9 speckit command files as symlinks
-├── .github/             # GitHub-specific configuration (Copilot)
+│   └── commands/        # Real folder — contains file-level symlinks
+├── .github/             # GitHub-specific configuration (Actions, Copilot)
 ├── .vscode/             # VS Code settings
 ├── src/                 # Source code
-├── tests/               # Test files
-├── docs/                # Documentation
+├── tests/               # Test files (mirrors src/ structure)
+├── docs/                # Documentation (Chinese user-facing, English technical)
 └── scripts/             # Build and utility scripts
 ```
 
-## 5. AI IDE Symlink Convention
+## 3. AI IDE Integration (Symlink Convention)
 
 All AI IDE directories follow a **hybrid symlink pattern** to maintain a Single Source of Truth while allowing per-IDE customization:
 
@@ -53,24 +55,22 @@ All AI IDE directories follow a **hybrid symlink pattern** to maintain a Single 
 
 **Rationale:**
 
-- `rules/` files are real — each IDE may need slightly different redirect content
-- `commands/` files are symlinks — 10 command files (1 init + 9 speckit) are identical across all IDEs; updates to `.agents/commands/` auto-propagate
+- `rules/` files are real — each IDE may need slightly different redirect content.
+- `commands/` files are symlinks — command files are identical across all IDEs; updates to `.agents/commands/` auto-propagate to all IDEs.
 
 **Exception — `.gemini/commands/`:** Gemini CLI requires TOML format. This directory contains both:
 
 - `.md` file-level symlinks → `.agents/commands/` (standard pattern)
 - `.toml` companion files (embedded full prompt content, Gemini CLI format)
 
-Both `.md` and `.toml` must exist for each command in `.gemini/commands/`.
+**Workflow:**
 
-**Adding a new command:** Edit only `.agents/commands/` — all IDE dirs automatically reflect the change via symlinks. Also add a `.toml` file to `.gemini/commands/`.
+- **Adding a new command**: Edit only `.agents/commands/` — all IDE dirs auto-reflect the change via symlinks. Also add a `.toml` file to `.gemini/commands/`.
+- **Adding a new IDE**: Create `.newIDE/rules/rules.md` (real file) and `.newIDE/commands/` (real dir with file-level symlinks).
 
-**Adding a new IDE:** Create `.newIDE/rules/rules.md` (real), `.newIDE/commands/` (real dir with file symlinks).
+## 4. AI IDE Configuration Reference
 
-## 6. AI IDE Configuration Files
-
-This project uses a **redirect pattern** to maintain a Single Source of Truth:
-all AI IDE config files point to `.agent/rules/` for actual rules.
+This project uses a **redirect pattern** to maintain a Single Source of Truth: all AI IDE config files point to `.agent/rules/` for actual rules.
 
 ### Root-level redirect files
 
@@ -149,3 +149,11 @@ Each directory contains a redirect `rules/rules.md` file, plus `commands/` (file
 | `.qwen/`        | `rules/rules.md`                                                | Qwen                   |
 | `.shai/`        | `rules/rules.md`                                                | Shai                   |
 | `.vibe/`        | `rules/rules.md`                                                | Vibe                   |
+
+## 5. Design Principles
+
+- **Layered Architecture**: Organize code in clear architecture layers (e.g., Presentation → Application → Domain → Infrastructure). Dependencies MUST only point inward — outer layers depend on inner layers, never the reverse.
+- **API Contracts**: Define all service boundaries with explicit, versioned contracts (OpenAPI/Swagger for REST, `.proto` files for gRPC, GraphQL schema). Contracts MUST be reviewed and version-bumped for breaking changes.
+- **Bounded Contexts**: In complex systems, define bounded contexts (DDD) with explicit integration points. Teams own their contexts; cross-context communication goes through well-defined APIs or events.
+- **Separation of Concerns**: Keep configuration, business logic, and infrastructure code strictly separated. Business logic MUST NOT contain infrastructure-specific code (SQL queries, HTTP calls, file I/O); use dependency injection and interfaces/adapters.
+- **Fail Fast**: Validate inputs and preconditions as early as possible in the call stack. Return clear errors immediately rather than propagating invalid state deeply into business logic.
