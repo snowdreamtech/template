@@ -113,10 +113,9 @@
   ✅ # Title
   ✅ ## Section
 
-  ❌ Title # Setext — only works for h1/h2, inconsistent
-  =====
-  ❌ Section
-  ------
+  # ❌ Title # Setext — only works for h1/h2, inconsistent
+
+  ## ❌ Section
   ```
 
 - Headings MUST NOT contain emojis or decorative symbols — they break TOC generators, `markdownlint`, and accessibility tools. Use plain text only.
@@ -228,13 +227,11 @@
 - Every table MUST have a **header row** with descriptive column names. Use alignment pipes consistently:
 
   ```markdown
-
   | Feature    | Supported | Notes          |
   | :--------- | :-------: | :------------- |
   | Basic auth |    ✅     | All versions   |
   | OAuth 2.0  |    ✅     | v2.0+ only     |
   | SAML SSO   |    ❌     | Not on roadmap |
-
   ```
 
 - Avoid tables for information that reads better as a list — tables add visual noise when there is only one data column.
@@ -254,3 +251,53 @@
   Or generate automatically with `markdown-toc`, `doctoc`, or GitHub's built-in TOC button.
 
 - Avoid embedding raw HTML (`<div>`, `<span>`, `<br>`) in Markdown unless the rendering target explicitly requires it. Standard Markdown is more portable across renderers (GitHub, GitLab, Notion, Docusaurus).
+
+## 6. AI IDE Special Directive Syntax
+
+Some AI IDEs use **non-standard `#`-prefixed directives** that look like ATX headings but are **NOT headings**. They must never have a space between `#` and the keyword, otherwise the directive is silently broken and treated as a plain Markdown heading.
+
+### GitHub Copilot — `#file:` Reference
+
+In GitHub Copilot `.prompt.md` and `.agent.md` files (located in `.github/prompts/` and `.github/agents/`), the `#file:` prefix is a **file-context injection directive** that embeds the content of another file into the prompt:
+
+```markdown
+✅ Correct — no space, Copilot injects the file content:
+#file:../../.agent/workflows/speckit.implement.md
+
+❌ Wrong — space makes it a Markdown H1 heading (directive completely ignored):
+
+# file:../../.agent/workflows/speckit.implement.md
+```
+
+> [!CAUTION]
+> Writing `# file:...` (with a space) will NOT inject any file content.
+> Copilot silently treats it as an H1 heading with the text `file:...`.
+> The referenced workflow will never be loaded, breaking the entire prompt.
+
+### Key Rules for AI IDE Directives
+
+- **No space** between `#` and the directive keyword: `#file:`, `#context:`, `#selection`, etc.
+- **A space after `#` always means a Markdown heading** in the ATX heading syntax — never a directive.
+- When markdownlint reports `MD018/no-missing-space-atx` on a `#file:` line, this is a **false positive** — do NOT add a space to silence it. Instead, configure markdownlint to ignore this pattern or add an inline `<!-- markdownlint-disable MD018 -->` suppression on that specific line.
+- Always verify `.github/prompts/*.prompt.md` and `.github/agents/*.agent.md` files use bare `#file:` without spaces after any automated formatting or linting fix runs.
+
+### markdownlint Suppression for `#file:` Lines
+
+If your CI runs markdownlint on `.prompt.md` / `.agent.md` files, add an inline suppression around the directive line to prevent false MD018 warnings:
+
+```markdown
+<!-- markdownlint-disable MD018 -->
+
+#file:../../.agent/workflows/speckit.implement.md
+
+<!-- markdownlint-enable MD018 -->
+```
+
+Or exclude these file types globally in `.markdownlint.json` using `globs`:
+
+```json
+{
+  "default": true,
+  "globs": ["**/*.md", "!.github/prompts/**", "!.github/agents/**"]
+}
+```
