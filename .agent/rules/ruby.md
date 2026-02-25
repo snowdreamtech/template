@@ -17,6 +17,7 @@
 - Prefer `&&`/`||` for boolean expressions in conditions. Use `and`/`or` only for control flow and only when the precedence is intentional.
 - Use `Struct` or a dedicated **Value Object** class for simple data carriers instead of plain hashes for structured data.
 - Use **Pattern Matching** (`case/in`) for complex data structure matching. It is idiomatic in Ruby 3+.
+- Mix in standard library modules (`Comparable`, `Enumerable`) to add well-understood default behaviors to domain objects instead of reimplementing them.
 
 ## 3. Architecture & Rails Patterns
 
@@ -31,6 +32,7 @@
 - Use **FactoryBot** for test data generation. Prefer `create` only when persistence is required; use `build` or `build_stubbed` for unit tests to avoid slow database writes.
 - Use **VCR** or **WebMock** to stub external HTTP calls in tests. Never make real network calls in CI.
 - Run `bundle exec rspec --format progress --format RspecJunitFormatter` in CI for JUnit XML output. Use `simplecov` for coverage reporting.
+- Use **`parallel_tests`** to run the RSpec test suite across multiple CPU cores in CI for large test suites, reducing feedback time.
 
 ## 5. Security & Tooling
 
@@ -39,3 +41,4 @@
 - Sanitize user output in views. In Rails, prefer the default HTML escaping — avoid `raw`, `html_safe`, and `sanitize` with permissive options.
 - Pin **Ruby version** in `.ruby-version` (rbenv/rvm/mise). Specify `ruby "~> 3.3"` in `Gemfile`.
 - Use `rubocop-performance` and `rubocop-rspec` extensions for additional linting coverage beyond the core RuboCop cops.
+- In Rails 7+ projects, use **encrypted credentials** (`config/credentials.yml.enc`) with `RAILS_MASTER_KEY` for secrets management. Never store unencrypted credentials in `database.yml` or environment-specific config files.

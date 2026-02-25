@@ -24,6 +24,8 @@
 - Give generic type parameters descriptive names beyond single letters when context warrants it: `TEntity`, `TResponse`, `TError`.
 - Constrain generics with `extends` to enforce shape requirements: `function merge<T extends object, U extends object>(a: T, b: U)`.
 - Prefer `readonly` modifiers on generic parameters used as immutable inputs: `function sort<T>(items: readonly T[]): T[]`.
+- Use `infer` in conditional types to extract sub-types: `type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never`.
+- Use **Template Literal Types** for string pattern constraints (e.g., `type EventName = \`on${Capitalize<string>}\``) — very useful for event systems and strongly-typed CSS class name utilities.
 
 ## 4. Enums, Constants & Utility Types
 

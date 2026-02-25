@@ -32,10 +32,12 @@
 - Use lowercase for all tag names and attribute names. Always quote attribute values with double quotes.
 - Validate HTML using the [W3C Validator](https://validator.w3.org/) or HTMLHint in CI.
 - Avoid deprecated HTML elements (`<font>`, `<center>`, `<marquee>`, `<b>` for styling — use `<strong>` for semantic importance).
+- Add a **Content Security Policy** via HTTP header (`Content-Security-Policy`) or `<meta http-equiv="Content-Security-Policy">` to restrict executable sources and mitigate XSS.
 
 ## 5. Performance & SEO
 
 - Lazy-load below-the-fold images: `<img loading="lazy">`. Eager-load hero/above-the-fold images: `<img loading="eager" fetchpriority="high">`.
+- Use `srcset` and `sizes` attributes on `<img>` to serve appropriately sized images for different screen densities and viewport widths: `<img srcset="img-400.webp 400w, img-800.webp 800w" sizes="(max-width: 600px) 400px, 800px">`.
 - Use `<link rel="preload">` for critical resources (fonts, key CSS, LCP images) and `<link rel="preconnect">` for third-party origins.
 - Minimize the DOM size. Aim for < 1,500 total DOM nodes for optimal rendering performance.
 - Use `<link rel="canonical">` on every page to prevent duplicate content SEO issues.

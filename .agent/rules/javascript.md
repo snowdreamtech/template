@@ -10,6 +10,7 @@
 - Prefer **template literals** (`` `Hello ${name}` ``) over string concatenation.
 - Use **optional chaining** (`?.`) and **nullish coalescing** (`??`) instead of verbose null checks. Avoid `||` for defaults when `0` or `""` are valid.
 - Prefer **destructuring** for objects and arrays where it improves readability: `const { id, name } = user`.
+- Use `structuredClone()` (native, available in all modern environments) for deep-cloning objects instead of `JSON.parse(JSON.stringify(obj))` — it handles more types correctly.
 
 ## 2. Modules & Imports
 
@@ -26,6 +27,7 @@
 - Use `Promise.all()` for concurrent independent async operations. Use `Promise.allSettled()` when results are needed even if some fail.
 - Set timeouts on all external async calls using `AbortController` or a wrapper with a deadline.
 - Handle Promise rejections explicitly. Configure an `unhandledRejection` listener at the process level in Node.js.
+- Offload CPU-intensive synchronous work (image processing, compression, crypto) to **Web Workers** (browser) or `worker_threads` (Node.js) to avoid blocking the main thread.
 
 ## 4. Error Handling
 
@@ -42,3 +44,4 @@
 - Limit function length (target < 40 lines). If a function does more than one thing, extract it.
 - Use **JSDoc** for public function documentation when not using TypeScript. Document parameters, return types, and thrown errors.
 - Measure and profile performance-critical paths. Avoid premature optimization — profile first, optimize second.
+- In browser environments handling HTML construction, use **Trusted Types** policies to defend against DOM XSS attacks. Never pass raw user input to `innerHTML`, `eval()`, or `document.write()`.

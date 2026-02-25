@@ -18,6 +18,7 @@
 - Place reusable UI components in `src/components/`. Use `.astro` for static/layout components; use your chosen framework (React, Vue, Svelte) for interactive islands only.
 - Place shared layouts in `src/layouts/`. A layout wraps page content with the document `<html>`, `<head>`, and `<body>`.
 - Use `src/content/` with the **Content Collections** API for type-safe Markdown/MDX content. Use `src/assets/` for images processed by `astro:assets`.
+- Define **Middleware** in `src/middleware.ts` using `defineMiddleware` for request/response interception (auth checks, redirects, setting headers). Middleware runs on every request in SSR mode.
 
 ## 3. Content Collections
 
@@ -40,3 +41,4 @@
 - Test interactive island components separately using the framework's own test tooling (Vitest + Testing Library).
 - Use **Playwright** for E2E tests of full pages. Run `astro preview` to serve the production build for testing before deployment.
 - Use Lighthouse CI or `unlighthouse` to measure Core Web Vitals (LCP, CLS, INP) across all pages on each release.
+- Use **`astro:env`** (Astro 5+) for type-safe, schema-validated environment variables instead of raw `import.meta.env`. Define a schema in `astro.config.mjs` to catch missing or malformed env vars at build time.

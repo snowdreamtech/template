@@ -31,6 +31,7 @@
 - Keep `UIViewController` / SwiftUI `View` code thin — no business logic, no network calls. Business logic belongs in ViewModels, UseCases, or domain objects.
 - Use **Swift Package Manager (SPM)** as the primary dependency manager. Avoid CocoaPods or Carthage for new projects unless required by a specific dependency.
 - Prefer **protocol-oriented design**: define capabilities via protocols, provide default implementations via extensions.
+- Use the **`@Observable` macro** (Swift 5.9+, Observation framework) as the modern replacement for `@ObservableObject` + `@Published`. It reduces boilerplate and integrates directly with SwiftUI's rendering model.
 
 ## 5. Testing & Tooling
 
@@ -39,3 +40,4 @@
 - Run `xcodebuild test -scheme <Scheme> -destination 'platform=iOS Simulator,name=iPhone 16'` in CI.
 - Lint with **SwiftLint** (configurable rules committed in `.swiftlint.yml`). Use **SwiftFormat** for auto-formatting.
 - Enable Thread Sanitizer and Address Sanitizer in the CI test scheme to catch runtime memory issues.
+- Use **Swift Macros** (Swift 5.9+) to reduce boilerplate for repetitive code generation (e.g., `@Codable` mapping, model stubbing). Validate macros with macro unit tests using `MacroTesting` framework.

@@ -39,3 +39,4 @@
 - Aim for ≥ 80% code coverage on service and repository layers. Use JaCoCo for coverage reporting in CI.
 - Run tests with `./mvnw verify` or `./gradlew test` in CI. Include `spotbugs:check` and `pmd:check` in the build pipeline.
 - Use **Testcontainers** for integration tests requiring real databases, message queues, or external services.
+- Use **GraalVM Native Image** (via Spring Boot 3+ AOT support or Quarkus) for startup-time-critical microservices. Validate native image compatibility in CI using `mvnw -Pnative test`.

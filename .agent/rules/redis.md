@@ -32,6 +32,7 @@
 - **Never use `KEYS *`** in production — it blocks the server event loop. Use `SCAN cursor MATCH pattern COUNT hint` for key iteration.
 - Do not store large blobs (> 1MB) in Redis. It is an in-memory store — use object storage (S3, GCS) for large binary data and store only a reference key in Redis.
 - Enable **Redis Persistence**: use `RDB + AOF` (`appendonly yes`, `appendfsync everysec`) for crash recovery. For pure cache use, `RDB` snapshots alone may suffice.
+- Use **Lua scripts** (`EVALSHA`) for complex atomic multi-command operations that must run without interleaving — e.g., check-and-set patterns. Cache scripts server-side with `SCRIPT LOAD` to avoid re-sending the script body.
 
 ## 5. Security & Operations
 
@@ -39,3 +40,4 @@
 - Use **TLS** for all Redis connections in production. Disable Redis on public interfaces — bind to `127.0.0.1` or a private VLAN IP only.
 - For high availability, use **Redis Sentinel** (automatic failover for < 10GB datasets) or **Redis Cluster** (horizontal sharding for larger datasets). Never rely on a standalone single node in production.
 - Monitor with `redis-cli INFO stats`, `SLOWLOG GET 10` for slow commands, and `redis_exporter` for Prometheus metrics. Never use `MONITOR` in production — it logs every command and severely impacts performance.
+- For memory-efficient probabilistic data structures, use **RedisBloom** module: `BF.ADD` / `BF.EXISTS` for Bloom filters (cache-miss protection), `HLL` commands for approximate cardinality counts.

@@ -30,6 +30,7 @@
 - Use **relative units** (`rem`, `em`, `%`, `vw`, `svh`, `dvh`) over fixed `px` for layout, typography, and spacing.
 - Use CSS **Grid** for two-dimensional layouts and **Flexbox** for one-dimensional layouts. Avoid positioning-based layout hacks.
 - Define breakpoints as named custom properties or in a single dedicated `_breakpoints.css` file to ensure consistency across the project.
+- Use **`@container` queries** for component-level responsive design — adapting a component's layout based on its container's size, not the viewport. This enables truly reusable components that adapt to where they are placed.
 
 ## 5. Performance & Tooling
 
