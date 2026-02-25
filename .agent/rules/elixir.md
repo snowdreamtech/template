@@ -13,6 +13,7 @@
   # ✅ Readable pipeline — data flows left to right
   result =
     raw_params
+
     |> Map.take([:name, :email, :role])
     |> AtomValidator.validate()
     |> Accounts.create_user()
@@ -122,8 +123,10 @@
   ```elixir
   results =
     user_ids
+
     |> Task.async_stream(&fetch_user/1, max_concurrency: 10, timeout: 5000, on_timeout: :kill_task)
     |> Enum.to_list()
+
   ```
 
 - Use **`Registry`** or **`pg`** (process groups) for dynamic process discovery instead of hardcoded PIDs or registered names:
@@ -178,11 +181,13 @@
 
     def changeset(user, attrs) do
       user
+
       |> cast(attrs, [:name, :email, :role])
       |> validate_required([:name, :email])
       |> validate_format(:email, ~r/@/)
       |> validate_length(:name, min: 1, max: 100)
       |> unique_constraint(:email)
+
     end
   end
   ```
@@ -191,12 +196,16 @@
 
   ```elixir
   Multi.new()
+
   |> Multi.insert(:user, User.changeset(%User{}, attrs))
   |> Multi.insert(:profile, fn %{user: user} -> Profile.changeset(%Profile{}, %{user_id: user.id}) end)
   |> Multi.run(:send_welcome, fn _repo, %{user: user} ->
+
     {:ok, Mailer.send_welcome(user)}
   end)
+
   |> Repo.transaction()
+
   ```
 
 - Use **`Ecto.Query`** for structured, composable database access. Avoid `Repo.all(Model)` on large tables without pagination.

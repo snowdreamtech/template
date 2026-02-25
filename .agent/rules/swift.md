@@ -223,7 +223,9 @@
     -scheme MyApp \
     -destination 'platform=iOS Simulator,name=iPhone 16' \
     -resultBundlePath TestResults.xcresult \
+
     | xcbeautify
+
   ```
 
 - Enable **Thread Sanitizer** and **Address Sanitizer** in CI test schemes for runtime memory and concurrency issue detection.

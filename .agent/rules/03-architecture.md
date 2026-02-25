@@ -50,10 +50,10 @@ project-root/
 
 All AI IDE directories follow a **hybrid symlink pattern** to maintain a Single Source of Truth while allowing per-IDE customization:
 
-| Directory        | Structure                            | Source               |
+| Directory | Structure | Source |
 | ---------------- | ------------------------------------ | -------------------- |
-| `.IDE/rules/`    | Real folder, real files              | IDE-specific content |
-| `.IDE/commands/` | Real folder, **file-level symlinks** | `.agents/commands/`  |
+| `.IDE/rules/` | Real folder, real files | IDE-specific content |
+| `.IDE/commands/` | Real folder, **file-level symlinks** | `.agents/commands/` |
 
 **Rationale:**
 
@@ -76,81 +76,81 @@ This project uses a **redirect pattern** to maintain a Single Source of Truth: a
 
 ### Root-level redirect files
 
-| File               | AI IDE                        |
+| File | AI IDE |
 | ------------------ | ----------------------------- |
-| `CLAUDE.md`        | Claude Code                   |
-| `AGENTS.md`        | OpenAI Codex / Generic agents |
-| `CONVENTIONS.md`   | Generic convention readers    |
-| `codex.md`         | OpenAI Codex                  |
-| `.cursorrules`     | Cursor (legacy)               |
-| `.clinerules`      | Cline (legacy)                |
-| `.roorules`        | Roo Code (legacy)             |
-| `.traerules`       | Trae (legacy)                 |
-| `.windsurfrules`   | Windsurf (legacy)             |
-| `.replit.agent.md` | Replit Agent                  |
-| `.aider.conf.yml`  | Aider (YAML format)           |
-| `.coderabbit.yaml` | CodeRabbit (YAML format)      |
-| `sweep.yaml`       | Sweep AI (YAML format)        |
-| `.pr_agent.toml`   | Qodo PR-Agent (TOML format)   |
+| `CLAUDE.md` | Claude Code |
+| `AGENTS.md` | OpenAI Codex / Generic agents |
+| `CONVENTIONS.md` | Generic convention readers |
+| `codex.md` | OpenAI Codex |
+| `.cursorrules` | Cursor (legacy) |
+| `.clinerules` | Cline (legacy) |
+| `.roorules` | Roo Code (legacy) |
+| `.traerules` | Trae (legacy) |
+| `.windsurfrules` | Windsurf (legacy) |
+| `.replit.agent.md` | Replit Agent |
+| `.aider.conf.yml` | Aider (YAML format) |
+| `.coderabbit.yaml` | CodeRabbit (YAML format) |
+| `sweep.yaml` | Sweep AI (YAML format) |
+| `.pr_agent.toml` | Qodo PR-Agent (TOML format) |
 
 ### IDE-specific directories
 
 Each directory contains a redirect `rules/rules.md` file, plus `commands/` (file symlinks):
 
-| Directory       | Rules File                                                      | AI IDE                 |
+| Directory | Rules File | AI IDE |
 | --------------- | --------------------------------------------------------------- | ---------------------- |
-| `.claude/`      | `CLAUDE.md`                                                     | Claude Code            |
-| `.cursor/`      | `rules/rules.md`, `rules/rules.mdc`                             | Cursor                 |
-| `.windsurf/`    | `rules/rules.md`                                                | Windsurf               |
-| `.github/`      | `copilot-instructions.md`, `instructions/rules.instructions.md` | GitHub Copilot         |
-| `.gemini/`      | `GEMINI.md`                                                     | Gemini                 |
-| `.cline/`       | `rules/rules.md`                                                | Cline                  |
-| `.roo/`         | `rules/rules.md`                                                | Roo Code               |
-| `.augment/`     | `rules/rules.md`                                                | Augment                |
-| `.amazonq/`     | `rules/rules.md`                                                | Amazon Q               |
-| `.continue/`    | `rules/rules.md`                                                | Continue               |
-| `.trae/`        | `rules/project_rules.md`                                        | Trae                   |
-| `.kiro/`        | `steering/rules.md`                                             | Kiro                   |
-| `.goose/`       | `.goosehints`                                                   | Goose                  |
-| `.junie/`       | `guidelines.md`                                                 | Junie                  |
-| `.codex/`       | `rules/rules.md`                                                | OpenAI Codex           |
-| `.void/`        | `rules/rules.md`                                                | Void IDE               |
-| `.aide/`        | `rules/rules.md`                                                | Aide IDE               |
-| `.devin/`       | `rules/rules.md`                                                | Devin AI               |
-| `.kilocode/`    | `rules/rules.md`                                                | Kilocode               |
-| `.openhands/`   | `microagents/rules.md`                                          | OpenHands              |
-| `.bob/`         | `rules/rules.md`                                                | Bob AI                 |
-| `.cortex/`      | `rules/rules.md`                                                | Cortex                 |
-| `.zencoder/`    | `rules/rules.md`                                                | Zencoder               |
-| `.opencode/`    | `rules/rules.md`                                                | OpenCode               |
-| `.pearai/`      | `rules/rules.md`                                                | PearAI                 |
-| `.specify/`     | `rules/rules.md`                                                | Specify                |
-| `.melty/`       | `rules/rules.md`                                                | Melty                  |
-| `.zed/`         | `agent/rules.md`                                                | Zed IDE                |
-| `.codeium/`     | `rules/rules.md`                                                | Codeium                |
-| `.cody/`        | `rules/rules.md`                                                | Sourcegraph Cody       |
-| `.tabnine/`     | `rules/rules.md`                                                | Tabnine                |
-| `.supermaven/`  | `rules/rules.md`                                                | Supermaven             |
-| `.blackbox/`    | `rules/rules.md`                                                | Blackbox               |
-| `.codegeex/`    | `rules/rules.md`                                                | CodeGeeX               |
-| `.bito/`        | `rules/rules.md`                                                | Bito                   |
-| `.aiassistant/` | `rules/project_rules.md`                                        | JetBrains AI Assistant |
-| `.adal/`        | `rules/rules.md`                                                | ADAL                   |
-| `.commandcode/` | `rules/rules.md`                                                | CommandCode            |
-| `.codebuddy/`   | `rules/rules.md`                                                | CodeBuddy              |
-| `.crush/`       | `rules/rules.md`                                                | Crush                  |
-| `.factory/`     | `rules/rules.md`                                                | Factory                |
-| `.iflow/`       | `rules/rules.md`                                                | iFlow                  |
-| `.kode/`        | `rules/rules.md`                                                | Kode                   |
-| `.mcpjam/`      | `rules/rules.md`                                                | MCP Jam                |
-| `.mux/`         | `rules/rules.md`                                                | Mux                    |
-| `.neovate/`     | `rules/rules.md`                                                | Neovate                |
-| `.pi/`          | `rules/rules.md`                                                | Pi IDE                 |
-| `.pochi/`       | `rules/rules.md`                                                | Pochi                  |
-| `.qoder/`       | `rules/rules.md`                                                | Qoder                  |
-| `.qwen/`        | `rules/rules.md`                                                | Qwen                   |
-| `.shai/`        | `rules/rules.md`                                                | Shai                   |
-| `.vibe/`        | `rules/rules.md`                                                | Vibe                   |
+| `.claude/` | `CLAUDE.md` | Claude Code |
+| `.cursor/` | `rules/rules.md`, `rules/rules.mdc` | Cursor |
+| `.windsurf/` | `rules/rules.md` | Windsurf |
+| `.github/` | `copilot-instructions.md`, `instructions/rules.instructions.md` | GitHub Copilot |
+| `.gemini/` | `GEMINI.md` | Gemini |
+| `.cline/` | `rules/rules.md` | Cline |
+| `.roo/` | `rules/rules.md` | Roo Code |
+| `.augment/` | `rules/rules.md` | Augment |
+| `.amazonq/` | `rules/rules.md` | Amazon Q |
+| `.continue/` | `rules/rules.md` | Continue |
+| `.trae/` | `rules/project_rules.md` | Trae |
+| `.kiro/` | `steering/rules.md` | Kiro |
+| `.goose/` | `.goosehints` | Goose |
+| `.junie/` | `guidelines.md` | Junie |
+| `.codex/` | `rules/rules.md` | OpenAI Codex |
+| `.void/` | `rules/rules.md` | Void IDE |
+| `.aide/` | `rules/rules.md` | Aide IDE |
+| `.devin/` | `rules/rules.md` | Devin AI |
+| `.kilocode/` | `rules/rules.md` | Kilocode |
+| `.openhands/` | `microagents/rules.md` | OpenHands |
+| `.bob/` | `rules/rules.md` | Bob AI |
+| `.cortex/` | `rules/rules.md` | Cortex |
+| `.zencoder/` | `rules/rules.md` | Zencoder |
+| `.opencode/` | `rules/rules.md` | OpenCode |
+| `.pearai/` | `rules/rules.md` | PearAI |
+| `.specify/` | `rules/rules.md` | Specify |
+| `.melty/` | `rules/rules.md` | Melty |
+| `.zed/` | `agent/rules.md` | Zed IDE |
+| `.codeium/` | `rules/rules.md` | Codeium |
+| `.cody/` | `rules/rules.md` | Sourcegraph Cody |
+| `.tabnine/` | `rules/rules.md` | Tabnine |
+| `.supermaven/` | `rules/rules.md` | Supermaven |
+| `.blackbox/` | `rules/rules.md` | Blackbox |
+| `.codegeex/` | `rules/rules.md` | CodeGeeX |
+| `.bito/` | `rules/rules.md` | Bito |
+| `.aiassistant/` | `rules/project_rules.md` | JetBrains AI Assistant |
+| `.adal/` | `rules/rules.md` | ADAL |
+| `.commandcode/` | `rules/rules.md` | CommandCode |
+| `.codebuddy/` | `rules/rules.md` | CodeBuddy |
+| `.crush/` | `rules/rules.md` | Crush |
+| `.factory/` | `rules/rules.md` | Factory |
+| `.iflow/` | `rules/rules.md` | iFlow |
+| `.kode/` | `rules/rules.md` | Kode |
+| `.mcpjam/` | `rules/rules.md` | MCP Jam |
+| `.mux/` | `rules/rules.md` | Mux |
+| `.neovate/` | `rules/rules.md` | Neovate |
+| `.pi/` | `rules/rules.md` | Pi IDE |
+| `.pochi/` | `rules/rules.md` | Pochi |
+| `.qoder/` | `rules/rules.md` | Qoder |
+| `.qwen/` | `rules/rules.md` | Qwen |
+| `.shai/` | `rules/rules.md` | Shai |
+| `.vibe/` | `rules/rules.md` | Vibe |
 
 ## 5. Design Principles
 

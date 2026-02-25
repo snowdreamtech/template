@@ -70,15 +70,15 @@
 
 Choose the **most specific Redis data type** for each use case — it determines memory efficiency, operation semantics, and available commands:
 
-| Structure         | Commands                           | Best for                                                  |
+| Structure | Commands | Best for |
 | ----------------- | ---------------------------------- | --------------------------------------------------------- |
-| **String**        | `GET`, `SET`, `INCR`, `INCRBY`     | Simple K-V, counters, session tokens, rate limit counts   |
-| **Hash**          | `HGET`, `HSET`, `HMGET`, `HGETALL` | Object with multiple fields (user profile, config)        |
-| **List**          | `LPUSH`, `RPOP`, `LRANGE`, `LLEN`  | FIFO queues, recent activity feeds, chat history          |
-| **Set**           | `SADD`, `SISMEMBER`, `SMEMBERS`    | Unique membership, tags, online users, blacklists         |
-| **Sorted Set**    | `ZADD`, `ZRANGEBYSCORE`, `ZRANK`   | Leaderboards, rate-limit sliding windows, priority queues |
-| **Stream**        | `XADD`, `XREAD`, `XREADGROUP`      | Reliable, persistent, consumer-group message queues       |
-| **String + JSON** | `JSON.SET`, `JSON.GET`             | Complex objects (with RedisJSON module)                   |
+| **String** | `GET`, `SET`, `INCR`, `INCRBY` | Simple K-V, counters, session tokens, rate limit counts |
+| **Hash** | `HGET`, `HSET`, `HMGET`, `HGETALL` | Object with multiple fields (user profile, config) |
+| **List** | `LPUSH`, `RPOP`, `LRANGE`, `LLEN` | FIFO queues, recent activity feeds, chat history |
+| **Set** | `SADD`, `SISMEMBER`, `SMEMBERS` | Unique membership, tags, online users, blacklists |
+| **Sorted Set** | `ZADD`, `ZRANGEBYSCORE`, `ZRANK` | Leaderboards, rate-limit sliding windows, priority queues |
+| **Stream** | `XADD`, `XREAD`, `XREADGROUP` | Reliable, persistent, consumer-group message queues |
+| **String + JSON** | `JSON.SET`, `JSON.GET` | Complex objects (with RedisJSON module) |
 
 - Prefer **Streams** over bare Lists for message queues when **at-least-once delivery** and consumer acknowledgment are required. Streams support consumer groups, acknowledgment, and replay.
 - Use **Hash** to store object data instead of `SET user:123 <entire json>` when only a few fields are needed at a time — `HMGET user:123 name email` is more efficient than parsing the full JSON.

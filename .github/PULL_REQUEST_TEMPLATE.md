@@ -21,7 +21,7 @@ Fixes # (issue)
 - [ ] Local environment deployment verified
 - [ ] Other (please specify): ****\_****
 
-## Checklist:
+## Checklist
 
 - [ ] My code follows the style guidelines of this project (`.agent/rules/02-coding-style.md`)
 - [ ] I have performed a self-review of my own code

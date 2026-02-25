@@ -23,13 +23,13 @@
 
 ### HTTP Method Semantics
 
-| Method   | Semantics                                 | Idempotent | Safe |
+| Method | Semantics | Idempotent | Safe |
 | -------- | ----------------------------------------- | ---------- | ---- |
-| `GET`    | Read a resource or collection             | ✅         | ✅   |
-| `POST`   | Create a resource or trigger an action    | ❌         | ❌   |
-| `PUT`    | Full resource replacement (all fields)    | ✅         | ❌   |
-| `PATCH`  | Partial update (send only changed fields) | ✅\*       | ❌   |
-| `DELETE` | Remove a resource                         | ✅         | ❌   |
+| `GET` | Read a resource or collection | ✅ | ✅ |
+| `POST` | Create a resource or trigger an action | ❌ | ❌ |
+| `PUT` | Full resource replacement (all fields) | ✅ | ❌ |
+| `PATCH` | Partial update (send only changed fields) | ✅\* | ❌ |
+| `DELETE` | Remove a resource | ✅ | ❌ |
 
 - Use `PATCH` for partial updates. Use `PUT` for full document replacement (idempotent with same input).
 - Support **idempotency keys** (`Idempotency-Key: <uuid>` request header) for `POST` endpoints that create resources or trigger payments. Store the key/response pair temporarily (e.g., 24 hours in Redis) to return the same response on retry:

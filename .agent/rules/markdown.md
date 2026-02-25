@@ -228,11 +228,13 @@
 - Every table MUST have a **header row** with descriptive column names. Use alignment pipes consistently:
 
   ```markdown
+
   | Feature    | Supported | Notes          |
   | :--------- | :-------: | :------------- |
   | Basic auth |    ✅     | All versions   |
   | OAuth 2.0  |    ✅     | v2.0+ only     |
   | SAML SSO   |    ❌     | Not on roadmap |
+
   ```
 
 - Avoid tables for information that reads better as a list — tables add visual noise when there is only one data column.

@@ -27,8 +27,9 @@ After reading the core rules, **inspect the project's file structure and configu
 Then read the corresponding rule files from `.agent/rules/`:
 
 ### Languages
+
 | Detected | Rule File |
-|----------|-----------|
+| ---------- | ----------- |
 | JavaScript | `.agent/rules/javascript.md` |
 | TypeScript | `.agent/rules/typescript.md` |
 | Python | `.agent/rules/python.md` |
@@ -53,8 +54,9 @@ Then read the corresponding rule files from `.agent/rules/`:
 | GraphQL | `.agent/rules/graphql.md` |
 
 ### Frameworks & Libraries
+
 | Detected | Rule File |
-|----------|-----------|
+| ---------- | ----------- |
 | Node.js | `.agent/rules/node.md` |
 | Bun | `.agent/rules/bun.md` |
 | Deno | `.agent/rules/deno.md` |
@@ -93,8 +95,9 @@ Then read the corresponding rule files from `.agent/rules/`:
 | WebAssembly | `.agent/rules/wasm.md` |
 
 ### Infrastructure & Data
+
 | Detected | Rule File |
-|----------|-----------|
+| ---------- | ----------- |
 | Docker | `.agent/rules/docker.md` |
 | Kubernetes | `.agent/rules/kubernetes.md` |
 | Terraform | `.agent/rules/terraform.md` |
@@ -109,8 +112,9 @@ Then read the corresponding rule files from `.agent/rules/`:
 | Monitoring (Prometheus/Grafana) | `.agent/rules/monitoring.md` |
 
 ### Additional Topics
+
 | Topic | Rule File |
-|-------|-----------|
+| ------- | ----------- |
 | API Design (REST/HTTP) | `.agent/rules/api-design.md` |
 | Accessibility (a11y) | `.agent/rules/accessibility.md` |
 | LLM Prompt Engineering | `.agent/rules/llm-prompt.md` |

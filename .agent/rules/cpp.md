@@ -182,9 +182,11 @@
   ```cpp
   // ✅ Range pipeline — explicit intent, no loop variable
   auto admins = users
+
     | std::views::filter([](const User& u) { return u.role == Role::Admin; })
     | std::views::transform(&User::email)
     | std::ranges::to<std::vector>();
+
   ```
 
 ### Fuzzing
