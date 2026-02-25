@@ -57,3 +57,5 @@
 - Use **`slog`** (Go 1.21+) with a JSON handler for structured request logging via middleware. Inject the logger through `c.Set("logger", logger)`.
 - Test handlers with `httptest.NewRecorder()` and `httptest.NewRequest()` without starting a real server. Use **Testify** for assertions.
 - Use **`go-sqlmock`** or Testcontainers for database integration tests. Use `golangci-lint` with gin-specific linter rules in CI.
+- Integrate **OpenTelemetry** via `otelgin` middleware for distributed tracing. Propagate trace context across service boundaries using `otel.GetTextMapPropagator()`.
+- Generate API documentation with **`swaggo/swag`** (`//go:generate swag init`). Keep swagger comments in sync with handler code.

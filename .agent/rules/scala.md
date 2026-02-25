@@ -9,6 +9,7 @@
 - Use `camelCase` for values, variables, and methods. `PascalCase` for classes, traits, and objects. `UPPER_SNAKE_CASE` for constants.
 - Prefer `val` (immutable) over `var` (mutable). Treat mutability as a deliberate, documented exception — not the default.
 - Use **sbt** or **Mill** as the build tool. Commit `build.sbt` and the sbt wrapper (`sbt` shim) for reproducibility.
+- For front-end or embedded targets, use **Scala.js** (compiles to JavaScript) or **Scala Native** (compiles to native binary) to share domain logic across platforms.
 
 ## 2. Functional Programming
 
@@ -40,3 +41,4 @@
 - For cats-effect or ZIO code, use their respective testing utilities (`munit-cats-effect`, `zio-test`) for fiber-aware, concurrent test execution.
 - Run tests with `sbt test` in CI. Add `scalafmt --check` and `scalafix --check` as CI pre-test gates.
 - Use `sbt assembly` or `sbt dist` for packaging. Ensure the build is reproducible by pinning all plugin and dependency versions.
+- Use **sbt-scoverage** for code coverage measurement. Set a minimum coverage threshold and fail the build if coverage drops below threshold.

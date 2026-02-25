@@ -23,6 +23,7 @@
 - Project only the fields you need: `{ field1: 1, field2: 1, _id: 0 }`. Never return full documents when only a subset is needed.
 - Use `countDocuments({ filter })` instead of the deprecated `count()`. Use `estimatedDocumentCount()` for fast approximate counts without filter criteria.
 - For cursor-based pagination, use range queries on an indexed field: `{ _id: { $gt: lastId } }` with a `LIMIT`. Avoid large `skip()` values — they perform sequential scans and discard documents.
+- Use **Change Streams** (`collection.watch()`) to react to real-time data changes (CDC) in MongoDB for event-driven architectures, cache invalidation, and audit logging.
 
 ## 4. Security
 
@@ -37,3 +38,4 @@
 - Use Atlas continuous backup, `mongodump`/`mongorestore`, or `mongodump` to S3 with a **tested restore procedure**. Verify backups monthly — an untested backup is not a backup.
 - Monitor slow operations: enable the **MongoDB Profiler** (`db.setProfilingLevel(1, { slowms: 100 })`) to log queries exceeding 100ms.
 - Use **connection pooling** from the driver (Mongoose, the official Node.js/Python/Go driver). Configure `maxPoolSize` appropriate to your load. Do not create a new connection per request.
+- Use **Atlas Search** (Lucene-based) for full-text search on MongoDB Atlas instead of using a separate Elasticsearch cluster. Use **Atlas Vector Search** for semantic similarity search with embedding models.

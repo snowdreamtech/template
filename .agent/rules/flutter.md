@@ -9,6 +9,7 @@
 - Enable and embrace **Dart null safety**. Avoid the `!` (bang) null assertion operator. Prefer null checks (`if (x != null)`), conditional access (`?.`), or the null coalescing operator (`??`).
 - Use named parameters for functions and constructors with more than two arguments. Use the `required` keyword for mandatory named parameters.
 - Use Dart's collection operators: `spread` (`...`), `if` in collection literals, and `for` in collection literals for clean, declarative data construction.
+- Use **Dart Records** (Dart 3+) for lightweight, unnamed, positional value objects: `(String name, int age) user = ('Alice', 30)`. Prefer named fields for clarity: `({String name, int age}) user`.
 
 ## 2. Widget Architecture
 
@@ -27,6 +28,7 @@
 - Keep business logic out of widgets. Delegate to `AsyncNotifier`, `Cubit`, or equivalent.
 - Use `ConsumerStatefulWidget` / `HookConsumerWidget` with Riverpod to integrate state into the widget tree.
 - Use `ref.watch()` for reactive reads and `ref.read()` for one-shot reads in event handlers. Never use `ref.read()` during the build phase.
+- Use **`flutter_hooks`** (with `HookWidget`) to encapsulate stateful widget logic into composable hook functions, reducing boilerplate compared to `StatefulWidget`.
 
 ## 4. Performance
 

@@ -9,6 +9,7 @@
 - Use `object` for singletons and companion objects for factory methods and constants. Avoid Java-style static utility classes.
 - Use scope functions (`let`, `run`, `apply`, `also`, `with`) appropriately and sparingly — prefer them when they genuinely reduce verbosity. Document intent with a comment when use is non-obvious.
 - Prefer **extension functions** over utility classes for adding functionality to existing types. Keep extension functions in a dedicated file, not scattered throughout the codebase.
+- For **Kotlin Multiplatform** (KMP) projects, place shared business logic in `commonMain` and platform-specific implementations behind `expect`/`actual` declarations. Avoid exposing platform APIs directly in `commonMain`.
 
 ## 2. Null Safety
 
@@ -38,3 +39,4 @@
 - Run tests with `./gradlew test` in CI. Enable the Kotlin compiler's strict mode (`allWarningsAsErrors = true` in Gradle Kotlin DSL).
 - Lint with **Ktlint** (style enforcement) or **Detekt** (configurable static analysis). Prefer Detekt for its extensibility and customizable rule sets.
 - Use **Kover** (JetBrains) for Kotlin code coverage reporting. Set a minimum coverage threshold in CI.
+- Use **Kotlin Power Assert** (Kotlin 2.0+) for better assertion failure messages in tests without external libraries.

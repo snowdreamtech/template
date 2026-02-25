@@ -9,6 +9,7 @@
 - Use `keyword` for exact-match fields (IDs, status codes, tags, enum values — used in filters and aggregations). Use `text` for full-text search fields. Never use `text` for filtering or aggregations.
 - Use **multi-fields** to index the same field as both `text` (for search) and `keyword` (for aggregation/sorting): `{ "type": "text", "fields": { "keyword": { "type": "keyword" } } }`.
 - Use **Index Templates** and **Index Lifecycle Management (ILM)** for time-series data (logs, events): define rollover policies (by size/age) and delete old indices automatically.
+- Use `dense_vector` field type with `knn` queries (Elasticsearch 8.x) for **semantic search** and similarity search. Pair with a text-embedding model (Vertex AI, OpenAI, ELSER) to enable hybrid BM25 + vector scoring pipelines.
 
 ## 2. Querying
 
@@ -36,3 +37,4 @@
 - Set **JVM heap** to no more than 50% of available RAM, and never exceed 31GB (JVM compressed ordinary object pointer limit — beyond 32GB, pointer size doubles and performance degrades).
 - Design for the **split-brain problem**: use an odd number of master-eligible nodes and set `cluster.initial_master_nodes`. Use **dedicated master nodes** for clusters with more than 5 data nodes.
 - Use **Curator** or **ILM** to manage index lifecycle (rollover, shrink, delete). Never manually retire time-series indices without an automated policy.
+- Use **Snapshot Lifecycle Management (SLM)** to automate regular snapshots to a repository (S3, GCS, Azure). Test snapshot restore regularly — an unverified backup is not a backup.

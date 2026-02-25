@@ -22,6 +22,7 @@
 - Avoid `.unwrap()` and `.expect()` in production code — use them only in tests or where panicking is genuinely the correct behavior. Add a comment explaining why.
 - Use **`thiserror`** for defining library error types and **`anyhow`** for application-level error handling with rich context wrapping.
 - Define meaningful error variants. Avoid stringly-typed errors. Use `#[error("...")]` for user-facing messages. Use `#[from]` for automatic From implementations.
+- Use **`serde`** with `#[derive(Serialize, Deserialize)]` for serialization. Use `#[serde(rename_all = "camelCase")]` or field-level `#[serde(rename)]` to control JSON field names explicitly.
 
 ## 4. Concurrency & Performance
 
@@ -37,3 +38,4 @@
 - **Documentation Tests**: Ensure code examples in doc comments (`/// # Examples`) are valid and run as tests via `cargo test --doc`. Doc tests are the canonical usage examples.
 - Use `cargo-nextest` as a faster drop-in replacement for `cargo test` in CI.
 - Document all public items with rustdoc. Run `RUSTDOCFLAGS="-D warnings" cargo doc --no-deps` in CI to catch undocumented public items.
+- Run **`cargo audit`** in CI to check all dependencies for known CVEs. Integrate with `RustSec` advisory database. Block builds on high-severity advisories.

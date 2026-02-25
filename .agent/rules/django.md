@@ -30,6 +30,7 @@
 - Use Django's ORM for all database queries. Never use raw SQL with user-controlled input. If raw SQL is necessary, use parameterized queries with `cursor.execute(sql, params)` or `RawQuerySet`.
 - Set `DEBUG = False` in production. Configure `ALLOWED_HOSTS`, `SECURE_SSL_REDIRECT = True`, `SESSION_COOKIE_SECURE = True`, `CSRF_COOKIE_SECURE = True`, and `SecurityMiddleware`.
 - Use Django's built-in `User` model or extend `AbstractUser`. Never implement custom password hashing — use `set_password()` which defaults to PBKDF2. Upgrade to Argon2 via `django[argon2]` for new projects.
+- Enable **HSTS** by setting `SECURE_HSTS_SECONDS = 31536000`, `SECURE_HSTS_INCLUDE_SUBDOMAINS = True`, and `SECURE_HSTS_PRELOAD = True` in production after SSL is fully set up.
 
 ## 5. Testing & Tooling
 
@@ -38,3 +39,4 @@
 - Use **DRF's `APIClient`** for API endpoint testing. Use `pytest-cov` for coverage measurement.
 - Run `python manage.py check --deploy` in CI to catch insecure settings. Run `bandit -r .` for security linting.
 - Use **Celery** with **Redis** or **RabbitMQ** for asynchronous task processing. Never perform slow operations (email, external API calls) synchronously in views. Always add idempotency keys to Celery tasks.
+- Use **`django-stubs`** with `mypy` for type-safe Django model, QuerySet, and form type checking. Add `django-stubs[compatible-mypy]` to dev dependencies and configure `mypy.ini`.

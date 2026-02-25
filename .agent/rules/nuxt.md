@@ -9,6 +9,7 @@
 - Keep `server/api/` endpoint files thin: validate input → call service → return response. Delegate business logic to `server/services/` or `server/utils/`.
 - Use `app/router.options.ts` for fine-grained router configuration instead of modifying Nuxt internals.
 - Prefix private server utilities and internal modules with `_` to prevent them from being auto-imported.
+- Use **Nuxt Layers** (`extends` in `nuxt.config.ts`) to share components, composables, and configuration across multiple Nuxt apps as a maintainable base layer.
 
 ## 2. Data Fetching
 
@@ -40,3 +41,4 @@
 - Enable **Nuxt DevTools** during development for performance analysis, composable inspection, and module management.
 - Run `nuxt build` and `nuxt typecheck` in CI. Use **Vitest** with `@nuxt/test-utils` for unit and component tests. Use **Playwright** for E2E tests.
 - Audit bundle size with `nuxt analyze` before production releases. Use dynamic imports (`defineAsyncComponent`, `lazyLoad`) and `lazy` prefix on auto-imported components.
+- Use Nuxt's **edge rendering** preset (`nitro.preset = 'cloudflare-pages'` / `'vercel-edge'`) for latency-sensitive routes deployed to edge CDN networks.

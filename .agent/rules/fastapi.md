@@ -22,6 +22,7 @@
 - Use an **async-compatible database library**: `SQLAlchemy 2.0 async` with `asyncpg`, `Tortoise ORM`, or `motor` (MongoDB). Do not use synchronous drivers (`psycopg2`) in async endpoints — they block the event loop.
 - Use **dependency injection** (`Depends()`) for database sessions, authenticated user resolution, rate limiters, and shared services. Keep path functions clean and focused.
 - Use **Background Tasks** (`BackgroundTasks`) for fire-and-forget work (sending emails, audit logs) that does not affect the response. For heavy workloads, use Celery or Arq.
+- Use FastAPI's built-in **WebSocket** support (`@app.websocket("/ws")`) for real-time bidirectional communication. Use `ConnectionManager` pattern to manage active connections.
 
 ## 4. Error Handling & Security
 
@@ -30,6 +31,7 @@
 - Use **OAuth2PasswordBearer** or **APIKeyHeader** (via `fastapi.security`) for authentication. Use `python-jose` or `PyJWT` for JWT token creation and validation.
 - Validate all inputs using Pydantic — FastAPI raises a `422 Unprocessable Entity` automatically for invalid data. Add custom validators with `@field_validator` and `@model_validator` for business-rule constraints.
 - Use `settings: Annotated[Settings, Depends(get_settings)]` with `lru_cache` for singleton configuration injection.
+- Configure **CORS** explicitly using `CORSMiddleware`. Always restrict `allow_origins` to known domains in production — never use `allow_origins=["*"]` in a production API that handles credentials.
 
 ## 5. Testing & Operations
 

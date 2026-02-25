@@ -17,6 +17,7 @@
 - Avoid logic in templates. Move complex expressions to component class methods or `@Pipe`s. Keep templates declarative and readable.
 - Prefix component selectors with the project abbreviation: `app-user-card`, not `user-card`. Enforce consistently with linting.
 - Use **Signal-based reactivity** (`signal()`, `computed()`, `effect()`) in Angular 16+ for fine-grained, zone-less reactivity. Signals provide synchronous, push-based updates without requiring `ChangeDetectorRef.markForCheck()`.
+- Use Angular 17+ **`@defer` blocks** in templates to declaratively lazy-load components with configurable triggers (`on idle`, `on viewport`, `on interaction`) — no manual dynamic import wiring needed.
 
 ## 3. Services & Dependency Injection
 
@@ -41,3 +42,4 @@
 - Use **Cypress** or **Playwright** for E2E tests. Use `@testing-library/angular` for component tests that follow a11y-first patterns.
 - Lint with **`@angular-eslint`**. Format with **Prettier**. Run `ng lint` in CI.
 - Run `ng build --configuration production` in CI to catch compilation and type errors. Use `ng test --no-watch --code-coverage` for coverage reports.
+- For large-scale Angular monorepos, use **Nx** (`@nx/angular`). Nx provides computation caching, affected-only task runs, and module boundaries to enforce architectural constraints.

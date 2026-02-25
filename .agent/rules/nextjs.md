@@ -24,6 +24,7 @@
 - Use **React Suspense** and `loading.tsx` for streaming and progressive page rendering. Wrap slow data blocks in `<Suspense fallback={...}>`.
 - Use **Server Actions** (`"use server"`) for form mutations and data writes; use `revalidatePath()` or `revalidateTag()` to invalidate stale cached data after mutations.
 - For client-side data and real-time updates, use **TanStack Query** or SWR. Integrate with Server Actions via `useMutation`.
+- Use **on-demand ISR** (`revalidateTag()` / `revalidatePath()`) from API route handlers or Server Actions when data changes (e.g., webhook from a CMS), avoiding full rebuilds for content updates.
 
 ## 4. Performance
 
@@ -40,3 +41,4 @@
 - Validate all environment variables at build/startup time using Zod or `@t3-oss/env-nextjs`. Fail fast with descriptive errors if required variables are missing.
 - Use **middleware** (`middleware.ts`) for authentication guards, rate limiting, and geolocation-based routing. Keep middleware thin and fast — it runs on every request.
 - Use **`next-safe-headers`** or manual `headers()` in `next.config.js` to set `Content-Security-Policy`, `X-Frame-Options`, `Permissions-Policy`, and other security headers.
+- In **Next.js 15**, the `dynamicIO` flag enforces that all data fetching is explicitly opted in or out of caching, preventing accidental cache misses. Enable it early to catch caching issues during development.

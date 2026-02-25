@@ -8,6 +8,7 @@
 - Follow **PSR-12** coding standards. Enforce automatically with **PHP CS Fixer** or **PHP_CodeSniffer** (`phpcs`) in CI. Commit the configuration file (`php-cs-fixer.dist.php`).
 - Use **Composer** for all dependency management. Commit `composer.lock`. Use `composer install --no-dev --optimize-autoloader` for production builds.
 - Use **Rector** for automated code upgrade refactoring when migrating PHP versions or upgrading major dependencies.
+- Use **OpenAPI/Swagger** documentation (via `zircote/swagger-php` annotations or `dedoc/scramble` for Laravel) to generate and maintain up-to-date API contracts for all HTTP endpoints.
 
 ## 2. Type Safety
 
@@ -40,3 +41,4 @@
 - Use **Infection** mutation testing framework to evaluate the quality of your test suite beyond raw coverage metrics.
 - Use **Xdebug** locally for step debugging and code coverage (via IDE integration). Use **PCOV** in CI for faster coverage collection.
 - **CI pipeline**: `phpcs → php-cs-fixer --dry-run → phpstan → rector → phpunit --coverage-clover`.
+- For high-concurrency PHP applications, consider **Swoole**, **OpenSwoole**, or **RoadRunner** as a persistent worker runtime to avoid PHP-FPM cold-start overhead on each request.

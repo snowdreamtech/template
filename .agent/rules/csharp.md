@@ -9,6 +9,7 @@
 - Use `PascalCase` for types, methods, properties, and public members. Use `camelCase` for local variables and parameters. Prefix private fields with `_` (e.g., `_userService`).
 - Use `var` for local variables when the type is apparent from the right-hand side. Specify the type explicitly when it improves clarity.
 - Enable all Roslyn analyzers and treat warnings as errors (`<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`) in production project files. Use `#pragma warning disable` sparingly and always with a comment.
+- Use **`record`** types (C# 9+) for immutable data transfer objects. Use `record class` for reference semantics with value equality, `record struct` for stack-allocated small value types.
 
 ## 2. Nullability & Safety
 
@@ -39,3 +40,4 @@
 - Run tests with `dotnet test --configuration Release` in CI. Enforce coverage with `dotnet-coverage` and a minimum threshold.
 - Use `dotnet format` and Roslyn analyzers (including `Microsoft.CodeAnalysis.NetAnalyzers`) for automated code quality enforcement.
 - Use **BenchmarkDotNet** for micro-benchmarks on performance-critical code paths. Profile with Visual Studio or dotTrace before optimizing.
+- Use **Source Generators** (Roslyn, C# 9+) for compile-time code generation (DI registration, JSON source generation, regex compilation) to reduce reflection overhead and improve AOT compatibility.

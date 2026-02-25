@@ -38,6 +38,7 @@
 - Set **query depth limits** and **query complexity limits** to prevent abusive or expensive queries. Use a library (`graphql-depth-limit`, `graphql-query-complexity`) to enforce limits.
 - Use **persisted queries** (hashed query IDs) in production to prevent arbitrary query execution from untrusted clients and reduce payload sizes.
 - Implement **field-level authorization** in resolvers — never expose fields that require permissions without checking them. Use a directive-based approach (`@auth(requires: ADMIN)`) for consistency.
+- For microservice architectures, use **Apollo Federation** (v2) or **GraphQL Mesh** to compose a supergraph from multiple downstream subgraph services without duplicating schema definitions.
 
 ## 5. Tooling & Versioning
 
@@ -45,3 +46,4 @@
 - Use **GraphQL Code Generator** (`graphql-codegen`) to generate type-safe client hooks (React Query, Apollo) and server resolver types from the schema. Run in CI on schema changes.
 - Use **Apollo Studio**, **Hive**, or **Stellate** for schema registry, field usage tracking, and schema change impact analysis.
 - Enforce schema linting and breaking change detection with **`graphql-inspector`** or **`@graphql-eslint`** in CI. Block merges that introduce breaking changes without a major version bump.
+- Monitor resolver-level N+1 queries in production using **Apollo Tracing** or `graphql-parse-resolve-info` to profile which fields are contributing to slow operation times.

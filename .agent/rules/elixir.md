@@ -25,6 +25,8 @@
 - Use **Ecto** for all database interactions. Use **changesets** for data validation and **Ecto queries** for structured, composable database access.
 - Use **Ecto.Multi** for multi-step database operations that should succeed or fail atomically as a single unit.
 - Use **Phoenix Channels** or **LiveView** for real-time features. Prefer LiveView over custom JavaScript for server-driven interactive UIs.
+- Use **LiveView Streams** (`stream/3`) for rendering large, efficiently-updated lists in LiveView without sending the full list state to the client on each update.
+- Use **Broadway** for building multi-stage, concurrent, and fault-tolerant data ingestion and processing pipelines (e.g., consuming from Kafka, SQS, or RabbitMQ).
 
 ## 4. Code Style & Documentation
 

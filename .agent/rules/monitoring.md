@@ -8,6 +8,7 @@
 - Use **OpenTelemetry** (OTel) as the single vendor-neutral instrumentation standard. Export to your chosen backends (Prometheus, Jaeger, Loki, Datadog, Honeycomb, Grafana Cloud).
 - Instrument every service automatically (OTel auto-instrumentation) and supplement with manual spans for critical business operations.
 - Establish a correlation ID strategy: generate a `traceId`/`requestId` at the entry point (API gateway or first service) and propagate it through all downstream services and log fields.
+- Track **DORA metrics** (Deployment Frequency, Lead Time for Changes, Change Failure Rate, Mean Time to Recovery) as engineering-level operational health KPIs alongside technical system metrics.
 
 ## 2. Logging
 
@@ -42,3 +43,4 @@
 - Avoid alert fatigue: alert on **symptoms** (user-visible error rate, latency degradation) not causes (high CPU, low disk). Causes are useful in dashboards, not pagers.
 - Maintain a **centralized Grafana dashboard** for each service with: request rate, error rate, latency percentiles, resource utilization, and SLO burn rate.
 - Run **scheduled synthetic health checks** (uptime monitors) against public endpoints from multiple geographic regions.
+- Use **Grafana Alloy** (formerly Grafana Agent) as a batteries-included, OpenTelemetry-compatible collector to unify metrics, logs, and traces collection with a single agent deployment.

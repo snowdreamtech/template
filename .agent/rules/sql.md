@@ -17,6 +17,7 @@
 - **Pagination**: Use keyset/cursor pagination (`WHERE id > :last_id ORDER BY id LIMIT :n`) for deep pagination. Avoid `OFFSET` for pages beyond a few hundred — performance degrades linearly.
 - Avoid `SELECT DISTINCT` as a workaround for duplicate data — it signals a query logic issue. Fix the join or group logic instead.
 - Use **window functions** (`ROW_NUMBER()`, `RANK()`, `LAG()`, `LEAD()`) for ranking and analytical queries instead of correlated subqueries.
+- Use **CTEs** (`WITH cte AS (...)`) to break complex queries into readable, named intermediate steps. Use `WITH RECURSIVE` for hierarchical/tree data traversal.
 
 ## 3. Indexing
 
@@ -38,3 +39,4 @@
 - Keep transactions **as short as possible** to minimize lock contention. Never call external services (HTTP, file I/O) inside a transaction.
 - Use `EXPLAIN (ANALYZE, BUFFERS)` to investigate slow queries before adding indexes or rewriting queries. Add query execution time logging (`log_min_duration_statement = 1000` in PostgreSQL).
 - Regularly `ANALYZE` and `VACUUM` (PostgreSQL) or `OPTIMIZE TABLE` (MySQL) large tables to maintain query planner statistics.
+- Understand MVCC: in PostgreSQL, every update creates a new row version. Dead tuples accumulate without `VACUUM`. Monitor `n_dead_tup` in `pg_stat_user_tables` and tune `autovacuum` aggressively for frequently updated tables.

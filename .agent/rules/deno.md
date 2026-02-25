@@ -55,6 +55,8 @@
 
 - For full-stack web applications, use **Fresh** (Deno-native SSR framework) or **Hono** (multi-runtime).
 - Use `Deno.KV` for simple persistent key-value storage in Cloudflare/Deno Deploy environments.
+- Deploy to **Deno Deploy** (globally distributed V8 isolates) for zero-config, edge-native TypeScript deployments. Use `deployctl` for CI deployment.
+- Deno 2.0 is fully **Node.js compatible**: use `node:*` module specifiers for Node built-ins. Existing npm packages work via `npm:` specifiers without an explicit install step.
 
 ## 5. Testing & Tooling
 

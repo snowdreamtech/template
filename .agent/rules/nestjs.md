@@ -8,6 +8,7 @@
 - Keep modules focused on a single bounded domain. Export only the providers that other modules need. Use `forRoot`/`forRootAsync` for library-style global modules (database, config).
 - Use **lazy-loaded modules** (`LazyModuleLoader`) for large applications where not all modules are needed on startup (CLI commands, background workers).
 - Define a clean module hierarchy: `AppModule` (root) → `CoreModule` (singletons: logger, config, database) → feature modules. Avoid circular dependencies between feature modules.
+- For microservices, use NestJS **transport layers** (`@nestjs/microservices`) with NATS, Redis, Kafka, or RabbitMQ. Use `@MessagePattern` / `@EventPattern` for typed message handlers.
 
 ## 2. Controllers, Services & Providers
 
@@ -49,3 +50,4 @@
 - Run `npm run test` (unit), `npm run test:e2e`, and `npm run test:cov` in CI. Enforce coverage thresholds in `jest.config.ts`.
 - Use **`nestjs-pino`** or `@nestjs/logger` with Pino for structured JSON logging. Apply the logger as a global middleware with request correlation IDs.
 - Expose health check endpoints via `@nestjs/terminus` for Kubernetes liveness and readiness probes. Include DB connection and memory heap checks.
+- Use **`@nestjs/swagger`** to auto-generate OpenAPI documentation from decorators (`@ApiProperty`, `@ApiOperation`). Expose `/api-docs` in development and staging environments only.

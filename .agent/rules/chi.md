@@ -47,3 +47,4 @@
 - Add `middleware.RequestID` globally and propagate the request ID in all log entries for distributed tracing correlation.
 - Use **`slog`** (Go 1.21+) with a structured JSON handler for request logging. Integrate via a custom Chi middleware that logs method, path, status, latency, and request ID.
 - Expose a `GET /healthz` endpoint that returns `200 OK` instantaneously (no DB checks) for liveness probes, and a `GET /readyz` endpoint that checks dependencies for readiness probes.
+- Generate API documentation using **Swaggo/swag** (`go:generate swag init`) or **ogen** from OpenAPI specs. Keep API documentation co-located with handler code.

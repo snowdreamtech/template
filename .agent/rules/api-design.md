@@ -9,6 +9,7 @@
 - Use HTTP methods **semantically**: `GET` (read, idempotent), `POST` (create), `PUT` (full replacement), `PATCH` (partial update), `DELETE` (remove).
 - Use `PATCH` for partial updates (send only modified fields). Use `PUT` for full resource replacement (idempotent).
 - For sub-resources, use nested paths with a maximum nesting depth of 2: `/users/{id}/orders` — not `/users/{id}/orders/{orderId}/items/{itemId}`.
+- Support **idempotency keys** (`Idempotency-Key: <uuid>` header) for `POST` endpoints that create resources or trigger payments, so clients can safely retry on network failures without duplicating work.
 
 ## 2. HTTP Status Codes
 
@@ -32,6 +33,7 @@
 - Wrap paginated list responses in an envelope: `{ "data": [...], "pagination": { "total": 100, "page": 1, "limit": 20, "cursor": "..." } }`.
 - For errors, return a machine-readable code and human-readable message: `{ "error": { "code": "USER_NOT_FOUND", "message": "...", "field": "userId" } }`.
 - Use ISO 8601 (`2024-01-15T10:30:00Z`) for all datetime fields. Never use epoch milliseconds in public APIs.
+- Use **`ETag`** response headers and support **conditional requests** (`If-None-Match`, `If-Match`) for cache validation and optimistic concurrency control. Return `304 Not Modified` for unchanged cached resources.
 
 ## 4. Versioning & Compatibility
 

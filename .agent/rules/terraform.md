@@ -41,6 +41,7 @@
 - Use **tflint** for provider-specific linting and **tfsec** or **Checkov** for security scanning. Block CI on any high-severity findings.
 - Pin **provider versions** explicitly: `version = "~> 5.0"`. Pin **module sources** to a specific version tag or commit hash. Never use `>= 0.0.0` or no version constraint.
 - Use `terraform test` (Terraform 1.6+) or **Terratest** Go-based tests for module integration testing.
+- Consider **OpenTofu** (open-source Terraform fork) for projects requiring open-source licensing. It is API-compatible and can be used as a drop-in replacement.
 
 ## 5. Workflow & Safety
 
@@ -49,3 +50,4 @@
 - Tag all cloud resources with standard tags: `environment`, `project`, `owner`, `managed-by = "terraform"`.
 - Run `terraform plan` on a daily schedule (**drift detection**) and alert on unexpected differences between plan and actual infrastructure.
 - Never run `terraform destroy` in production without a manual approval gate and a recent backup verification.
+- Use **Infracost** in CI to show the estimated monthly cloud cost delta for each PR. This prevents accidental costly infrastructure changes from slipping through review.

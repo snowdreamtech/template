@@ -22,6 +22,7 @@
 - Use **`Deployment`** (not bare `Pod`) for stateless applications. Use **`StatefulSet`** for stateful workloads requiring stable identities and persistent storage.
 - Set `strategy.type: RollingUpdate` with `maxSurge` and `maxUnavailable` for zero-downtime deployments. Set `terminationGracePeriodSeconds` appropriately for graceful drain.
 - Use **`HorizontalPodAutoscaler`** (HPA) for traffic-driven autoscaling. Define `minReplicas` and `maxReplicas` conservatively. Scale based on CPU utilization or custom metrics from `kube-metrics-adapter`.
+- Use **`VerticalPodAutoscaler`** (VPA) in recommendation mode to automatically right-size CPU/memory requests based on real usage, reducing wasted capacity.
 
 ## 4. Labels, Selectors & Observability
 
@@ -37,3 +38,5 @@
 - Manage manifests with **Helm** (versioned charts) or **Kustomize** (overlay-based). Lint manifests with **kubeconform** against the appropriate Kubernetes schema version.
 - Use **Kyverno** or **OPA/Gatekeeper** for admission policy enforcement (require labels, prohibit `latest` image tags, enforce resource limits).
 - Run **Trivy** or **Kubescape** in CI to scan Kubernetes manifests for misconfigurations and CVEs before deploying.
+- Use **Karpenter** (AWS) or **Cluster Autoscaler** for node-level autoscaling — provision right-sized nodes on-demand instead of over-provisioning a fixed node pool.
+- Attach a **Software Bill of Materials (SBOM)** to container images in CI using `syft` or `cosign`. Sign images with cosign and enforce signature verification in the cluster via admission webhooks.

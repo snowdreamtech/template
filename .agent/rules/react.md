@@ -9,6 +9,7 @@
 - **Purity**: React components must act as pure functions with respect to their props. Do not mutate props or produce side effects during rendering.
 - **Composition**: Favor composition over inheritance. Build complex UIs by composing small, focused components.
 - **Co-location**: Co-locate a component's styles (`*.module.css`), tests (`*.test.tsx`), and Storybook story (`*.stories.tsx`) with the component file.
+- In **React Server Components** (RSC) environments (Next.js App Router), default to Server Components for data fetching and rendering. Add `'use client'` only when a component needs interactivity, browser APIs, or event handlers.
 
 ## 2. Hooks
 
@@ -24,6 +25,7 @@
 - **Context API**: Use React Context for static or rarely-changing global state (theme, locale, authenticated user). For frequently changing state, Context causes unnecessary rerenders — use a dedicated store.
 - **Server State**: Use **TanStack Query** (React Query), **SWR**, or **Apollo Client** for fetching, caching, and mutating server state. Do not manage server state in Redux/Zustand.
 - **Client Global State**: Use **Zustand** or **Jotai** for lightweight global client state. Use **Redux Toolkit** only for complex state machines with deeply nested updates.
+- Use **`useTransition`** (React 18+) to mark non-urgent state updates as transitions, keeping the UI responsive during heavy re-renders. Use **React 19 Actions** (`<form action={serverAction}>`) for server-driven form submissions without manual `onSubmit` wiring.
 
 ## 4. TypeScript Integration
 

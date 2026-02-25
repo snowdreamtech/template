@@ -51,3 +51,4 @@
 - Use **`pino`** or **`winston`** for structured JSON logging. Never use `console.log` in production.
 - Expose a `/health` (liveness) and `/ready` (readiness) endpoint for container orchestrator health checks. Expose a metrics endpoint for Prometheus scraping (via `prom-client`).
 - Set graceful shutdown: listen for `SIGTERM` and `SIGINT`, stop accepting new connections, and close the server with a timeout.
+- Integrate **OpenTelemetry** (`@opentelemetry/sdk-node`) for distributed tracing. Auto-instrument Express middleware, database clients, and HTTP calls to enable end-to-end request tracing across services.

@@ -33,6 +33,8 @@
 - Use **context managers** (`with`) for all resources (files, DB connections, locks) to ensure proper cleanup.
 - Use the **`logging`** module for all diagnostic output. Never use `print()` for logging, debugging, or status messages in production code. Configure loggers per module: `logger = logging.getLogger(__name__)`.
 - Write **generators** and use lazy evaluation where possible for large data processing. Avoid loading entire datasets into memory.
+- Follow **PEP 257** for docstring conventions. Use Google-style or NumPy-style docstrings consistently in a project. Document all public functions, classes, and modules.
+- Set up **`pre-commit`** hooks for `ruff check --fix`, `ruff format`, and `mypy` so formatting and type errors are caught before they reach CI.
 
 ## 5. Testing & CI
 
@@ -42,3 +44,4 @@
 - Use `pytest-mock` or `unittest.mock` for mocking. Prefer dependency injection for testability over patching globals.
 - **CI pipeline commands**: `ruff check .` → `ruff format --check .` → `mypy .` → `pytest --cov --cov-fail-under=80`.
 - Use **`tox`** or **`nox`** to test against multiple Python versions in isolation.
+- Run **`bandit -r .`** for security linting in CI to detect common Python security issues (hardcoded secrets, use of `subprocess.shell=True`, insecure deserialization).

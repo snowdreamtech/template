@@ -8,6 +8,7 @@
 - Use **Gradle** (Kotlin DSL `build.gradle.kts`) or **Maven** for builds. Commit the build wrapper (`gradlew` / `mvnw`). Never require a locally-installed Gradle or Maven version.
 - Structure packages by **feature slice**, not by layer: `com.example.user` (containing `UserController`, `UserService`, `UserRepository`) — not `com.example.controllers`.
 - Use **Spring Boot Actuator** for health checks, metrics, and environment info endpoints. Secure sensitive actuator endpoints (expose only `/health` and `/info` publicly).
+- For cloud-native deployments, use **Spring Native / Spring Boot 3 AOT** with GraalVM to compile to a native executable for fast startup and low memory footprint.
 
 ## 2. Dependency Injection & Design
 
@@ -38,3 +39,4 @@
 - Use **Mockito** with `@MockBean` for unit tests. Use `@ExtendWith(MockitoExtension.class)` for pure unit tests without Spring context overhead.
 - Use **JaCoCo** for code coverage reporting. Enforce minimum coverage thresholds in CI.
 - Emit **structured JSON logs** via Logback + `logstash-logback-encoder`. Export metrics to Prometheus via **Micrometer** and integrate with Grafana dashboards.
+- Leverage **Virtual Threads** (Spring Boot 3.2+ with Java 21) by enabling `spring.threads.virtual.enabled=true` for near-zero-cost thread-per-request concurrency in I/O-bound applications.

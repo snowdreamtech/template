@@ -43,6 +43,8 @@
   run: echo "$PR_TITLE"
   ```
 
+- Use **OIDC** (OpenID Connect) for cloud authentication (AWS, GCP, Azure) instead of long-lived static credentials. OIDC issues short-lived tokens scoped to the specific workflow run.
+
 ## 3. Reusability & DRY
 
 - Use **Composite Actions** (`.github/actions/my-action/action.yml`) to extract reusable step sequences and share within a repository.
@@ -70,3 +72,4 @@
 - Use **Environments** (Settings → Environments) for production deployments to enforce required reviewers, deployment protection rules, and environment-scoped secrets.
 - Store structured outputs from jobs using `$GITHUB_OUTPUT` (not the deprecated `::set-output`). Use `$GITHUB_STEP_SUMMARY` to write Markdown summaries visible in the Actions UI.
 - Periodically audit workflow run history and prune old workflows. Monitor billing using the `gh` CLI or the GitHub API.
+- Use **`ossf/scorecard-action`** to run OpenSSF Scorecard on each push to the default branch. This measures supply chain security practices (pinned actions, branch protection, vulnerability alerts).

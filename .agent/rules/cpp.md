@@ -8,6 +8,7 @@
 - Avoid raw C-style patterns in modern C++: prefer `std::string` over `char*`, `std::vector` over raw arrays, `std::span` (C++20) over pointer+length pairs, and `std::format` (C++20) over `sprintf`.
 - Follow the **C++ Core Guidelines** (by Bjarne Stroustrup and Herb Sutter). Use the GSL (Guidelines Support Library) for `gsl::not_null<T>`, `gsl::span`, etc.
 - Enable and enforce compiler warnings in CI: `-Wall -Wextra -Werror -Wshadow -Wconversion -Wundef` (GCC/Clang). Compile with both GCC and Clang in CI to catch compiler-specific issues.
+- Use **C++20 Modules** (`import std;`, `import mylib;`) for new large-scale projects to replace `#include` headers, reduce compilation times, and eliminate macro pollution. Ensure the build system (CMake 3.28+) supports modules.
 
 ## 2. Memory Management
 
@@ -26,6 +27,7 @@
 - Never use `std::memcpy` on non-trivially-copyable types. Check `std::is_trivially_copyable_v<T>` if in doubt.
 - Use `[[nodiscard]]` on functions returning error codes or resource handles to prevent callers from silently ignoring return values.
 - Prefer `std::optional<T>` over nullable raw pointers for optional return values.
+- Use **`std::expected<T, E>`** (C++23) for error-propagating functions that need a typed error alongside the result, as a cleaner alternative to exceptions or `std::pair<T, Error>`.
 
 ## 4. Build System & Dependencies
 
