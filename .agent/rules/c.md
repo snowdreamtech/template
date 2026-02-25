@@ -187,3 +187,33 @@
   ```
 - Use **`cppcheck`** for additional static analysis: `cppcheck --enable=all --error-exitcode=1 src/`.
 - Run `nm -u` on your objects to audit external symbol dependencies. Use `size` to measure code/data section sizes for embedded targets.
+
+### Portability & Cross-Platform Considerations
+
+- Write portable C by avoiding compiler-specific extensions unless explicitly required. Guard extensions with macros:
+  ```c
+  /* Compiler-agnostic branch prediction hints */
+  #ifdef __GNUC__
+  #  define LIKELY(x)   __builtin_expect(!!(x), 1)
+  #  define UNLIKELY(x) __builtin_expect(!!(x), 0)
+  #else
+  #  define LIKELY(x)   (x)
+  #  define UNLIKELY(x) (x)
+  #endif
+  ```
+- Handle **endianness** explicitly for network protocols and binary file formats. Never cast `int*` to read multi-byte network data:
+
+  ```c
+  #include <stdint.h>
+
+  /* Read a big-endian 32-bit integer portably */
+  uint32_t read_be32(const uint8_t *buf) {
+      return ((uint32_t)buf[0] << 24)
+           | ((uint32_t)buf[1] << 16)
+           | ((uint32_t)buf[2] <<  8)
+           |  (uint32_t)buf[3];
+  }
+  ```
+
+- Use `<stdint.h>` fixed-width types for protocol fields and data-structure layouts. Use `size_t` for sizes and array indices, `ptrdiff_t` for pointer differences, and `intptr_t` / `uintptr_t` for pointer-to-integer conversions.
+- CI MUST build on at least **two distinct target platforms** (e.g., x86-64 Linux and ARM64 Linux) and with at least two compilers (GCC and Clang) to catch platform-specific bugs early.

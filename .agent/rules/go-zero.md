@@ -198,3 +198,36 @@ service/
 
 - Integration-test with **Testcontainers** for MySQL/Redis.
 - Run API validation in CI: `goctl api validate --api service.api && go test -race ./...`.
+
+### Performance & Deployment
+
+- Configure **database and Redis connection pools** explicitly in `config.yaml` — go-zero defaults can be too conservative for high-concurrency services:
+  ```yaml
+  DataSource:
+    Host: localhost:3306
+    MaxIdleConns: 10
+    MaxOpenConns: 50
+    ConnMaxLifetime: 1h
+  ```
+- go-zero includes **built-in graceful shutdown** (SIGTERM handling). Ensure logic handlers release resources within the shutdown window. Set `ShutdownTimeout` in config:
+  ```yaml
+  Rest:
+    Port: 8080
+    Timeout: 5000 # request timeout in ms
+    MaxConns: 10000 # max concurrent connections
+    ShutdownTimeout: 10 # seconds to allow in-flight requests to complete
+  ```
+- **Docker image**: use multi-stage builds — compile the Go binary in a `golang:alpine` stage, then copy the binary into a `scratch` or `gcr.io/distroless/static-debian12` final image for a minimal attack surface and fast image pulls:
+
+  ```dockerfile
+  FROM golang:1.23-alpine AS builder
+  WORKDIR /app
+  COPY go.mod go.sum ./
+  RUN go mod download
+  COPY . .
+  RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o service ./api/
+
+  FROM gcr.io/distroless/static-debian12
+  COPY --from=builder /app/service /service
+  ENTRYPOINT ["/service", "-f", "etc/config.yaml"]
+  ```
