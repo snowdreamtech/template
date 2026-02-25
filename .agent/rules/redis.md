@@ -6,7 +6,7 @@
 
 - Use a consistent, hierarchical key naming convention with colons as separators: `{app}:{env}:{resource}:{id}` (e.g., `myapp:prod:user:1234:session`, `myapp:prod:product:cache:list`).
 - Keep key names short but descriptive. Use prefixes to group related keys for batch operations (`SCAN MATCH myapp:session:*`).
-- Avoid collisions: namespace keys by application, environment, and resource type to safely share a Redis instance across services.
+- Avoid collisions: namespace keys by application, environment, and resource type when sharing a Redis instance across services.
 - Document the key schema for each feature: key pattern, data type, TTL rule, and owner service.
 
 ## 2. Expiry (TTL) & Eviction
@@ -24,18 +24,18 @@
   - **List**: FIFO/LIFO queues (`LPUSH`/`RPOP`), recent activity feeds.
   - **Set**: Unique membership checks, tags, online users.
   - **Sorted Set**: Leaderboards, rate-limiting sliding windows, time-series indexing by score.
-  - **Streams**: Persistent, consumer-group-based message queues (prefer over bare List for reliability).
+  - **Streams**: Persistent, consumer-group-based message queues. Prefer over bare List for reliability and at-least-once delivery.
 
 ## 4. Performance & Reliability
 
 - Use **pipelining** to batch multiple Redis commands and reduce round-trip latency. Use transactions (`MULTI`/`EXEC`) only when atomicity is required.
 - **Never use `KEYS *`** in production — it blocks the server event loop. Use `SCAN cursor MATCH pattern COUNT hint` for key iteration.
-- Do not store large blobs (> 1MB) in Redis. It is an in-memory store — use object storage (S3) for large binary data and store only a reference in Redis.
+- Do not store large blobs (> 1MB) in Redis. It is an in-memory store — use object storage (S3, GCS) for large binary data and store only a reference key in Redis.
 - Enable **Redis Persistence**: use `RDB + AOF` (`appendonly yes`, `appendfsync everysec`) for crash recovery. For pure cache use, `RDB` snapshots alone may suffice.
 
 ## 5. Security & Operations
 
-- Enable **AUTH** via an ACL user (`requirepass` is deprecated). Use **Redis ACLs** (Redis 6+) to grant minimal permissions (`~key:*`, `+get`, `+set`) per application user.
+- Enable **AUTH** via ACL users with `requirepass` (`requirepass` alone is deprecated for fine-grained access). Use **Redis ACLs** (Redis 6+) to grant minimal permissions (`~key:*`, `+get`, `+set`) per application user.
 - Use **TLS** for all Redis connections in production. Disable Redis on public interfaces — bind to `127.0.0.1` or a private VLAN IP only.
-- For high availability, use **Redis Sentinel** (failover) or **Redis Cluster** (horizontal shaling). Never rely on a standalone single node in production.
-- Monitor with `redis-cli INFO stats`, `MONITOR` (development only), and `SLOWLOG GET 10` for slow commands. Export metrics to Prometheus using `redis_exporter`.
+- For high availability, use **Redis Sentinel** (automatic failover for < 10GB datasets) or **Redis Cluster** (horizontal sharding for larger datasets). Never rely on a standalone single node in production.
+- Monitor with `redis-cli INFO stats`, `SLOWLOG GET 10` for slow commands, and `redis_exporter` for Prometheus metrics. Never use `MONITOR` in production — it logs every command and severely impacts performance.

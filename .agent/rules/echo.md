@@ -4,8 +4,9 @@
 
 ## 1. Project Structure
 
-- Use the same domain-driven layout:
-  ```
+- Use domain-driven layout:
+
+  ```text
   cmd/server/main.go          # Entry point — minimal, bootstraps dependencies
   internal/
   ├── handler/                # HTTP handlers (thin controllers)
@@ -14,43 +15,55 @@
   ├── middleware/             # Echo middleware
   └── model/                  # Domain models & DTOs
   ```
+
 - Initialize Echo in `main.go` or an `app.go` factory function. Inject dependencies via constructor injection into handlers.
-- Wire dependencies in `main.go` using manual DI or a container (`fx`, `wire`). Avoid `init()` functions.
+- Wire dependencies in `main.go` using manual DI or a container (`fx`, `wire`). Avoid `init()` functions for dependency setup.
 
 ## 2. Routing & Handlers
 
-- Use `e.Group()` to group routes by path prefix. Apply group-level middleware (auth, logging) at the group — not per-route.
-- Handler signature MUST be: `func(c echo.Context) error`. Always return an error from handlers — never `nil` after calling `c.JSON()` on an error path.
+- Use `e.Group()` to group routes by path prefix. Apply group-level middleware (auth, logging) at the group — not per-route — to avoid duplication.
+- Handler signature MUST be: `func(c echo.Context) error`. Always return an error from handlers — never call `c.JSON()` on an error path and then return `nil`.
 - Bind and validate with `c.Bind(&req)` followed by `c.Validate(&req)`. Register a custom validator using `go-playground/validator` on `e.Validator` at startup.
-- Respond with `c.JSON(http.StatusOK, payload)`. Use `*echo.HTTPError` for structured HTTP error responses.
+- Respond with `c.JSON(http.StatusOK, payload)`. Use `echo.NewHTTPError(code, message)` for structured HTTP error responses.
+- Use `c.Param("id")`, `c.QueryParam("page")`, `c.FormValue("name")` for safe parameter extraction. Always validate and coerce types.
 
 ## 3. Middleware
 
-- Use Echo's built-in middleware: `middleware.Logger()`, `middleware.Recover()`, `middleware.CORS()`, `middleware.RateLimiter()`.
-- Apply global middleware with `e.Use()`. Use `g.Use()` for group-scoped middleware.
-- Use `c.Set(key, value)` / `c.Get(key)` to pass values (authenticated user, request ID) between middleware and handlers within a request scope.
-- Add a **request ID** middleware to generate and propagate a unique ID for each request for logging correlation.
+- Use Echo's built-in middleware: `middleware.Logger()`, `middleware.Recover()`, `middleware.CORS()`, `middleware.RateLimiter()`, `middleware.Secure()`.
+- Apply global middleware with `e.Use()`. Use `g.Use()` for group-scoped middleware. Order matters — `Recover` and `RequestID` should be first.
+- Use `c.Set(key, value)` / `c.Get(key)` to pass values (authenticated user, request ID) between middleware and handlers within a single request lifecycle.
+- Add a **request ID** middleware early in the chain to generate and propagate a unique ID for each request, enabling log correlation.
 
 ## 4. Error Handling
 
-- Define a custom `HTTPErrorHandler` on the Echo instance for centralized error formatting:
+- Define a custom `HTTPErrorHandler` on the Echo instance for centralized, consistent error formatting:
+
   ```go
   e.HTTPErrorHandler = func(err error, c echo.Context) {
-      // map domain errors to HTTP status codes
-      // return structured JSON error response
+      code := http.StatusInternalServerError
+      message := "internal server error"
+      if he, ok := err.(*echo.HTTPError); ok {
+          code = he.Code
+          message = fmt.Sprint(he.Message)
+      }
+      _ = c.JSON(code, map[string]string{"error": message})
   }
   ```
-- Return errors from handlers — let the global error handler format the response. Do not call `c.JSON` for errors and then return `nil`.
-- Map domain errors (not-found, forbidden, conflict) to appropriate HTTP status codes in the centralized handler.
+
+- Return errors from handlers — let the global error handler format the response. Do not call `c.JSON()` for errors and then return `nil`.
+- Map domain errors (not-found, forbidden, conflict) to appropriate HTTP status codes in the centralized handler, not in individual handlers.
 
 ## 5. Performance & Testing
 
 - Configure server timeouts always in production to prevent connection exhaustion:
+
   ```go
-  e.Server.ReadTimeout = 5 * time.Second
+  e.Server.ReadTimeout  = 5 * time.Second
   e.Server.WriteTimeout = 10 * time.Second
-  e.Server.IdleTimeout = 30 * time.Second
+  e.Server.IdleTimeout  = 30 * time.Second
   ```
-- Use `GracefulShutdown` (`e.Shutdown(ctx)`) with a context timeout to allow in-flight requests to complete.
+
+- Use `e.ShutdownWithContext(ctx)` with a context timeout to allow in-flight requests to complete on SIGTERM.
 - Test handlers with `httptest.NewRecorder()` + `httptest.NewRequest()` without starting a real server. Use **Testify** for assertions.
-- Use `GIN_MODE=release` equivalent: run Echo in production without debug output. Set `Logger` to a no-op for benchmarks.
+- Enable request tracing with `middleware.RequestID()` + `middleware.Logger()` with structured JSON fields. Integrate with OpenTelemetry for distributed tracing.
+- Benchmark critical endpoints using `wrk` or `k6` under realistic load. Profile with `pprof` to find hot paths.

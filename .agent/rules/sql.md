@@ -4,17 +4,19 @@
 
 ## 1. Security
 
-- **Parameterized Queries**: ALWAYS use parameterized queries or prepared statements. Never concatenate user input into SQL strings — this is the most critical defense against SQL injection.
+- **Parameterized Queries**: ALWAYS use parameterized queries or prepared statements. Never concatenate user input into SQL strings — this is the primary defense against SQL injection.
 - **Least Privilege**: Application database users MUST have only the permissions they need (`SELECT`, `INSERT`, `UPDATE`, `DELETE` on relevant tables). Never grant `DROP`, `ALTER`, `CREATE`, or DBA-level permissions to application accounts.
 - Hash all passwords using a strong adaptive algorithm (**Argon2id**, bcrypt, scrypt). Never store passwords in plaintext or use `MD5`/`SHA1` for password storage.
 - Encrypt sensitive columns (PII, payment data) at rest using transparent data encryption or application-level encryption. Separate key storage from data storage.
+- Audit privileged database operations and DDL changes. Log and alert on unexpected schema modifications in production.
 
 ## 2. Query Design
 
 - **Explicit Columns**: Always specify column names in `SELECT` statements. Never use `SELECT *` in application code — it couples code to schema structure and can leak sensitive fields.
-- **Explicit JOINs**: Use `INNER JOIN` / `LEFT JOIN` / `RIGHT JOIN` explicitly. Never use implicit comma joins (`FROM a, b WHERE a.id = b.aid`). Always alias tables in multi-table queries for readability.
-- **Pagination**: Use keyset/cursor pagination (`WHERE id > :last_id ORDER BY id LIMIT :n`) for deep pagination. Avoid `OFFSET` for page numbers beyond a few hundred — performance degrades linearly.
-- Avoid `SELECT DISTINCT` as a workaround for duplicate data — it indicates a query logic issue. Fix the join or group logic instead.
+- **Explicit JOINs**: Use `INNER JOIN` / `LEFT JOIN` / `RIGHT JOIN` explicitly. Never use implicit comma joins (`FROM a, b WHERE a.id = b.aid`). Always alias tables in multi-table queries.
+- **Pagination**: Use keyset/cursor pagination (`WHERE id > :last_id ORDER BY id LIMIT :n`) for deep pagination. Avoid `OFFSET` for pages beyond a few hundred — performance degrades linearly.
+- Avoid `SELECT DISTINCT` as a workaround for duplicate data — it signals a query logic issue. Fix the join or group logic instead.
+- Use **window functions** (`ROW_NUMBER()`, `RANK()`, `LAG()`, `LEAD()`) for ranking and analytical queries instead of correlated subqueries.
 
 ## 3. Indexing
 
@@ -33,6 +35,6 @@
 ## 5. Transactions & Operations
 
 - Wrap multi-step operations that must succeed or fail atomically in explicit transactions with proper `COMMIT`/`ROLLBACK` handling.
-- Keep transactions **as short as possible** to minimize lock contention. Never call external services (HTTP requests, file I/O) inside a transaction.
-- Use `EXPLAIN (ANALYZE, BUFFERS)` to investigate slow queries. Add query execution time logging (`log_min_duration_statement = 1000` in PostgreSQL).
-- Regularly `ANALYZE` and `VACUUM` (PostgreSQL) or `OPTIMIZE TABLE` (MySQL) large tables to maintain statistics and reclaim space.
+- Keep transactions **as short as possible** to minimize lock contention. Never call external services (HTTP, file I/O) inside a transaction.
+- Use `EXPLAIN (ANALYZE, BUFFERS)` to investigate slow queries before adding indexes or rewriting queries. Add query execution time logging (`log_min_duration_statement = 1000` in PostgreSQL).
+- Regularly `ANALYZE` and `VACUUM` (PostgreSQL) or `OPTIMIZE TABLE` (MySQL) large tables to maintain query planner statistics.

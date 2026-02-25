@@ -6,7 +6,7 @@
 
 - Use `snake_case` for all table, column, index, and constraint names.
 - Always define a `PRIMARY KEY`. Use `BIGINT UNSIGNED AUTO_INCREMENT` for surrogate keys.
-- Prefer `DATETIME` for time columns — store dates in UTC at the application level. Be aware that `TIMESTAMP` is stored in UTC and converted when read based on the session timezone, which can cause surprises.
+- Prefer `DATETIME` for time columns — store dates in UTC at the application level. Be aware that `TIMESTAMP` is stored in UTC and converted on read based on session timezone, which can cause surprises.
 - Add `created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP` and `updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP` to all tables.
 - Use the **InnoDB** storage engine exclusively for all new tables. Never use MyISAM (no transactions, no foreign key support, no crash recovery).
 
@@ -16,21 +16,21 @@
 - Use **composite indexes** with the most selective column first. MySQL uses the **leftmost prefix rule** — queries must match columns left-to-right in the index to use it.
 - Run `EXPLAIN` (or `EXPLAIN ANALYZE` in MySQL 8) to verify queries use indexes. Eliminate `type: ALL` (full table scan) on large tables in production.
 - Enable the **slow query log** (`slow_query_log = ON`, `long_query_time = 1`) to identify queries exceeding 1 second.
-- Use `pt-query-digest` (Percona Toolkit) to aggregate and analyze slow query log output.
+- Use `pt-query-digest` (Percona Toolkit) to aggregate and analyze slow query log output over time.
 
 ## 3. Querying
 
 - Use **parameterized queries** / prepared statements for all user input. Never concatenate user data into SQL strings.
 - Use explicit column names in `SELECT`. Avoid `SELECT *` in application code.
-- Use **keyset pagination** (`WHERE id > :last_id LIMIT 20`) for large tables. Avoid `LIMIT ... OFFSET` beyond the first few hundred rows — it performs a full sequential scan to skip rows.
-- Use **covering indexes** to serve queries entirely from the index without hitting the table. Especially effective for write-heavy workloads.
+- Use **keyset pagination** (`WHERE id > :last_id LIMIT 20`) for large tables. Avoid `LIMIT ... OFFSET` beyond the first few hundred rows — it performs a sequential scan to skip rows.
+- Use **covering indexes** to serve queries entirely from the index without hitting the table. Especially effective for read-heavy workloads.
 
 ## 4. Transactions & Constraints
 
 - Use `START TRANSACTION` / `COMMIT` / `ROLLBACK` for all multi-step write operations.
-- Define `FOREIGN KEY` constraints explicitly with `ON DELETE` and `ON UPDATE` behavior. Enable `foreign_key_checks` (it is on by default in InnoDB).
+- Define `FOREIGN KEY` constraints explicitly with `ON DELETE` and `ON UPDATE` behavior. InnoDB enforces these by default — do not disable `foreign_key_checks` in production.
 - Keep transactions **short** to minimize lock contention and reduce deadlock risk.
-- For upsert operations, use `INSERT ... ON DUPLICATE KEY UPDATE` or `INSERT IGNORE` (with care), not a separate SELECT + INSERT pattern.
+- For upsert operations, use `INSERT ... ON DUPLICATE KEY UPDATE` or `INSERT IGNORE` (with care), not a separate `SELECT` + `INSERT` pattern.
 
 ## 5. Operations & Safety
 

@@ -12,15 +12,15 @@
 ## 2. Type Safety & Schemas
 
 - Define all request bodies, responses, and query parameters using **Pydantic v2** models. Use strict mode (`model_config = ConfigDict(strict=True)`) for critical payloads.
-- Annotate every endpoint with `response_model=` to control the API's output schema and automatically filter sensitive fields (e.g., passwords).
+- Annotate every endpoint with `response_model=` to control the API's output schema and automatically filter sensitive fields (e.g., `hashed_password`).
 - Use `Annotated` with `Query(...)`, `Body(...)`, or `Path(...)` for rich parameter metadata, constraints, and validation.
 - Separate **request schemas** (input DTOs), **response schemas** (output DTOs), and **DB models** (ORM entities) into distinct classes — never share a single class for all three roles.
 
 ## 3. Async & Performance
 
 - Use `async def` for all path operation functions that perform I/O (database queries, HTTP calls, file reads).
-- Use an **async-compatible database library**: `SQLAlchemy 2.0 async` with `asyncpg`, `Tortoise ORM`, or `motor` (MongoDB). Do not use synchronous drivers (`psycopg2`) in async endpoints.
-- Use **dependency injection** (`Depends()`) for database sessions, authenticated user resolution, rate limiters, and shared services. Keep path functions clean.
+- Use an **async-compatible database library**: `SQLAlchemy 2.0 async` with `asyncpg`, `Tortoise ORM`, or `motor` (MongoDB). Do not use synchronous drivers (`psycopg2`) in async endpoints — they block the event loop.
+- Use **dependency injection** (`Depends()`) for database sessions, authenticated user resolution, rate limiters, and shared services. Keep path functions clean and focused.
 - Use **Background Tasks** (`BackgroundTasks`) for fire-and-forget work (sending emails, audit logs) that does not affect the response. For heavy workloads, use Celery or Arq.
 
 ## 4. Error Handling & Security
@@ -29,11 +29,12 @@
 - Define an `@app.exception_handler(...)` for custom exception types to return consistent, structured error shapes across the API.
 - Use **OAuth2PasswordBearer** or **APIKeyHeader** (via `fastapi.security`) for authentication. Use `python-jose` or `PyJWT` for JWT token creation and validation.
 - Validate all inputs using Pydantic — FastAPI raises a `422 Unprocessable Entity` automatically for invalid data. Add custom validators with `@field_validator` and `@model_validator` for business-rule constraints.
+- Use `settings: Annotated[Settings, Depends(get_settings)]` with `lru_cache` for singleton configuration injection.
 
 ## 5. Testing & Operations
 
 - Test with `pytest` using **`httpx.AsyncClient`** with `ASGITransport`. Never use `TestClient` (synchronous) with async endpoints.
-- Use `pytest-asyncio` (`asyncio_mode = "auto"`) for async test functions. Use separate test database fixtures with rollback between tests.
+- Use `pytest-asyncio` (`asyncio_mode = "auto"`) for async test functions. Use separate test database fixtures backed by transactions with rollback between tests.
 - Run in development with `uvicorn app.main:app --reload`. In production, run with **Gunicorn + Uvicorn workers**: `gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app`.
 - Expose `/health` and `/ready` endpoints. Mount a `/metrics` endpoint using `prometheus-fastapi-instrumentator`.
 - **CI pipeline**: `ruff check` → `ruff format --check` → `mypy` → `pytest --asyncio-mode=auto --cov`.

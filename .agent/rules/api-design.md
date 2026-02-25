@@ -12,7 +12,7 @@
 
 ## 2. HTTP Status Codes
 
-- Return semantically correct status codes. Common rules:
+- Return semantically correct status codes:
   - `200 OK`: Successful read (`GET`, `PUT`, `PATCH`).
   - `201 Created`: Resource successfully created (`POST`). Include `Location` header with the URL of the new resource.
   - `204 No Content`: Successful deletion (`DELETE`) or update with no response body.
@@ -41,6 +41,7 @@
   - Adding a new required field = breaking.
   - Adding optional fields = non-breaking.
 - Maintain a **deprecation policy**: announce deprecated endpoints in response headers (`Deprecation: true`, `Sunset: Sat, 1 Jan 2026 00:00:00 GMT`) at least 6 months before removal.
+- Publish a structured **changelog** with every API version release.
 
 ## 5. Documentation, Security & Specification
 
@@ -48,4 +49,4 @@
 - Use the spec as the source of truth for generating client SDKs (`openapi-generator`), server stubs, and integration tests.
 - Implement **rate limiting** on all endpoints (especially auth). Return `429` with `Retry-After` when limits are exceeded.
 - Require authentication on all non-public endpoints. Use standard token schemes (OAuth 2.0 Bearer tokens, API keys via header — never in query parameters).
-- Use **HTTPS exclusively** in production. Reject plain HTTP connections.
+- Use **HTTPS exclusively** in production. Reject plain HTTP connections. Enable HTTP Strict Transport Security (HSTS).

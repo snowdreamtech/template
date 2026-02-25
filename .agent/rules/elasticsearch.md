@@ -7,7 +7,7 @@
 - Design indexes around **query patterns**, not data structure. Understand how data will be searched and aggregated before defining the mapping.
 - Define an **explicit mapping** for every index before indexing data. Avoid `dynamic: true` mapping in production — it silently creates field types that are often wrong, cause errors at scale, and are hard to fix without reindexing.
 - Use `keyword` for exact-match fields (IDs, status codes, tags, enum values — used in filters and aggregations). Use `text` for full-text search fields. Never use `text` for filtering or aggregations.
-- Use `multi-fields` to index the same field as both `text` (for search) and `keyword` (for aggregation/sorting): `{ "type": "text", "fields": { "keyword": { "type": "keyword" } } }`.
+- Use **multi-fields** to index the same field as both `text` (for search) and `keyword` (for aggregation/sorting): `{ "type": "text", "fields": { "keyword": { "type": "keyword" } } }`.
 - Use **Index Templates** and **Index Lifecycle Management (ILM)** for time-series data (logs, events): define rollover policies (by size/age) and delete old indices automatically.
 
 ## 2. Querying
@@ -21,18 +21,18 @@
 
 - Use the **bulk API** (`/_bulk`) for all batch indexing. Never index documents one by one in a loop — it has extreme overhead.
 - For large reindex operations, temporarily set `refresh_interval: "-1"` (disable auto-refresh) and `number_of_replicas: 0` on the target index, then restore after indexing is complete.
-- Use **Index Aliases** to enable zero-downtime reindexing: point the read alias at the old index, reindex into a new one, then atomically swap the alias.
-- Define `_source` includes/excludes to avoid returning large, unused fields in responses.
+- Use **Index Aliases** to enable zero-downtime reindexing: point the read alias at the old index, reindex into a new one, then atomically swap the alias with a single `_aliases` API call.
+- Define `_source` includes/excludes to avoid returning large, unused fields in search responses. Use `stored_fields` for accessing individual fields without loading the entire `_source`.
 
 ## 4. Security
 
-- Enable **TLS + authentication** (X-Pack Security) in production. Never expose Elasticsearch directly to the internet.
-- Use **Role-Based Access Control (RBAC)** for index and cluster permissions. Application accounts should only have access to their own indexes.
+- Enable **TLS + authentication** (X-Pack Security / Elastic Stack Security) in production. Never expose Elasticsearch directly to the internet without authentication.
+- Use **Role-Based Access Control (RBAC)** for index and cluster permissions. Application accounts should have access only to their own indexes.
 - Sanitize all user input before including it in Query DSL — especially in `query_string` and `simple_query_string` queries, which support Lucene syntax and can expose data if misconfigured.
 
 ## 5. Operations & Reliability
 
-- Monitor cluster health with `GET /_cluster/health`. Alert on `yellow` status (unassigned replica shards) and page on `red` status (unassigned primary shards = data loss risk).
-- Set **JVM heap** to no more than 50% of available RAM, and never exceed 31GB (to stay within JVM compressed ordinary object pointers — beyond 32GB, pointer size doubles).
+- Monitor cluster health with `GET /_cluster/health`. Alert on `yellow` status (unassigned replica shards) and page on `red` status (unassigned primary shards = potential data loss).
+- Set **JVM heap** to no more than 50% of available RAM, and never exceed 31GB (JVM compressed ordinary object pointer limit — beyond 32GB, pointer size doubles and performance degrades).
 - Design for the **split-brain problem**: use an odd number of master-eligible nodes and set `cluster.initial_master_nodes`. Use **dedicated master nodes** for clusters with more than 5 data nodes.
-- Use **Curator** or **ILM** to manage index lifecycle (rollover, shrink, delete). Never manually manage time-series index retirement.
+- Use **Curator** or **ILM** to manage index lifecycle (rollover, shrink, delete). Never manually retire time-series indices without an automated policy.

@@ -8,14 +8,14 @@
 - Follow the **Microsoft C# Coding Conventions** and enforce with an `.editorconfig` committed to the repository.
 - Use `PascalCase` for types, methods, properties, and public members. Use `camelCase` for local variables and parameters. Prefix private fields with `_` (e.g., `_userService`).
 - Use `var` for local variables when the type is apparent from the right-hand side. Specify the type explicitly when it improves clarity.
-- Enable all Roslyn analyzers and treat warnings as errors (`<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`) in production project files.
+- Enable all Roslyn analyzers and treat warnings as errors (`<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`) in production project files. Use `#pragma warning disable` sparingly and always with a comment.
 
 ## 2. Nullability & Safety
 
 - Enable nullable reference types in all projects: `<Nullable>enable</Nullable>` in `.csproj`. Treat all non-nullable references as guaranteed non-null.
 - Use `?` to explicitly annotate nullable types. Use `??` (null-coalescing) and `?.` (null-conditional) operators to handle nulls gracefully.
-- Avoid `null` return values from public APIs. Prefer `Optional`-style patterns using `bool TryGet(out T value)`, `Result<T, E>`, or domain-specific wrappers.
-- Enable `<Nullable>enable</Nullable>` in all class libraries and address all nullable warnings before marking them as resolved.
+- Avoid `null` return values from public APIs. Prefer `bool TryGet(out T value)`, discriminated union-style patterns, or `Result<T, E>` wrappers.
+- Use `required` members (C# 11+) on DTOs and configuration types to enforce initialization without constructors.
 
 ## 3. Async/Await & Concurrency
 
@@ -38,4 +38,4 @@
 - Use `WebApplicationFactory<T>` for integration tests against ASP.NET Core endpoints. Use **Testcontainers for .NET** for real database integration tests.
 - Run tests with `dotnet test --configuration Release` in CI. Enforce coverage with `dotnet-coverage` and a minimum threshold.
 - Use `dotnet format` and Roslyn analyzers (including `Microsoft.CodeAnalysis.NetAnalyzers`) for automated code quality enforcement.
-- Use **BenchmarkDotNet** for micro-benchmarks on performance-critical code paths.
+- Use **BenchmarkDotNet** for micro-benchmarks on performance-critical code paths. Profile with Visual Studio or dotTrace before optimizing.
