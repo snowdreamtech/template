@@ -16,6 +16,7 @@
 
 - Organize automation into **roles** using the standard directory layout: `tasks/`, `handlers/`, `defaults/`, `vars/`, `templates/`, `files/`, `meta/`.
 - Use **collections** (`ansible-galaxy collection install`) for shared, reusable roles across projects. Pin collection versions in `requirements.yml` — never leave version fields empty.
+- **Collections Dual-File Sync**: The `ansible_collections` list in `roles/bootstrap/vars/python/default.yml` and the `collections` list in `requirements.yml` MUST remain in perfect synchronization. `bootstrap/vars/python/default.yml` is the single source of truth. Any change to `ansible_collections` MUST be immediately reflected in `requirements.yml` with a specific version. Both files MUST be committed together in the same commit. Desync causes "couldn't resolve module/action" failures.
 - Follow the standard project layout:
 
   ```text
@@ -48,6 +49,7 @@
 
 - Use `snake_case` for all variable names, task names, tag names, and role names. Ansible variable names MUST use underscores (`_`), never hyphens (`-`). If a system package name contains hyphens (e.g., `my-app`), define a bridge variable (e.g., `my_app_package_name: "my-app"`) and reference it in tasks instead of hardcoding the hyphenated name.
 - Give every task a descriptive `name:` field wrapped in double quotes. Never leave a task unnamed — unnamed tasks produce unreadable output. Exception: `include_role`, `import_role`, `include_tasks`, `import_tasks`, and `ansible.builtin.assert` MUST NOT have a `name:`.
+- **OS Fingerprint Suffix**: If a task has a `name:`, MUST append the OS fingerprint suffix: `{{ '(' ~ os_fingerprint ~ ')' if os_fingerprint is defined else '' }}`. This ensures task output is traceable to the target OS in multi-platform runs.
 - Every task and key variable definition MUST be preceded by an inline comment explaining its purpose or rationale (explain the "Why", not the "What").
 - Use `notify` and `handlers` for operations that should run only on change (e.g., reload a service only when its config changes).
 - Use **tags** semantically on all tasks. Mandatory standard tags: `install`, `config`, `service`, `security`, `assert`. Use `tags: ["always"]` ONLY for plumbing tasks (facts derivation, environment checks, global skip flags, logging) — NEVER on tasks that modify system state or on routing tasks (`include_role`, `include_tasks`, etc.).
@@ -133,3 +135,130 @@
 - Use `--check` (dry-run) mode combined with `--diff` in CI to preview changes before applying to production.
 - Use `ansible-playbook --syntax-check playbook.yml` as a lightweight pre-flight check in CI before running the full Molecule suite.
 - **Zero-Tolerance Linting**: Style is function. All CI lint warnings MUST be fixed. No global suppression.
+
+## 13. App Development Standards (Multi-Distribution)
+
+- **Compatibility-First**: App configurations MUST prioritize maximum system compatibility. Support at minimum: Alpine Linux, Debian/Ubuntu, RHEL/Rocky/AlmaLinux, Fedora, Arch Linux, and macOS (Homebrew + MacPorts).
+- **Package Loader Prefix Syntax**: The `package_loader` supports 38+ installation methods via unified prefix syntax. Use the correct prefix for the target ecosystem:
+
+  | Prefix category   | Examples                                             |
+  | ----------------- | ---------------------------------------------------- |
+  | System packages   | `nginx`, `curl` (no prefix)                          |
+  | macOS native      | `.dmg`, `.pkg`, `.app`, `mas:`                       |
+  | Universal Linux   | `snap:`, `flatpak:`, `nix:`, `aur:`                  |
+  | Language managers | `pip:`, `npm:`, `cargo:`, `go:`, `gem:`, `composer:` |
+  | Windows           | `winget:`, `choco:`, `scoop:`                        |
+
+- **Variable Hierarchy**: Follow the loader hierarchical loading order (low → high priority): `default.yml` → `app_name.yml` → `family.yml` → `distro.yml` → `mode.yml` → `mode/distro.yml`.
+- **DRY File Strategy**:
+  - Same config for 90%+ systems → use `default.yml` only.
+  - Same config within an OS family → use `{family}.yml` (e.g., `debian.yml`, `redhat.yml`).
+  - Unique config for a distro → create `{distro}.yml` only when necessary.
+  - Never create distribution-specific files for identical configurations.
+- **Package Name Divergence**: If a package has different names across distributions (e.g., `redis-server` on Debian vs `redis` on Alpine), specify `app_packages` explicitly in each distribution's config file. For version-based package replacement (e.g., Redis → Valkey on RHEL 10+), use Jinja2 version detection:
+
+  ```yaml
+  app_packages: >-
+    {{
+      ['valkey'] if (
+        (os_distribution == 'RedHat' and os_distribution_major_version | int >= 10) or
+        (os_distribution == 'Fedora' and os_distribution_major_version | int >= 41)
+      ) else ['redis']
+    }}
+  ```
+
+- **Documentation Annotation**: Every distribution config file MUST have a header comment listing which systems it covers and a `# WHY:` comment for any non-obvious decision.
+- **Reference Pattern**: Before developing new app configurations, study `roles/native/tasks/package_loader/` for multi-distribution support strategy and OS loader routing mechanism.
+
+## 14. Scenario Design Patterns
+
+- **Matrix Scenario (Recommended)**: For managing multi-software deployments, use the "Explicit List + Conditional Activation" pattern. List ALL supported applications in `tasks/main.yml` and activate them with boolean facts:
+
+  ```yaml
+  - name: "Matrix: Deploy Redis {{ '(' ~ os_fingerprint ~ ')' if os_fingerprint is defined else '' }}"
+    ansible.builtin.include_role:
+      name: "app"
+    vars:
+      app_name: "redis"
+      app_service_enabled: true
+    when: is_redis | default(false, true) | bool or is_db_node | default(false, true) | bool
+  ```
+
+- **Benefits**: Configuration is explicitly visible, supporting granular differential config (e.g., enable service for databases, install-only for tools). Avoids implicit activation and hidden dependencies.
+- **Role Interface Preference**: MUST prioritize `role: app` unified interface over direct low-level module or native role invocations for software deployment.
+
+## 15. Container Volume Configuration (Cross-Platform)
+
+- **Directory Structure**: Use standardized paths following FHS:
+  - Linux/macOS: `/opt/data/containers/volumes/{app_name}`
+  - Windows: `C:/data/containers/volumes/{app_name}`
+- **Ownership Defaults**: Provide platform-appropriate default ownership:
+
+  | Platform | Owner           | Group            |
+  | -------- | --------------- | ---------------- |
+  | Linux    | `root`          | `root`           |
+  | macOS    | `root`          | `wheel`          |
+  | Windows  | `Administrator` | `Administrators` |
+
+- **Volume Strategy**: Prefer named volumes for portability. Use bind mounts only when direct host access is required.
+- **Directory Creation Location**: Volume base directories MUST be created in `container_loader` (after engine detection, before engine dispatch), NOT in the `init` role.
+- **SELinux Support**: On RHEL-based systems with SELinux enabled, MUST set `container_file_t` SELinux type on volume directories using `ansible.posix.sefcontext`. Apply only when `os_family == 'redhat'` and `ansible_selinux.status == 'enabled'`.
+- **Permission Auto-Detection (Zero-Config)**: Container roles SHOULD implement two-stage UID/GID probing:
+  1. **Stage 1**: Extract `.Config.User` via `docker inspect`. Use immediately if numeric.
+  2. **Stage 2**: If the result is a string name, run a minimal temporary container (`sh -c 'id -u && id -g'`) to resolve the numeric IDs.
+- **Image Best Practice**: In `Dockerfile`, prefer numeric `USER UID:GID` (e.g., `USER 1001:1001`) over symbolic names to improve deployment performance and cross-platform compatibility.
+
+## 16. Shell Script Standards (POSIX Compatibility)
+
+All shell scripts (`.sh`) invoked by Ansible MUST be POSIX-compatible unless Bash-specific features are explicitly required.
+
+- **Shebang**: MUST use `#!/bin/sh` unless Bash-specific features are unavoidable.
+- **Prohibited Bash-isms**:
+  - `[[ ]]` double-bracket tests → use `[ ]` single brackets
+  - `${BASH_SOURCE[0]}` → use `$0`
+  - `${var:offset:length}` → use `cut`/`sed`
+  - `${var,,}` / `${var^^}` case conversion → use `tr`/`awk`
+  - `&>>` redirect operator → use `>> file 2>&1`
+  - Arrays (in POSIX context) → use space-separated strings
+  - `function` keyword → use `func_name() { }` syntax
+  - `==` in tests → use `=` for string comparison
+  - `source` command → use `.` (dot)
+- **POSIX-Compatible Patterns**:
+  - Script directory detection: `SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)`
+  - Logical operators: `[ cond1 ] && [ cond2 ]` or `[ cond1 ] || [ cond2 ]`
+  - Non-empty test: `[ -n "$var" ]`; empty test: `[ -z "$var" ]`
+- **Cross-Platform Wrapper Sync**: When modifying or creating `.sh` scripts, MUST synchronously create or update the corresponding `.bat` (Windows Batch) and `.ps1` (PowerShell) wrappers to ensure consistent developer experience on Linux, macOS, and Windows/WSL.
+- **Execution Mode Guard**:
+  - **Tool scripts** (e.g., `home.sh`): MUST reject being `source`d.
+  - **Environment scripts** (e.g., `setup_venv.sh`): MUST reject being executed directly; prompt the user to use `source`.
+- **Fail Fast**: MUST use `set -euo pipefail` in all scripts.
+- **Command Detection**: Use `command -v` instead of `which`.
+- **GNU flag portability**: Avoid GNU-specific flags (e.g., `grep -P`, `sed -r`); use portable alternatives.
+
+## 17. Windows Platform Standards
+
+- **Installation Detection**:
+  - **MSI/EXE/Winget installers**: PROHIBITED from using `win_stat` on hardcoded paths (e.g., `C:\Program Files`). MUST use `ansible.windows.win_powershell` to query Registry Uninstall keys:
+
+    ```yaml
+    - name: "Check if App is installed (Registry)"
+      ansible.windows.win_powershell:
+        script: |
+          $keys = @(
+            'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
+            'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+          )
+          $app = $keys | ForEach-Object {
+            if (Test-Path $_) {
+              Get-ChildItem -Path $_ -ErrorAction SilentlyContinue |
+              Get-ItemProperty | Where-Object { $_.DisplayName -match '^AppName' }
+            }
+          } | Select-Object -First 1
+          if ($app) { $ansible.Result = @{ installed = $true } }
+          else { $ansible.Result = @{ installed = $false } }
+      register: _app_reg_check
+    ```
+
+  - **Portable installs (Zip/Direct)**: `win_stat` is permitted, but the path MUST be defined via a variable (e.g., `{{ app_install_dir }}`). Hardcoded absolute paths are PROHIBITED.
+
+- **Execution Safety**: When using `delegate_to: localhost` with a Python-based `ansible_python_interpreter`, MUST explicitly set `vars: ansible_python_interpreter: "{{ ansible_playbook_python }}"` to prevent virtual environment pollution from the managed node.

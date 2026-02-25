@@ -279,7 +279,7 @@ npx markdownlint-cli2 --fix "docs/**/*.md" "*.md"
 
 Before merging any PR that affects documentation, verify all applicable items:
 
-**README completeness**
+### README completeness
 
 - [ ] All five sections present and fully populated
 - [ ] Architecture diagram included (ASCII or image)
@@ -288,31 +288,31 @@ Before merging any PR that affects documentation, verify all applicable items:
 - [ ] Troubleshooting section covers ≥ 3 common failure scenarios
 - [ ] Security considerations section is present and accurate
 
-**Bilingual compliance**
+### Bilingual compliance
 
 - [ ] English and Chinese versions are content-equivalent
 - [ ] Code blocks are identical in both language versions
 - [ ] Changed terminology matches the project glossary
 
-**API documentation**
+### API documentation
 
 - [ ] All new/changed public APIs have docstrings
 - [ ] Deprecations are annotated with removal version and migration path
 - [ ] Usage examples included in docstrings
 
-**Changelog & ADR**
+### Changelog & ADR
 
 - [ ] `CHANGELOG.md` updated for every user-visible change
 - [ ] ADR created for any significant architectural decision
 
-**Markdown quality**
+### Markdown quality
 
 - [ ] All code blocks have language identifiers
 - [ ] No broken links (validate with `npx markdown-link-check`)
 - [ ] Markdownlint passes with zero errors
 - [ ] File ends with a single newline
 
-**Sync**
+### Sync
 
 - [ ] Documentation updated in the same PR as the implementation change
 - [ ] Runbook updated if operational behavior changed
