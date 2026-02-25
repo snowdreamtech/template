@@ -15,6 +15,7 @@
 
 - **Composition over inheritance**: Build complex UIs by composing small, focused components. Pass components as props (render props, `children`) for flexible composition.
 - **Co-location**: Place a component's tests (`*.test.tsx`), styles (`*.module.css`), and Storybook story (`*.stories.tsx`) alongside the component file:
+
   ```text
   components/
   └── UserCard/
@@ -23,6 +24,7 @@
       ├── UserCard.module.css   # Scoped styles
       └── UserCard.stories.tsx  # Storybook story
   ```
+
 - **React Server Components (RSC)**: In Next.js App Router, default to Server Components for data fetching and rendering. Move to `'use client'` only when a component requires:
   - User interaction (onClick, onChange event handlers)
   - Browser-only APIs (localStorage, window, navigator)
@@ -32,6 +34,7 @@
 ### Recommended File Structure
 
 ```text
+
 app/                          # Next.js App Router (or pages/ for legacy)
 ├── (auth)/                   # Route group
 │   ├── login/
@@ -46,6 +49,7 @@ lib/
 ├── stores/                   # Zustand or Jotai stores
 ├── api/                      # Data fetching functions
 └── utils/                    # Pure utility functions
+
 ```
 
 ## 2. Hooks
@@ -58,6 +62,7 @@ lib/
 ### Common Hooks Best Practices
 
 ```typescript
+
 // useEffect — cleanup subscription, avoid stale closures
 useEffect(() => {
   const subscription = dataStream.subscribe((data) => setData(data));
@@ -77,6 +82,7 @@ const sortedItems = useMemo(
   () => [...items].sort((a, b) => a.score - b.score),
   [items], // only recompute when items changes
 );
+
 ```
 
 ### Custom Hooks
@@ -178,12 +184,14 @@ const sortedItems = useMemo(
   - `React.FC` doesn't support generics cleanly
   - Plain functions have simpler TypeScript inference
 - Use `ComponentPropsWithoutRef<'button'>` or `ComponentPropsWithRef<'button'>` for component wrappers that forward native HTML element props:
+
   ```typescript
   interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
     variant?: "primary" | "secondary";
     isLoading?: boolean;
   }
   ```
+
 - Type `useRef` explicitly: `const ref = useRef<HTMLDivElement>(null)`. Type `useState` when the initial value doesn't convey the full type: `const [users, setUsers] = useState<User[]>([])`.
 
 ## 5. Performance, Accessibility & Testing

@@ -32,10 +32,12 @@
   ```
 
 - Export **only the `AppRouter` type** to the client package — never the router implementation. This ensures zero runtime coupling between server and client bundles:
+
   ```ts
   // client: type-only import — no server code leaks to the bundle
   import type { AppRouter } from "@/server/api/root";
   ```
+
 - Define the shared `t` object (router, procedure, middleware factories) in a single `trpc.ts` initialization file. Import from it everywhere — never call `initTRPC` more than once:
 
   ```ts
@@ -105,6 +107,7 @@
 ### Context & Authentication
 
 - Build the tRPC **context** (`createContext`) from the incoming request. Attach the authenticated session/user object (or `null`) to the context. Keep context creation lightweight — validate the session token but do not run business logic queries here:
+
   ```ts
   export async function createContext({ req }: { req: Request }) {
     const session = await getSession(req.headers);
@@ -112,9 +115,11 @@
   }
   export type Context = Awaited<ReturnType<typeof createContext>>;
   ```
+
 - The `protectedProcedure` middleware narrows `ctx.user` to non-null in a type-safe way. This guarantee is enforced at the TypeScript type level — handlers using `protectedProcedure` can safely access `ctx.user` without null checks.
 - Pass dependencies (database client, request headers, user session, services) through the context object. Never use global variables, module-level singletons, or ambient state in procedure handlers.
 - Use `experimental_caller` (tRPC server-side caller) for calling procedures from within server code without HTTP overhead:
+
   ```ts
   const caller = appRouter.createCaller(ctx);
   const user = await caller.user.getById({ id: "..." });
@@ -134,6 +139,7 @@
 
 - Standard tRPC error codes and their HTTP equivalents: `BAD_REQUEST` (400), `UNAUTHORIZED` (401), `FORBIDDEN` (403), `NOT_FOUND` (404), `CONFLICT` (409), `TOO_MANY_REQUESTS` (429), `INTERNAL_SERVER_ERROR` (500).
 - Use `errorFormatter` in `initTRPC.create()` to produce consistent, sanitized error shapes on the client. Strip internal error details in production:
+
   ```ts
   errorFormatter({ shape, error }) {
     return {
@@ -145,6 +151,7 @@
     };
   }
   ```
+
 - Never expose internal error messages, stack traces, or database errors directly to clients. Log detailed errors server-side, return sanitized messages to clients.
 
 ## 5. Client Integration, Testing & Performance
@@ -163,10 +170,12 @@
 
 - Configure the tRPC client with `superjson` transformer and the server's base URL. Set fetch options for credentials, custom headers (e.g., CSRF token), and retry behavior.
 - Use **`createServerSideHelpers`** (Pages Router) or the **server-side caller** (App Router Server Components) for prefetching data on the server:
+
   ```ts
   // Next.js App Router Server Component
   const user = await api.user.getById({ id: params.id });
   ```
+
 - Use **`utils.user.getById.invalidate()`** or `utils.invalidate()` after mutations to automatically refetch stale queries.
 - For non-React environments (Node.js scripts, server-to-server calls, CLIs), use the **tRPC vanilla client** (`createTRPCClient`).
 
@@ -199,10 +208,13 @@
 
 - Use **TanStack Query's staleTime and cacheTime** configuration to control client-side caching behavior. Set `staleTime: Infinity` for static reference data (rarely changes).
 - Use `httpBatchLink` or `httpBatchStreamLink` to batch multiple concurrent queries into a single HTTP request, reducing latency:
+
   ```ts
   links: [httpBatchLink({ url: "/api/trpc", maxURLLength: 2083 })];
   ```
+
 - Use `splitLink` to route subscriptions to a `wsLink` (WebSocket) while routing queries/mutations to `httpBatchLink`:
+
   ```ts
   links: [
     splitLink({
@@ -212,4 +224,5 @@
     }),
   ];
   ```
+
 - Profile slow procedures using the built-in timing middleware or a custom logging middleware. Add database query explain plans for N+1 query hotspots (DataLoader pattern for related data).

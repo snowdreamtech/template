@@ -17,12 +17,14 @@
 - Prefer **declarative** over imperative configuration (e.g., desired-state IaC like Terraform/Ansible over ad-hoc shell scripts). Declarative configs are self-documenting and inherently idempotent when applied correctly.
 - Avoid side effects in initialization code. Setup scripts must be safe to re-run without human intervention.
 - When a non-idempotent operation is unavoidable, guard it explicitly:
+
   ```bash
   # Idempotency guard examples
   [ -f /etc/myapp/config ] && exit 0          # file-based guard
   psql -c "CREATE TABLE IF NOT EXISTS ..."    # SQL-level guard
   kubectl apply --dry-run=client -f manifest  # Kubernetes dry-run validation
   ```
+
 - Document the reason and guard mechanism for every non-idempotent operation.
 
 ## 3. Cross-Platform Compatibility
@@ -33,6 +35,7 @@
   - Detect OS at runtime: `process.platform`, `sys.platform`, `runtime.GOOS`.
 - When shell scripts are required, provide both `.sh` (Unix/POSIX) and `.ps1` (Windows PowerShell) variants, or use a cross-platform runner (`npx`, `python`, `node`).
 - Normalize line endings: configure `.gitattributes` with `* text=auto` to prevent CRLF/LF conflicts across platforms:
+
   ```gitattributes
   # .gitattributes — normalize line endings
   * text=auto
@@ -40,6 +43,7 @@
   *.ps1 text eol=crlf   # PowerShell scripts always CRLF
   *.png binary          # binary files — no normalization
   ```
+
 - Test on all target platforms in CI using matrix builds: `runs-on: [ubuntu-latest, macos-latest, windows-latest]`.
 - Cross-platform gotchas to avoid:
   - `sed -i` behaves differently on macOS (requires `''` after `-i`) vs Linux
@@ -64,15 +68,19 @@
   Implement exponential backoff (1s → 2s → 4s → 8s) with a maximum of 5 attempts for application-level retries.
 
 - **Proxy**: When downloading GitHub resources, the `{{ github_proxy }}` prefix (or equivalent variable) **MUST** be added before the URL to ensure stable access in restricted environments:
+
   ```bash
   GITHUB_PROXY="${GITHUB_PROXY:-}"   # empty = no proxy
   curl "${GITHUB_PROXY}https://github.com/org/repo/archive/main.tar.gz" -o repo.tar.gz
   ```
+
 - **Checksum Verification**: Validate downloaded artifacts with SHA-256 before using them. Store checksums in version-controlled `checksums.sha256`:
+
   ```bash
   sha256sum --check checksums.sha256   # Linux
   shasum -a 256 --check checksums.sha256  # macOS
   ```
+
 - Configure connection and read timeouts for all HTTP clients. Never use an infinite timeout in production code.
 - For services behind a proxy, support `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` environment variables.
 

@@ -9,6 +9,7 @@
 - Follow Nuxt's **file-based conventions**. Auto-imports are enabled for `components/`, `composables/`, `utils/`, and `stores/` — leverage them instead of manual imports. Document this in the project README so all contributors understand the convention.
 - Prefix private internal files with `_` to prevent them from being auto-imported: `_helpers.ts`, `_InternalCard.vue`.
 - Use the standard directory roles:
+
   ```text
   app/
   ├── pages/              # Routed views (file-based routing)
@@ -27,6 +28,7 @@
       ├── services/        # Server business logic (not auto-imported)
       └── utils/           # Server-only utilities (DB clients)
   ```
+
 - Use **Nuxt Layers** (`extends` in `nuxt.config.ts`) to share components, composables, and configuration across multiple Nuxt apps as a maintainable base layer.
 - Use `app/router.options.ts` for fine-grained router configuration instead of modifying Nuxt internals.
 
@@ -54,6 +56,7 @@
   ```
 
 - Use **`lazy: true`** for non-critical data fetches to avoid blocking initial page rendering. Combine with a loading skeleton:
+
   ```vue
   <template>
     <Suspense>
@@ -62,19 +65,25 @@
     </Suspense>
   </template>
   ```
+
 - Use **`$fetch`** (Nuxt's isomorphic `ofetch` wrapper) for programmatic API calls in composables and event handlers:
+
   ```typescript
   async function createOrder(data: CreateOrderDto) {
     return await $fetch("/api/orders", { method: "POST", body: data });
   }
   ```
+
   Do NOT use the global `fetch` directly or import `axios` — `$fetch` handles JSON serialization, base URL resolution, and server-side proxying automatically.
 - Forward browser cookies/auth headers in SSR context using `useRequestHeaders`:
+
   ```typescript
   const headers = useRequestHeaders(["cookie", "authorization"]);
   const { data } = await useFetch("/api/profile", { headers });
   ```
+
 - Use the `key` option to differentiate requests and control cache invalidation:
+
   ```typescript
   // Refetches when route.params.id changes
   const { data } = await useFetch("/api/users", { key: () => route.params.id as string });
@@ -85,6 +94,7 @@
 ### API Endpoint Design
 
 - Define API endpoints in `server/api/` using file-name method encoding:
+
   ```text
   server/api/
   ├── users/
@@ -92,6 +102,7 @@
   │   ├── index.post.ts     # POST /api/users
   │   └── [id].get.ts       # GET /api/users/:id
   ```
+
 - Use **`defineEventHandler`** for all server routes. Use **`readValidatedBody`** and **`getValidatedQuery`** with Zod for type-safe, validated input parsing:
 
   ```typescript
@@ -158,9 +169,11 @@
 ### SSR-Safe Shared State
 
 - Use **`useState()`** for SSR-safe shared state that needs to survive the hydration boundary without Pinia overhead:
+
   ```typescript
   const theme = useState<"light" | "dark">("theme", () => "light");
   ```
+
 - Use **`useNuxtData()`** to share cached `useAsyncData`/`useFetch` data between components without re-fetching.
 
 ## 5. Performance, SEO & Testing
@@ -170,10 +183,13 @@
 - Use **`@nuxt/image`** for automatic image optimization, lazy loading, and responsive `srcset` generation.
 - Audit bundle size with `nuxt analyze` before production releases. Look for large dependencies in the client bundle.
 - Use lazy component loading with the **`Lazy` prefix** on auto-imported components (`<LazyHeavyChart>`) for code splitting:
+
   ```vue
   <LazyHeavyChart v-if="showChart" :data="chartData" />
   ```
+
 - Use Nuxt's **edge rendering** presets for latency-sensitive routes deployed to edge CDN networks:
+
   ```typescript
   // nuxt.config.ts
   export default defineNuxtConfig({ nitro: { preset: "cloudflare-pages" } });
@@ -182,6 +198,7 @@
 ### SEO & Metadata
 
 - Use **`useSeoMeta()`** for structured meta tag management per page — type-safe and SSR-aware:
+
   ```typescript
   useSeoMeta({
     title: `${user.value?.name} — My App`,
@@ -190,6 +207,7 @@
     ogImage: `https://myapp.com/og/${user.value?.id}.png`,
   });
   ```
+
 - Use `useHead()` for non-meta head elements (scripts, links).
 
 ### Testing

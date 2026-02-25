@@ -13,6 +13,7 @@
 ### Correlation Strategy
 
 - Establish a **correlation ID strategy**: generate a `traceId`/`requestId` at the entry point (API gateway or first service) and propagate it through all downstream services in logs and response headers:
+
   ```yaml
   # Example correlation flow
   User → API Gateway (generates: X-Request-ID: abc123, traceparent: 00-xxx-yyy-01)
@@ -21,6 +22,7 @@
       → DB calls (adds DB span to same trace)
   All logs include: { "requestId": "abc123", "traceId": "xxx", "spanId": "zzz" }
   ```
+
 - Track **DORA metrics** (Deployment Frequency, Lead Time for Changes, Change Failure Rate, Mean Time to Recovery) as engineering-level health KPIs alongside technical system metrics.
 
 ## 2. Logging
@@ -28,6 +30,7 @@
 ### Structured Logging
 
 - Use **structured logging with JSON output**. Every log entry MUST include a consistent set of fields that can be queried and filtered in any log aggregation system (Loki, Elasticsearch, CloudWatch):
+
   ```json
   {
     "timestamp": "2025-01-15T10:30:00.123Z",
@@ -43,6 +46,7 @@
     "total": 49.99
   }
   ```
+
 - Use recommended logging libraries:
   - **Go**: `slog` (stdlib, Go 1.21+) with JSON handler, or `zap`/`zerolog`
   - **Python**: `structlog` with JSON renderer
@@ -70,15 +74,18 @@
 ### Prometheus & RED/USE Methods
 
 - Expose a **`/metrics` endpoint** (Prometheus text format) from every service. Each service is responsible for its own metrics endpoint:
+
   ```go
   // Go example with prometheus client
   import "github.com/prometheus/client_golang/prometheus/promhttp"
   http.Handle("/metrics", promhttp.Handler())
   ```
+
 - Implement the **RED Method** for all user-facing services:
   - **R**ate: requests processed per second
   - **E**rror rate: percentage of failed requests (4xx, 5xx)
   - **D**uration: latency percentiles (p50, p90, p95, p99, p999)
+
   ```yaml
   # Prometheus alerting rule example
   - alert: HighErrorRate
@@ -87,6 +94,7 @@
     annotations:
       summary: "Error rate above 1% for 5 minutes"
   ```
+
 - Implement the **USE Method** for infrastructure resources:
   - **U**tilization: % of time the resource is busy (CPU, disk I/O)
   - **S**aturation: degree to which work is queued (memory pressure, run queue length)
@@ -95,6 +103,7 @@
 ### SLIs & SLOs
 
 - Define **Service Level Indicators (SLIs)** and **Service Level Objectives (SLOs)** for each critical service:
+
   ```yaml
   # Example SLO definition
   service: payment-api
@@ -105,7 +114,9 @@
     latency:
       target: "p99 < 500ms over 30-second windows"
   ```
+
 - Create alerting rules that fire when the SLO **error budget** is being consumed too rapidly (multiwindow, multi-burn-rate alerting):
+
   ```yaml
   - alert: SLOBurnRateHigh
     expr: |
@@ -117,6 +128,7 @@
       summary: "SLO error budget burning too fast"
       runbook: "https://wiki.example.com/runbooks/high-error-budget"
   ```
+
 - Add **business-level metrics** (orders processed, payments failed, user signups, active sessions) alongside infrastructure metrics.
 
 ## 4. Distributed Tracing
@@ -152,6 +164,7 @@
 
 - Alerts MUST be **actionable**: when an alert fires, the on-call engineer must immediately understand what is impacted and what the mitigation step is.
 - Include a **runbook URL** in every alert's annotations:
+
   ```yaml
   annotations:
     summary: "High error rate in payment service"
@@ -159,6 +172,7 @@
     runbook: "https://wiki.example.com/runbooks/payment-high-error-rate"
     dashboard: "https://grafana.example.com/d/abc123"
   ```
+
 - Alert on **symptoms** (user-visible error rate, latency degradation, SLO burn rate) — not causes (high CPU, low disk). Causes belong in dashboards for diagnosis, not in pagers.
 - Avoid alert fatigue: each team's pager should fire for fewer than 5 alerts per day on average in steady state.
 
@@ -173,11 +187,13 @@
 ### Infrastructure
 
 - Use **Grafana Alloy** (formerly Grafana Agent) as an OTel-compatible collector — unifies metrics scraping, log collection, and trace forwarding in a single agent:
+
   ```yaml
   # alloy config — scrapes metrics, collects logs, receives traces
   prometheus.scrape "app" { targets = [{"__address__" = "app:8080", "__metrics_path__" = "/metrics"}] }
   loki.source.journal "journal" { }
   otelcol.receiver.otlp "default" { grpc { endpoint = "0.0.0.0:4317" } }
   ```
+
 - Run **scheduled synthetic health checks** (uptime monitors) against public endpoints from multiple geographic regions. Trigger alerts if uptime < SLO target from any region.
 - Maintain **incident runbooks** for each alert. Review and update runbooks during post-mortem to ensure accuracy. Conduct quarterly blameless post-mortems for every P1/P2 incident.

@@ -7,6 +7,7 @@
 ### Layout
 
 - Organize Terraform code into **reusable modules** and **root environment configurations**:
+
   ```text
   infra/
   ├── modules/                     # Reusable, versioned Terraform modules
@@ -27,9 +28,11 @@
       │   └── versions.tf
       └── staging/
   ```
+
 - **Never duplicate** infrastructure code between environments. Parameterize all differences via `variables.tf`. If two environments share more than 80% configuration, they belong in the same module with different variable values.
 - Each module MUST have a `README.md` documenting: inputs (name, type, description, default), outputs, resource dependencies, and usage examples.
 - Use a **`locals` block** to compute derived values, avoiding repeated expressions:
+
   ```hcl
   locals {
     environment = var.environment
@@ -45,17 +48,20 @@
 
 - Design modules **around business capabilities**, not cloud resources. A `web-application` module is better than separate `alb`, `ecs`, and `rds` modules that must be wired manually for every deployment.
 - Define **module version constraints** when calling external public modules:
+
   ```hcl
   module "vpc" {
     source  = "terraform-aws-modules/vpc/aws"
     version = "5.5.2"   # exact version — never ">= 0.0.0"
   }
   ```
+
 - Keep module interfaces minimal — expose only variables that callers genuinely need to customize. Use sensible defaults.
 
 ## 2. State Management
 
 - Always use a **remote backend** for shared team state. Configure it explicitly in `backend.tf`:
+
   ```hcl
   # AWS S3 + DynamoDB backend
   terraform {
@@ -69,14 +75,17 @@
     }
   }
   ```
+
   Supported backends: S3 + DynamoDB (AWS), GCS (GCP), Azure Blob, Terraform Cloud.
 - **Never commit `.tfstate` files** to version control. Add `*.tfstate*` and `*.tfstate.backup` to `.gitignore`.
 - Enable **state locking** to prevent concurrent modifications. DynamoDB provides lock for S3 backend. Always verify locking is active before enabling CI apply.
 - Use **separate state files per environment** (separate backend key prefixes, not Terraform workspaces). Never share state between environments:
+
   ```text
   production/terraform.tfstate   # production env state
   staging/terraform.tfstate      # staging env state — isolated
   ```
+
 - Protect the state bucket:
   - Enable S3 versioning for rollback capability
   - Restrict IAM access to CI/CD service accounts and admin roles only
@@ -121,27 +130,34 @@
   ```
 
 - Mark sensitive outputs and variables with `sensitive = true`:
+
   ```hcl
   output "database_password" {
     value     = random_password.db.result
     sensitive = true   # prevents logging in plan/apply output
   }
   ```
+
 - Use **`terraform.tfvars`** for non-secret environment-specific values. Commit a `.tfvars.example` template showing required variables without values. Never commit actual `.tfvars` files containing secrets.
 
 ## 4. Code Quality & Security
 
 - Run `terraform fmt -recursive` and `terraform validate` in pre-commit hooks and as CI gates.
 - Use **tflint** with provider-specific ruleset:
+
   ```bash
   tflint --init && tflint --recursive
   ```
+
 - Use **tfsec** or **Checkov** for infrastructure security scanning. Fail CI on high-severity findings:
+
   ```bash
   tfsec . --minimum-severity HIGH --soft-fail    # review findings; fail on critical
   checkov -d . --compact --quiet
   ```
+
 - Pin **provider versions** and the **Terraform version** explicitly:
+
   ```hcl
   terraform {
     required_version = ">= 1.7.0, < 2.0.0"
@@ -153,6 +169,7 @@
     }
   }
   ```
+
 - Use `terraform test` (Terraform 1.6+) or **Terratest** Go-based tests for module integration testing.
 - Consider **OpenTofu** as a drop-in, API-compatible open-source Terraform fork for projects requiring open-source licensing.
 
@@ -169,11 +186,14 @@
 ### Safety Practices
 
 - Use `-target` only for emergency surgical changes. Always document the reason in a comment and remove `-target` in a follow-up cleanup PR:
+
   ```bash
   # Emergency fix: only apply the load balancer listener change
   terraform apply -target="aws_lb_listener.https"
   ```
+
 - **Tag all resources** with standard tags via a default tags provider:
+
   ```hcl
   provider "aws" {
     region = var.aws_region
@@ -188,12 +208,14 @@
     }
   }
   ```
+
 - Run `terraform plan` on a **daily schedule** (drift detection) and alert if the plan is non-empty (i.e., actual infrastructure differs from desired state).
 - Never run `terraform destroy` in production without:
   1. A manual approval gate (required reviewers in GitHub Environments)
   2. A recent backup verification
   3. A documented rollback plan
 - Use **Infracost** in CI to display the estimated monthly cost delta for each PR — prevents accidental costly changes from merging without review:
+
   ```bash
   infracost diff --path . --format json | infracost comment github --pull-request $PR_NUMBER
   ```

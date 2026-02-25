@@ -34,6 +34,7 @@
 ### File Layout
 
 ```text
+
 src/
 ├── components/
 │   ├── ui/               # Generic UI components (buttons, modals, avatars)
@@ -49,6 +50,7 @@ src/
 │   └── userStore.ts
 └── views/                # Page-level components (routed views)
     └── UserProfileView.vue
+
 ```
 
 ## 2. Props, Emits & Component Design
@@ -75,6 +77,7 @@ src/
 ### Emits
 
 - Define all custom events with typed event signatures:
+
   ```typescript
   const emit = defineEmits<{
     "update:modelValue": [value: string];
@@ -156,10 +159,12 @@ src/
 
 - Use **`ref`** for primitives and object references. Use **`reactive`** for complex object state only when you need deep reactive access without `.value`. Prefer `ref` as the default for consistency.
 - Use **`computed()`** for all derived state — never compute derived values in templates:
+
   ```typescript
   const fullName = computed(() => `${user.value?.firstName} ${user.value?.lastName}`.trim());
   const activeUsers = computed(() => users.value.filter((u) => u.isActive));
   ```
+
 - Use **`watchEffect`** when all reactive dependencies should be tracked automatically. Use **`watch`** when you need explicit source control, access to old values, or lazy evaluation:
 
   ```typescript
@@ -202,9 +207,11 @@ src/
 
 - Use **`<KeepAlive>`** to cache component state for tabs or wizard steps users navigate back to. Use `include`/`exclude` to limit caching scope — don't cache everything.
 - Use **`defineAsyncComponent()`** and route-level lazy loading for code splitting:
+
   ```typescript
   const HeavyDashboard = defineAsyncComponent(() => import("./HeavyDashboard.vue"));
   ```
+
 - Use **Vue DevTools** to profile renders and inspect Pinia state. Identify unnecessary re-renders before reaching for `v-memo` or `shallowRef` manual optimizations.
 - Use **`shallowRef()`** for large, externally-managed data structures (canvas state, chart data) where deep reactivity tracking would be wasteful.
 

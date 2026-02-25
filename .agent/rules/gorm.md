@@ -41,6 +41,7 @@
 ### Struct Design
 
 - Use **`gorm.Model`** (embeds `ID uint`, `CreatedAt`, `UpdatedAt`, `DeletedAt`) for tables that benefit from soft delete and standard timestamps:
+
   ```go
   type Order struct {
     gorm.Model               // provides ID, CreatedAt, UpdatedAt, DeletedAt
@@ -51,6 +52,7 @@
     Items     []OrderItem    `gorm:"foreignKey:OrderID"`
   }
   ```
+
 - Use **explicit GORM struct tags** — do not rely on naming convention inference for non-standard configurations:
 
   ```go
@@ -69,6 +71,7 @@
   ```
 
 - Define **relationships explicitly** with `foreignKey` and `references` to avoid GORM inferring incorrect column names:
+
   ```go
   type Order struct {
     ID     uint   `gorm:"primarykey"`
@@ -76,6 +79,7 @@
     User   User   `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:RESTRICT;"`
   }
   ```
+
 - Use **soft deletes** (`DeletedAt gorm.DeletedAt`) only for records that need logical archival. Understand that all GORM queries automatically filter soft-deleted records — use `.Unscoped()` to bypass for admin queries.
 
 ## 3. Querying
@@ -83,6 +87,7 @@
 ### Safe Query Building
 
 - Use the **method chaining** API with explicit context propagation:
+
   ```go
   var users []User
   result := db.WithContext(ctx).
@@ -93,6 +98,7 @@
     Find(&users)
   if result.Error != nil { return fmt.Errorf("list users: %w", result.Error) }
   ```
+
 - **Never interpolate user input** into GORM conditions. Always use `?` positional placeholders or named parameters:
 
   ```go
@@ -120,12 +126,14 @@
   ```
 
 - Use **`Select`** to limit column projection. Avoid `SELECT *`:
+
   ```go
   db.WithContext(ctx).
     Select("id", "name", "email", "role").
     Where("status = ?", "active").
     Find(&users)
   ```
+
 - Use **keyset pagination** for large datasets instead of `OFFSET`:
 
   ```go
@@ -139,6 +147,7 @@
 ## 4. Transactions
 
 - Use **`db.Transaction()`** for atomic multi-step operations. Returning non-nil error triggers automatic rollback:
+
   ```go
   err := db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
     if err := tx.Create(&order).Error; err != nil { return err }
@@ -147,6 +156,7 @@
     return nil
   })
   ```
+
 - Always use the **`tx` variable** (not the global `db`) for all operations inside the transaction — otherwise, operations bypass the transaction context:
 
   ```go

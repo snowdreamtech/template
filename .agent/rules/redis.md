@@ -27,11 +27,13 @@
 ### TTL Rules
 
 - **Always set a TTL** (`EX seconds`, `PX milliseconds`, `EXAT timestamp`) on cache keys. Store data indefinitely only when it is genuinely permanent and externally managed:
+
   ```bash
   SET user:123:session "{...}" EX 3600        # 1 hour
   SET product:456:detail "{...}" EX 86400     # 24 hours
   SETEX rate:192.168.1.1 60 1                 # 60 seconds
   ```
+
 - Design for **cache misses** — the application MUST handle a missing key gracefully, fall back to the source of truth, and repopulate the cache. Treat cache as an optional performance layer.
 
 ### Cache-Aside (Lazy Loading)
@@ -53,9 +55,11 @@
 ### Cache Stampede Prevention
 
 - Use **`SET NX`** (set-if-not-exists) combined with a lock key to prevent cache stampedes under high traffic:
+
   ```bash
   SET cache:products:list "{...}" EX 3600 NX  # only set if not exists
   ```
+
   Or implement probabilistic early expiration: recompute the cache before it expires (e.g., recompute when TTL < 20% of original) to avoid synchronous misses.
 - Configure an appropriate **eviction policy** in `redis.conf` based on use case:
   - `allkeys-lru` — pure cache; evict least recently used keys when memory full
@@ -79,6 +83,7 @@ Choose the **most specific Redis data type** for each use case — it determines
 - Prefer **Streams** over bare Lists for message queues when **at-least-once delivery** and consumer acknowledgment are required. Streams support consumer groups, acknowledgment, and replay.
 - Use **Hash** to store object data instead of `SET user:123 <entire json>` when only a few fields are needed at a time — `HMGET user:123 name email` is more efficient than parsing the full JSON.
 - Use **Sorted Sets** for sliding window rate limiting:
+
   ```bash
   # Sliding window — add current request timestamp (score = epoch ms)
   ZADD rate:user:123 1700000000000 "req-uuid-1"
@@ -93,6 +98,7 @@ Choose the **most specific Redis data type** for each use case — it determines
 ### Command Best Practices
 
 - Use **pipelining** to batch multiple Redis commands in a single roundtrip — reduces latency dramatically for bulk operations:
+
   ```python
   async with redis.pipeline(transaction=False) as pipe:
       pipe.get("user:1")
@@ -100,14 +106,18 @@ Choose the **most specific Redis data type** for each use case — it determines
       pipe.incr("counter:daily")
       user1, user2, daily = await pipe.execute()
   ```
+
 - Use **`MULTI`/`EXEC`** (transactions) only when atomicity is required — they disable pipelining during transaction execution.
 - **Never use `KEYS *`** in production — it blocks the server event loop and can kill latency for all other clients. Use `SCAN` with `MATCH` and `COUNT` for key iteration:
+
   ```bash
   # Paginated key scan — does NOT block the server
   SCAN 0 MATCH "myapp:cache:*" COUNT 100
   ```
+
 - Do NOT store large blobs (> 1MB) in Redis. It is an in-memory store — use object storage (S3, GCS, R2) for large binary data and store a reference URL or key in Redis.
 - Use **Lua scripts** (`EVAL` / `EVALSHA`) for complex atomic multi-command operations that must be race-condition-free:
+
   ```lua
   -- Atomic check-and-decrement for rate limiting
   local remaining = redis.call('DECR', KEYS[1])
@@ -117,6 +127,7 @@ Choose the **most specific Redis data type** for each use case — it determines
   end
   return remaining
   ```
+
   Cache scripts with `SCRIPT LOAD` → `EVALSHA` to avoid resending the script body on every call.
 
 ### Persistence & Reliability
@@ -133,22 +144,27 @@ Choose the **most specific Redis data type** for each use case — it determines
 ### Security
 
 - Enable **Redis AUTH** using ACL users (Redis 6+ ACL system — `requirepass` alone is deprecated for fine-grained access):
+
   ```bash
   # redis.conf
   ACL SETUSER appuser on >s3cr3tpass ~myapp:* +get +set +del +expire +exists +scan resetkeys
   ```
+
   Grant each application the **minimum required ACL permissions** — specific key patterns and command sets only.
 - Use **TLS** for all Redis connections in production. Disable Redis on public interfaces — bind to `127.0.0.1` or a private VLAN IP:
+
   ```bash
   bind 127.0.0.1 -::1    # only local and private
   tls-port 6380
   tls-cert-file /etc/tls/redis.crt
   ```
+
 - Disable dangerous commands in production via ACL (`-flushall`, `-flushdb`, `-config`, `-debug`). Log all admin commands.
 
 ### Monitoring & Observability
 
 - Monitor with `redis_exporter` for Prometheus metrics and Grafana dashboards. Key metrics to alert on:
+
   | Metric | Alert threshold |
   |---|---|
   | `redis_connected_clients` | > 80% of `maxclients` |
@@ -156,6 +172,7 @@ Choose the **most specific Redis data type** for each use case — it determines
   | `redis_keyspace_misses_total` | > 20% miss rate (cache efficiency) |
   | `redis_slowlog_length` | > 10 entries (commands > 10ms) |
   | `redis_repl_backlog_active` | lag > 5 seconds |
+
 - Check `SLOWLOG GET 10` regularly for commands exceeding the slow log threshold (default: 10ms). Investigate commands with > 100ms execution time.
 - **Never use `MONITOR` in production** — it publishes every command to a subscriber and can reduce throughput by 50% or more.
 - Use **RedisBloom** module for memory-efficient probabilistic use cases:

@@ -38,13 +38,16 @@
   ```
 
 - **Base Images**: Use official, minimal base images. Pin to a specific **SHA digest** for reproducible builds — tags can be overwritten without warning:
+
   ```dockerfile
   FROM node:22-alpine@sha256:abc123...   # ✅ pinned SHA digest
   # FROM node:22-alpine                  # ❌ tag can change
   # FROM node:latest                     # ❌ never in production
   ```
+
 - **Non-Root Execution**: Containers MUST NOT run as root. Create and switch to a dedicated non-root user with a numeric UID (compatible with Kubernetes Pod Security Standards).
 - **`.dockerignore`**: Always maintain a `.dockerignore` to minimize the build context and prevent secrets from being included:
+
   ```dockerignore
   .git
   .env
@@ -55,7 +58,9 @@
   .github/
   docs/
   ```
+
 - **SBOM & Image Scanning**: Scan every image with Trivy before pushing. CRITICAL and HIGH CVEs MUST block the push:
+
   ```bash
   trivy image --exit-code 1 --severity HIGH,CRITICAL myapp:latest
   syft myapp:latest -o cyclonedx-json > sbom.json   # generate SBOM
@@ -71,6 +76,7 @@
   - **Kubernetes**: External Secrets Operator + AWS Secrets Manager / Vault
   - **Docker Swarm**: Docker secrets (`docker secret create`)
   - **Standalone servers**: HashiCorp Vault Agent, AWS SSM Parameter Store
+
   ```yaml
   # Kubernetes — External Secrets Operator example
   apiVersion: external-secrets.io/v1beta1
@@ -83,6 +89,7 @@
       - secretKey: database-url
         remoteRef: { key: myapp/production, property: DATABASE_URL }
   ```
+
 - Provide a `.env.example` with all required environment variable names, placeholder values, and descriptions. Never commit a real `.env`.
 - **Hot Reload of Config**: Design services to reload non-secret configuration without restarting (config map watch, SIGHUP handler, config server polling). Document which values require a full restart.
 
@@ -106,6 +113,7 @@
 
 - **Feature Flags**: Use feature flags (LaunchDarkly, Flipt, Unleash) to decouple feature releases from code deployments. Dark-launch new features before official release.
 - **Rollback Plan**: Every deployment MUST have a documented, tested rollback procedure. Automated rollback MUST trigger on health check failures within 5 minutes:
+
   ```bash
   # Kubernetes rollback
   kubectl rollout undo deployment/myapp
@@ -118,6 +126,7 @@
 
 - Manage ALL infrastructure (Terraform, Pulumi, Ansible, Kubernetes manifests, CloudFormation) in version control alongside the application code. Infrastructure changes follow the same PR and review process as application code.
 - **Remote State**: Use remote, locking state backends for IaC tools to prevent concurrent modification:
+
   ```hcl
   # terraform backend — S3 + DynamoDB locking
   terraform {
@@ -130,11 +139,14 @@
     }
   }
   ```
+
 - **Review Before Apply**: Always review `plan`/`dry-run` output before applying infrastructure changes:
+
   ```bash
   terraform plan -out=tfplan   # generate plan in CI (reviewed by humans)
   terraform apply tfplan        # apply in protected environment after approval
   ```
+
 - **Drift Detection**: Run scheduled drift detection and alert on detected drift. IaC is the source of truth — manual changes are a drift event that must be remediated.
 - **Cost & Tagging**: All provisioned cloud resources MUST be tagged with: `environment`, `team`, `service`, `cost-center`. Enforce via AWS SCPs, Azure Policy, or GCP Org Policies.
 
@@ -143,6 +155,7 @@
 ### Structured Observability
 
 - **Structured Logging**: All applications MUST emit structured JSON logs to stdout:
+
   ```json
   {
     "timestamp": "2025-01-15T10:30:00.123Z",
@@ -156,6 +169,7 @@
     "durationMs": 42
   }
   ```
+
   Never log: passwords, API keys, PII (email, SSN), or internal infrastructure details.
 - **Metrics & Alerting**: Expose a `/metrics` endpoint in Prometheus format. Define SLO-based alerting rules:
   - Error rate: alert if error rate > 1% over 5 minutes

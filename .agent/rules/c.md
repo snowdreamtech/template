@@ -25,12 +25,14 @@
 ### Compiler Warnings as Errors
 
 - Enable comprehensive warnings and treat them as errors in CI:
+
   ```makefile
   CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -Werror \
            -Wformat=2 -Wshadow -Wconversion -Wundef \
            -Wstrict-prototypes -Wmissing-prototypes \
            -Wwrite-strings -Wuninitialized
   ```
+
 - Compile with **both GCC and Clang** in CI to catch compiler-specific bugs and maximize portability (`CC=gcc make && CC=clang make`).
 - Use `_Static_assert(sizeof(int) >= 4, "int must be at least 32 bits")` for compile-time invariant checks.
 
@@ -54,26 +56,32 @@
   ```
 
 - Document **ownership** clearly in comments: which function or struct owns each allocation and is responsible for freeing it. Use a consistent naming pattern (e.g., `*_create()` allocs, `*_destroy()` frees):
+
   ```c
   // Caller owns the returned Connection — must call connection_destroy()
   Connection *connection_create(const char *host, uint16_t port);
   void connection_destroy(Connection *conn);
   ```
+
 - Set pointers to `NULL` immediately after `free()` to prevent use-after-free and double-free bugs:
+
   ```c
   free(buf);
   buf = NULL;  // prevents accidental use-after-free
   ```
+
 - Prefer **stack allocation** for small, fixed-size objects. Heap-allocate only when the object lifetime must outlive its lexical scope, or when size is dynamic/large.
 
 ### Memory Error Detection
 
 - Always run CI tests with **AddressSanitizer** (`-fsanitize=address,leak`) and **Undefined Behavior Sanitizer** (`-fsanitize=undefined`):
+
   ```makefile
   sanitize:
-  	$(CC) $(CFLAGS) -fsanitize=address,leak,undefined -g -O1 src/*.c -o bin/sanitized_test
-  	./bin/sanitized_test
+   $(CC) $(CFLAGS) -fsanitize=address,leak,undefined -g -O1 src/*.c -o bin/sanitized_test
+   ./bin/sanitized_test
   ```
+
 - Use **Valgrind** (`valgrind --leak-check=full --error-exitcode=1 ./test`) for detailed memory analysis on Linux.
 - Use **`-fsanitize=thread`** (ThreadSanitizer) to detect data races in multithreaded code.
 
@@ -135,6 +143,7 @@
   ```
 
 - Protect all header files from double inclusion:
+
   ```c
   #pragma once          // preferred on modern compilers
   /* OR traditional guard: */
@@ -143,6 +152,7 @@
   /* ... */
   #endif /* MY_HEADER_H */
   ```
+
 - Minimize macro usage. Prefer `inline` functions for type safety and debuggability. Use macros only for functionality that genuinely cannot be expressed as a function (stringification, token pasting, X-macros).
 
 ## 5. Build, Testing & Security
@@ -171,6 +181,7 @@
 
 - Set `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` to generate `compile_commands.json` for IDE analysis and clang-tidy integration.
 - Format with **clang-format** (commit `.clang-format`). Lint with **clang-tidy** (commit `.clang-tidy`). Enforce both in CI:
+
   ```bash
   clang-format --dry-run --Werror src/**/*.c include/**/*.h
   clang-tidy src/*.c -- -std=c11 -Iinclude
@@ -180,17 +191,20 @@
 
 - Use **Unity** (embedded-friendly) or **cmocka** (mock support) for unit testing. Test all public API functions. Run tests with sanitizers enabled.
 - For security-critical code parsing untrusted input (file formats, network protocols, config parsers), add **fuzzing** with **AFL++** or **libFuzzer**:
+
   ```bash
   # LibFuzzer target
   clang -fsanitize=fuzzer,address src/parser.c tests/fuzz_parser.c -o fuzz_parser
   ./fuzz_parser -timeout=60 -max_total_time=3600 corpus/
   ```
+
 - Use **`cppcheck`** for additional static analysis: `cppcheck --enable=all --error-exitcode=1 src/`.
 - Run `nm -u` on your objects to audit external symbol dependencies. Use `size` to measure code/data section sizes for embedded targets.
 
 ### Portability & Cross-Platform Considerations
 
 - Write portable C by avoiding compiler-specific extensions unless explicitly required. Guard extensions with macros:
+
   ```c
   /* Compiler-agnostic branch prediction hints */
   #ifdef __GNUC__
@@ -201,6 +215,7 @@
   #  define UNLIKELY(x) (x)
   #endif
   ```
+
 - Handle **endianness** explicitly for network protocols and binary file formats. Never cast `int*` to read multi-byte network data:
 
   ```c

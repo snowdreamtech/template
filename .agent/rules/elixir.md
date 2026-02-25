@@ -42,6 +42,7 @@
   ```
 
 - Use **guards** (`when is_integer(x) and x > 0`) in function heads and `case`/`cond` expressions for type and value dispatch:
+
   ```elixir
   def divide(_, 0), do: {:error, :division_by_zero}
   def divide(a, b) when is_number(a) and is_number(b), do: {:ok, a / b}
@@ -99,6 +100,7 @@
 - Use **Supervisors** to build supervision trees. Define supervision strategies (`one_for_one`, `rest_for_one`, `one_for_all`) based on dependency relationships between workers.
 - Embrace **"let it crash"** — write crash-resilient systems through Supervisor restarts rather than defensive `try/rescue` at every callsite. Fix root causes in error logs, not in defensive code surrounding every operation.
 - Use **DynamicSupervisor** for dynamically starting supervised processes:
+
   ```elixir
   DynamicSupervisor.start_child(MyApp.WorkerSupervisor, {MyApp.Worker, job_id})
   ```
@@ -106,6 +108,7 @@
 ### Tasks & Async Patterns
 
 - Use **`Task`** for one-off concurrent work. Use **`Task.Supervisor`** to supervise async tasks and handle crashes gracefully:
+
   ```elixir
   # Supervised async task
   task = Task.Supervisor.async(MyApp.TaskSupervisor, fn ->
@@ -113,14 +116,18 @@
   end)
   result = Task.await(task, 30_000)  # timeout in ms
   ```
+
 - Use **`Task.async_stream`** for concurrent processing of a collection with concurrency control:
+
   ```elixir
   results =
     user_ids
     |> Task.async_stream(&fetch_user/1, max_concurrency: 10, timeout: 5000, on_timeout: :kill_task)
     |> Enum.to_list()
   ```
+
 - Use **`Registry`** or **`pg`** (process groups) for dynamic process discovery instead of hardcoded PIDs or registered names:
+
   ```elixir
   {:ok, _} = Registry.register(MyApp.Registry, {:job, job_id}, self())
   [{pid, _}] = Registry.lookup(MyApp.Registry, {:job, job_id})
@@ -131,6 +138,7 @@
 ### Phoenix Architecture
 
 - Keep **Phoenix Controllers** thin — delegate all business logic to **Context modules**. Controllers orchestrate; contexts contain domain logic:
+
   ```elixir
   # ✅ Thin controller
   def create(conn, %{"user" => user_params}) do
@@ -140,7 +148,9 @@
     end
   end
   ```
+
 - Use **Contexts** to group related business logic behind a clean public interface. Keep internal schemas and queries private:
+
   ```text
   lib/myapp/
   ├── accounts/               # Accounts context
@@ -178,6 +188,7 @@
   ```
 
 - Use **`Ecto.Multi`** for multi-step database operations that must succeed or fail atomically:
+
   ```elixir
   Multi.new()
   |> Multi.insert(:user, User.changeset(%User{}, attrs))
@@ -187,6 +198,7 @@
   end)
   |> Repo.transaction()
   ```
+
 - Use **`Ecto.Query`** for structured, composable database access. Avoid `Repo.all(Model)` on large tables without pagination.
 
 ### Real-Time
@@ -201,6 +213,7 @@
 - Lint with **Credo**: `mix credo --strict`. Commit committed `.credo.exs` configuration to the repository.
 - **Naming**: `snake_case` for variables, function names, modules attributes; `PascalCase` for module names; `?` suffix for predicate functions returning boolean; `!` suffix for functions that raise on error.
 - Document all public functions with `@doc` and all modules with `@moduledoc`. Add **`@spec`** typespecs to all public function signatures:
+
   ```elixir
   @doc """
   Creates a new user account.
@@ -211,6 +224,7 @@
     %User{} |> User.changeset(attrs) |> Repo.insert()
   end
   ```
+
 - Run **Dialyzer** (`dialyxir`) in CI for gradual static type checking: `mix dialyzer --halt-exit-status`. Address all warnings — never `@dialyzer {:nowarn_function, ...}` without a documented justification.
 
 ## 5. Testing & Tooling
@@ -240,12 +254,15 @@
   ```
 
 - Use **Mox** to mock **behaviours** — define explicit interfaces (`@behaviour`) for all external dependencies:
+
   ```elixir
   # In test support:
   Mox.defmock(MyApp.EmailMock, for: MyApp.EmailBehaviour)
   expect(MyApp.EmailMock, :send_welcome, fn _user -> :ok end)
   ```
+
 - Use **`Ecto.Adapters.SQL.Sandbox`** for database isolation — each test runs in a rolled-back transaction:
+
   ```elixir
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(MyApp.Repo)
@@ -253,15 +270,18 @@
     :ok
   end
   ```
+
 - Use **ExMachina** for test data factories. Define factories in `test/support/factory.ex`.
 
 ### CI Pipeline
 
 - Run the full quality gate in CI:
+
   ```bash
   mix format --check-formatted  # formatting check
   mix credo --strict             # linting
   mix dialyzer --halt-exit-status # type checking
   mix test --cover               # tests + coverage
   ```
+
 - Set minimum coverage threshold using the `ExCoveralls` library.

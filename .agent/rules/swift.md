@@ -10,6 +10,7 @@
   - Inheritance is required
   - Objective-C interoperability requires a reference type
 - Use **`guard`** for early exit and optional unwrapping at function entry points. This keeps the happy path at shallow indentation and makes preconditions clear:
+
   ```swift
   func process(user: User?) {
     guard let user else {
@@ -23,7 +24,9 @@
     performAction(for: user)
   }
   ```
+
 - Use **`enum` with associated values** to model discriminated unions and state machines clearly:
+
   ```swift
   enum AuthState {
     case unauthenticated
@@ -32,6 +35,7 @@
     case locked(until: Date, reason: LockReason)
   }
   ```
+
 - Follow the **Swift API Design Guidelines** rigorously: write names that read as grammatical English phrases at the call site. Prefer `removeItem(at:)` over `remove(itemAt:)`. Read more: [swift.org/documentation/api-design-guidelines](https://www.swift.org/documentation/api-design-guidelines/).
 - Use `extension` to organize protocol conformances and group related functionality. Each protocol conformance in its own `// MARK: - ProtocolName` extension.
 - Use **type aliases** to document domain intent: `typealias UserId = UUID`, `typealias Milliseconds = Double`.
@@ -213,6 +217,7 @@
 
 - Use `withDependencies` (TCA) or manual dependency injection for testability. Never access global singletons in testable code.
 - Run tests in CI with:
+
   ```bash
   xcodebuild test \
     -scheme MyApp \
@@ -220,6 +225,7 @@
     -resultBundlePath TestResults.xcresult \
     | xcbeautify
   ```
+
 - Enable **Thread Sanitizer** and **Address Sanitizer** in CI test schemes for runtime memory and concurrency issue detection.
 
 ### Tooling

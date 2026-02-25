@@ -36,6 +36,7 @@
 
 - Where the repository policy requires it, **sign commits with GPG** (`git commit -S`). Enforce signature verification on protected branches via branch protection rules.
 - Configure `.gitattributes` to normalize line endings and designate merge drivers for generated files:
+
   ```gitattributes
   * text=auto
   *.sh  text eol=lf
@@ -124,24 +125,30 @@
 ## 5. History Hygiene
 
 - Use **`rebase`** (not merge commits) to integrate upstream changes into feature branches to maintain a linear, readable history:
+
   ```bash
   git fetch origin
   git rebase origin/main   # rebase feature branch onto latest main
   git push --force-with-lease origin feature/my-branch   # force-push rewritten history
   ```
+
   Use `--force-with-lease` (never bare `--force`) to prevent overwriting others' work.
 - **Squash** trivial/fixup commits (`WIP`, `fix typo`, `address review comment`) before merging. Preserve meaningful individual commits that tell the story of a change. Configure **Squash and Merge** as the default merge strategy on GitHub/GitLab for repositories preferring linear history.
 - Never rewrite history on shared branches (`main`, `develop`, `release/*`). Force-push is only allowed on personal feature branches with prior team communication.
 - Store large binary files (videos, datasets, compiled artifacts > 50 MB) in **Git LFS**:
+
   ```bash
   git lfs install
   git lfs track "*.bin" "*.mp4" "*.zip" "model-weights/**"
   git add .gitattributes
   ```
+
   Document LFS usage in the project README and include LFS setup in onboarding instructions.
 - Tag every production release with a **signed, annotated tag**:
+
   ```bash
   git tag -a -s v1.2.3 -m "Release v1.2.3: Add OAuth2 login, fix token refresh race"
   git push origin v1.2.3
   ```
+
   Enforce tag signing verification via CI: `git tag -v v1.2.3`.

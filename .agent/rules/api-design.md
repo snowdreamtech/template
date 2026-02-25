@@ -73,6 +73,7 @@
 ### Response Envelopes
 
 - Wrap paginated list responses in a consistent envelope:
+
   ```json
   {
     "data": [{ "id": "1", "name": "Alice" }],
@@ -84,7 +85,9 @@
     }
   }
   ```
+
 - Return structured machine-readable errors with human-readable messages and optional field-level details:
+
   ```json
   {
     "error": {
@@ -97,6 +100,7 @@
     }
   }
   ```
+
 - Use **`ETag`** response headers for cacheable resources. Support conditional requests (`If-None-Match`, `If-Match`) for cache validation and optimistic concurrency:
 
   ```http
@@ -129,12 +133,14 @@
 ### Deprecation Policy
 
 - Announce deprecated endpoints via response headers (RFC 8594 compliant) for at least 6 months before removal:
+
   ```http
   HTTP/1.1 200 OK
   Deprecation: true
   Sunset: Sat, 01 Jan 2026 00:00:00 GMT
   Link: <https://docs.example.com/v2/migration>; rel="successor-version"
   ```
+
 - Publish a structured **changelog** with every API version release. Log usage of deprecated endpoints to identify active consumers before sunset.
 
 ## 5. Documentation, Security & Specification
@@ -180,13 +186,17 @@
 
 - Implement **rate limiting** on all endpoints (lower limits on auth endpoints like `/login`, `/register`, `/forgot-password`). Return `429 Too Many Requests` with `Retry-After` header when limits are exceeded.
 - Require authentication on all non-public endpoints. Use standard OAuth 2.0 Bearer tokens:
+
   ```http
   Authorization: Bearer <access_token>
   ```
+
   Never pass tokens in query parameters — they appear in server logs, browser history, and proxy logs.
 - Require **HTTPS exclusively** in production. Reject plain HTTP connections at the load balancer level. Enable HTTP Strict Transport Security (HSTS):
+
   ```http
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   ```
+
 - Implement **CORS** controls explicitly. Define allowed origins, methods, and headers. Never use wildcard `Access-Control-Allow-Origin: *` for authenticated APIs.
 - Set `X-Content-Type-Options: nosniff` and `X-Frame-Options: DENY` on all API responses to prevent content-type sniffing and clickjacking.

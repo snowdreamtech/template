@@ -85,6 +85,7 @@
 ## 4. Documentation
 
 - All public APIs, exported functions, and non-obvious code blocks MUST have clear **docstrings or inline comments** in **English**:
+
   ```go
   // ParseConfig reads the configuration from the given file path and returns
   // a validated Config struct. Returns ErrConfigNotFound if the file does not
@@ -94,6 +95,7 @@
   // defined in docs/config-schema.json.
   func ParseConfig(path string) (*Config, error) { ... }
   ```
+
 - `README.md` files and user-facing documentation MUST be in **Simplified Chinese (简体中文)**.
 - Comments explain **why**, not **what**. Avoid comments that merely restate the code:
 

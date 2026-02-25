@@ -7,6 +7,7 @@
 ### Directory Organization
 
 - Follow the **Angular Style Guide** (angular.io/guide/styleguide). Organize code by **feature domain** — not by technical type:
+
   ```text
   src/
   ├── app/
@@ -28,8 +29,10 @@
   │   │   └── orders/
   │   └── app.config.ts             # Global providers (router, HTTP, signals)
   ```
+
 - Use the **Angular CLI** (`ng generate component`, `ng generate service`, `ng generate pipe`) for all scaffolding to ensure consistent file naming, module imports, and testing setup.
 - Prefer **Standalone Components** (Angular 14+) over NgModule-based architecture for new projects. They reduce boilerplate, improve tree-shaking, and enable simpler lazy-loading:
+
   ```typescript
   @Component({
     selector: "app-user-card",
@@ -52,11 +55,13 @@
   - Container components: fetch data, manage state, communicate with services
   - Presentational components: receive data via `@Input()`, emit events via `@Output()`, no service injection
 - Use **`OnPush` change detection** strategy by default. This tells Angular to only check the component when an Input reference changes, an event fires, or observables/signals emit:
+
   ```typescript
   @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
   })
   ```
+
 - Avoid logic in templates. Move complex expressions to component class methods or `@Pipe` transforms. Keep templates declarative:
 
   ```html
@@ -94,6 +99,7 @@
   ```
 
 - Use Angular 17+ **`@defer` blocks** for declarative lazy-loading with configurable triggers:
+
   ```html
   @defer (on viewport) {
   <app-heavy-analytics-chart [data]="chartData" />
@@ -152,6 +158,7 @@
 
 - For application-wide state, use **NgRx** (Redux-style with selectors/effects) for complex apps, or **NgRx ComponentStore** / **NGXS** for feature-level state. Avoid duplicating state management with ad-hoc Subject chains.
 - Expose service state as **Signals** (preferred for Angular 16+) or **Observables**. Never expose a writable `Subject` as a public API:
+
   ```typescript
   // ✅ Signal-based service state
   private _users    = signal<User[]>([]);

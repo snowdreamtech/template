@@ -49,6 +49,7 @@
   ```
 
 - Implement **Dark Mode** using `prefers-color-scheme` and CSS variables. Map all color tokens to both light and dark variants:
+
   ```css
   :root {
     --color-bg: #ffffff;
@@ -61,6 +62,7 @@
     }
   }
   ```
+
 - Apply a consistent **CSS Reset** (`modern-normalize`, `@tailwind/base`, or `@layer base { * { box-sizing: border-box } }`) to eliminate cross-browser inconsistencies.
 
 ## 2. Componentization & Architecture
@@ -71,6 +73,7 @@
   - **Container (smart) components**: fetch data, manage state, communicate with services, no direct styling concerns
   - **Presentational (dumb) components**: receive data via props, emit events — no data-fetching, no store access, no side effects
 - Co-locate a component's styles, tests, and Storybook story in the same directory:
+
   ```text
   components/
   └── UserCard/
@@ -80,7 +83,9 @@
       ├── UserCard.test.tsx     # unit tests
       └── UserCard.stories.tsx  # Storybook story
   ```
+
 - Define clear, typed **props/interfaces** for every component. Document required vs optional props and provide usage examples:
+
   ```typescript
   interface UserCardProps {
     /** User object to display (required) */
@@ -91,6 +96,7 @@
     compact?: boolean;
   }
   ```
+
 - Version and document breaking changes in component APIs. Increment the component's major version for any breaking prop change and provide a migration guide.
 - Use **Storybook** to develop and document UI components in isolation. Stories serve as both living documentation and a component test harness.
 
@@ -110,12 +116,14 @@
   ```
 
 - All interactive elements MUST be operable via **keyboard navigation**. Tab order MUST be logical. Never remove `outline` without a visible custom focus indicator:
+
   ```css
   :focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px; /* separates from element edge */
   }
   ```
+
 - All `<img>` elements MUST have a descriptive `alt` attribute. Use `alt=""` for decorative images. Complex visuals (charts, infographics) MUST have a text alternative.
 - Color contrast MUST meet WCAG 2.2 AA minimums: **4.5:1** for normal text, **3:1** for large text (≥ 18pt or ≥ 14pt bold) and UI components.
 - Use **ARIA roles and attributes** only when semantic HTML is insufficient. Test critical flows with a screen reader (VoiceOver on macOS/iOS, NVDA on Windows, TalkBack on Android) before releasing.
@@ -135,9 +143,11 @@
 
 - Provide **immediate visual feedback** for all user actions: loading spinners, skeleton screens, success toasts, error messages, and disabled states during async operations. Users should never wonder "did my click work?".
 - Optimize images: use modern formats (WebP, AVIF), specify `width`/`height` to prevent CLS, lazy-load below-the-fold images, and serve via CDN with responsive `srcset`:
+
   ```html
   <img src="hero.jpg" srcset="hero-480.webp 480w, hero-1024.webp 1024w" sizes="(max-width: 480px) 480px, 1024px" width="1024" height="576" alt="Product screenshot showing the dashboard" loading="lazy" decoding="async" />
   ```
+
 - Lazy-load non-critical components and routes with code splitting. Establish a **JavaScript bundle size budget** (e.g., initial bundle < 200 KB gzipped) and enforce it in CI using `bundlesize` or `bundlemon`.
 - Minimize third-party scripts: load non-critical third-party scripts with `defer` or `async`. Audit with WebPageTest and Lighthouse.
 

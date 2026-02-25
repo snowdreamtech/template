@@ -11,6 +11,7 @@
   - `security-scan.yml` — scheduled vulnerability scans
 - Give every workflow a clear `name:` and every job within it a descriptive `name:`. This makes failed workflow runs instantly identifiable in the Actions UI without expanding each job.
 - Use **trigger filters** to avoid running expensive workflows unnecessarily:
+
   ```yaml
   on:
     push:
@@ -25,12 +26,15 @@
         - "**.md"
         - "docs/**"
   ```
+
 - Define `concurrency` to cancel in-progress runs for the same ref when new commits arrive — prevents duplicate CI runs on rapid pushes:
+
   ```yaml
   concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: ${{ github.ref != 'refs/heads/main' }} # don't cancel main branch deploys
   ```
+
 - Organize complex pipelines into multiple focused workflow files. Use reusable workflows (`workflow_call`) to compose them without duplication.
 
 ## 2. Security Hardening
@@ -48,6 +52,7 @@
   ```
 
 - Use **Dependabot** to keep action SHA pins current. Configure in `.github/dependabot.yml`:
+
   ```yaml
   version: 2
   updates:
@@ -122,6 +127,7 @@
 ## 3. Reusability & DRY
 
 - Use **Composite Actions** (`.github/actions/<name>/action.yml`) to extract reusable step sequences within a repository:
+
   ```yaml
   # .github/actions/setup-node/action.yml
   name: "Setup Node.js"
@@ -138,6 +144,7 @@
       - run: npm ci
         shell: bash
   ```
+
 - Use **Reusable Workflows** (`workflow_call`) for sharing entire job sequences across repositories:
 
   ```yaml
@@ -161,6 +168,7 @@
   ```
 
 - Use the **`env:`** key for shared environment variables at the workflow, job, or step level to avoid duplication:
+
   ```yaml
   env:
     NODE_ENV: production
@@ -172,6 +180,7 @@
 ### Dependency Caching
 
 - Use **`actions/cache`** for all dependency managers. A missing cache causes unnecessary full installs on every run:
+
   ```yaml
   - uses: actions/cache@5a3ec84eff668545956fd18c39b1ba4a59d65f26 # v4.2.3
     with:
@@ -182,6 +191,7 @@
       restore-keys: |
         ${{ runner.os }}-node-
   ```
+
   Use `hashFiles()` to key the cache on the lockfile — cache busts automatically when dependencies change.
 
 ### Parallel Execution
@@ -199,6 +209,7 @@
   ```
 
 - Use **matrix strategies** for cross-platform and cross-version testing. Use `fail-fast: false` to see all failure combinations:
+
   ```yaml
   strategy:
     fail-fast: false
@@ -215,6 +226,7 @@
 ### Timeouts & Error Handling
 
 - Set `timeout-minutes:` on every job and step. The default is 360 minutes — far too long:
+
   ```yaml
   jobs:
     build:
@@ -225,6 +237,7 @@
           timeout-minutes: 10 # per-step timeout
           run: go test ./...
   ```
+
 - Use `continue-on-error: true` sparingly. Always add an inline comment explaining why the step is allowed to fail.
 
 ### Environments & Deployment Protection
@@ -233,6 +246,7 @@
   - Required reviewers (human approval before deploy)
   - Deployment protection rules (branch restrictions, time windows)
   - Environment-scoped secrets (not visible to other jobs/envs)
+
   ```yaml
   jobs:
     deploy:
@@ -243,13 +257,17 @@
 ### Structured Outputs & Audit
 
 - Use `$GITHUB_OUTPUT` for job outputs (the deprecated `::set-output` is removed):
+
   ```bash
   echo "image-tag=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
   ```
+
 - Use `$GITHUB_STEP_SUMMARY` to write Markdown summaries visible in the Actions UI:
+
   ```bash
   echo "## Test Results" >> "$GITHUB_STEP_SUMMARY"
   echo "✅ All ${PASSING} tests passed" >> "$GITHUB_STEP_SUMMARY"
   ```
+
 - Use **`ossf/scorecard-action`** on the default branch to measure supply chain security: pinned actions, branch protection, vulnerability alerts, dependency review.
 - Periodically audit active workflows and disable/delete unused ones. Monitor Actions billing with `gh api /repos/{owner}/{repo}/actions/billing/usage`.

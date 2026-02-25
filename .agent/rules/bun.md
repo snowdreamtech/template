@@ -11,15 +11,20 @@
   - GitHub Actions: `oven-sh/setup-bun@v2` with `bun-version: "1.1.38"`
   - Never rely on a system-wide Bun installation of unknown version.
 - Use **`bun install`** for package management. Commit `bun.lockb` to version control for reproducible installs. Use `--frozen-lockfile` in CI to prevent accidental lockfile mutations:
+
   ```bash
   bun install --frozen-lockfile
   ```
+
 - Use **`bunx`** (Bun's `npx` equivalent) to execute package binaries without global installation:
+
   ```bash
   bunx prisma generate
   bunx drizzle-kit push
   ```
+
 - Use **`bun run <script>`** for `package.json` script execution. Define consistent script names across projects:
+
   ```json
   {
     "scripts": {
@@ -32,6 +37,7 @@
     }
   }
   ```
+
 - Configure Bun via **`bunfig.toml`** for project-level defaults:
 
   ```toml
@@ -61,10 +67,13 @@
 
 - Bun supports TypeScript **natively without a separate compile step**. The runtime strips types at startup with zero configuration.
 - **Type-checking is separate** — Bun's native TS execution does not type-check. Always add a `typecheck` script and run it in CI:
+
   ```bash
   bun run tsc --noEmit   # fails on type errors without emitting files
   ```
+
 - Configure `tsconfig.json` aligned with Bun's runtime and bundler:
+
   ```json
   {
     "compilerOptions": {
@@ -78,11 +87,15 @@
     }
   }
   ```
+
 - Install `@types/bun` to get IDE support for Bun globals (`Bun.serve`, `Bun.file`, `Bun.password`, etc.):
+
   ```bash
   bun add -d bun-types
   ```
+
 - Use **`bun --hot`** for hot module reloading during development (replaces `nodemon`/`tsx`). Use **`bun --watch`** for simple file watching that restarts the process on change:
+
   ```bash
   bun --hot src/server.ts   # hot reload without restart
   bun --watch src/server.ts # restart on change
@@ -126,11 +139,14 @@
   - **Hono** — multi-runtime, runs on Bun, Cloudflare Workers, Deno, Node.js
   - **Fastify** — mature ecosystem with a Bun adapter
 - Use **`Bun.file()`** for efficient file serving without loading into memory:
+
   ```typescript
   const file = Bun.file("./public/logo.png");
   return new Response(file); // streams from disk efficiently
   ```
+
 - Bun's `Bun.serve()` supports **WebSockets natively** via the `websocket` option — no additional library needed:
+
   ```typescript
   Bun.serve({
     fetch(req, server) {
@@ -175,12 +191,15 @@
 
 - Tests are auto-discovered from `*.test.ts`, `*.spec.ts`, `*_test.ts`, and `test.ts` files — no configuration needed.
 - Run with useful CI flags:
+
   ```bash
   bun test --bail          # stop on first failure
   bun test --timeout 10000 # fail tests taking > 10 seconds
   bun test --coverage      # generate coverage report
   ```
+
 - Configure coverage thresholds in `bunfig.toml`:
+
   ```toml
   [test]
   coverageThreshold = 0.80       # fail if < 80% coverage
@@ -208,10 +227,12 @@
 ### CI Pipeline
 
 ```bash
+
 # Full quality gate
 bun install --frozen-lockfile
 bun run typecheck       # tsc --noEmit
 bun run lint            # eslint
 bun test --bail --coverage  # tests + coverage gate
 bun build ...           # production build verification
+
 ```

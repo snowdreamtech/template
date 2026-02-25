@@ -72,6 +72,7 @@
 ### Graceful Shutdown
 
 - Call `await prisma.$disconnect()` on process shutdown to cleanly release all connections:
+
   ```typescript
   process.on("SIGTERM", async () => {
     await prisma.$disconnect();
@@ -126,11 +127,14 @@
   ```
 
 - Use **`findUniqueOrThrow`** and **`findFirstOrThrow`** when the record is expected to exist. They throw `PrismaClientKnownRequestError` on miss rather than returning `null`:
+
   ```typescript
   const user = await prisma.user.findUniqueOrThrow({ where: { id } });
   // No null check needed — throws if not found
   ```
+
 - Reuse query fragments via **composable `where` objects**:
+
   ```typescript
   const activeUserFilter = { deletedAt: null, isActive: true };
   const users = await prisma.user.findMany({ where: { ...activeUserFilter, role: "ADMIN" } });
@@ -151,10 +155,13 @@
 ## 4. Transactions
 
 - Use **`prisma.$transaction([])`** for a list of independent operations that must all succeed or fail together:
+
   ```typescript
   const [post, notification] = await prisma.$transaction([prisma.post.create({ data: postData }), prisma.notification.create({ data: notifData })]);
   ```
+
 - Use **interactive transactions** for complex conditional logic spanning multiple queries:
+
   ```typescript
   const result = await prisma.$transaction(
     async (tx) => {
@@ -166,6 +173,7 @@
     { timeout: 5000 },
   ); // always set timeout to prevent lock hold
   ```
+
 - Keep transactions **short and minimal** — long transactions hold database locks. Avoid N+1 queries inside transactions.
 - Avoid nested transactions — Prisma does not support savepoints. Design transaction logic to be flat.
 
@@ -174,26 +182,34 @@
 ### Migration Workflow
 
 - Use **`prisma migrate dev`** during development (creates migration files, applies them, regenerates Prisma Client):
+
   ```bash
   prisma migrate dev --name add_user_preferences
   ```
+
 - Use **`prisma migrate deploy`** in production CI/CD — applies pending migrations without generating new ones:
+
   ```bash
   # In CI before starting the application:
   prisma migrate deploy && node dist/server.js
   ```
+
 - Commit all `prisma/migrations/` files to version control. **Never edit a migration file** after it has been applied to any environment — create a new migration instead.
 - Use **`prisma migrate status`** in startup health checks to verify migrations are applied before the application serves traffic.
 
 ### Seeding & Testing
 
 - Use **`prisma db seed`** with `prisma/seed.ts` for reference/fixture data in staging. Define the seed command in `package.json`:
+
   ```json
   { "prisma": { "seed": "ts-node prisma/seed.ts" } }
   ```
+
 - In tests, use **Testcontainers** to spin up an isolated database instance per test suite:
+
   ```typescript
   const container = await new PostgreSqlContainer().start();
   process.env.DATABASE_URL = container.getConnectionUri();
   ```
+
 - Alternatively, use `prisma.$transaction` with `rollback` or reset the database between test runs with `prisma migrate reset --force --skip-seed` in CI.

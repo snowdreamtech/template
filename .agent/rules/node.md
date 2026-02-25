@@ -7,16 +7,20 @@
 ### Version Pinning
 
 - Pin the Node.js version using **one** of: `.nvmrc`, `.node-version`, or `engines` field in `package.json`. All three should agree to avoid ambiguity between tools:
+
   ```
   # .nvmrc
   22.x
   ```
+
   ```json
   // package.json
   { "engines": { "node": ">=22.0.0" } }
   ```
+
 - Use the latest **LTS (Long-Term Support)** release for production. LTS releases receive 3 years of security fixes. Never run production on odd-numbered (Current/unstable) releases.
 - Use a version manager (`fnm` — fastest, Rust-based; or `mise` for polyglot projects) for consistent environments across development, CI, and developer machines:
+
   ```bash
   # .tool-versions (mise/rtx format)
   nodejs 22.12.0
@@ -37,11 +41,14 @@
   - `pnpm-lock.yaml` (pnpm)
   - Commit whichever lock file your project uses — deterministic builds require it.
 - Use **`npm ci`** (not `npm install`) in CI pipelines — it does a clean install from the lock file and fails if the lock file is out of sync:
+
   ```bash
   npm ci --ignore-scripts   # faster, more secure — disable postinstall scripts in CI
   ```
+
 - Never install project-specific tools globally. Add them to `devDependencies` and invoke via `npx` or npm scripts.
 - Define all scripts in `package.json`:
+
   ```json
   {
     "scripts": {
@@ -58,9 +65,11 @@
 ### Security & Updates
 
 - Run **`npm audit --audit-level=high`** in CI. Block on `high` and `critical` vulnerabilities:
+
   ```bash
   npm audit --audit-level=high --production  # only production deps
   ```
+
 - Use **Renovate** or **Dependabot** to automate dependency update PRs with grouping and scheduling. Configure minor/patch updates weekly, major updates with careful review.
 
 ## 3. Code Style & Module System
@@ -84,6 +93,7 @@
   ```
 
 - Import Node.js built-in modules with the **`node:` prefix** to distinguish them from npm packages:
+
   ```typescript
   import { readFile } from "node:fs/promises";
   import { createHash } from "node:crypto";
@@ -93,6 +103,7 @@
 ### TypeScript
 
 - Use **TypeScript** for all non-trivial Node.js projects. Enable strict mode:
+
   ```json
   // tsconfig.json
   {
@@ -108,7 +119,9 @@
     }
   }
   ```
+
 - Use **`tsx`** for running TypeScript directly in development (zero config, fast). Always compile to JavaScript for production (`tsc`):
+
   ```bash
   npx tsx src/index.ts          # dev
   npx tsc && node dist/index.js # prod
@@ -117,10 +130,12 @@
 ### Linting & Formatting
 
 - Lint with **ESLint** (flat config `eslint.config.js`) and format with **Prettier**. Enforce via CI and pre-commit hooks (Husky + lint-staged):
+
   ```bash
   # .husky/pre-commit
   npx lint-staged
   ```
+
   ```json
   // package.json lint-staged config
   {
@@ -254,6 +269,7 @@
 ## 7. Error Handling & Observability
 
 - Register global safety nets and **exit on unrecoverable errors**:
+
   ```typescript
   process.on("uncaughtException", (err) => {
     logger.fatal({ err }, "Uncaught exception");
@@ -264,6 +280,7 @@
     process.exit(1);
   });
   ```
+
 - Use **structured logging** with `pino` (fastest Node.js logger):
 
   ```typescript
@@ -275,6 +292,7 @@
   ```
 
 - Add a **request ID** to every HTTP request and propagate it in all downstream log entries:
+
   ```typescript
   app.use((req, _res, next) => {
     req.requestId = req.headers["x-request-id"] ?? crypto.randomUUID();
@@ -282,6 +300,7 @@
     next();
   });
   ```
+
 - Instrument with **OpenTelemetry** for automatic distributed tracing:
 
   ```typescript

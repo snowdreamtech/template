@@ -26,6 +26,7 @@
 ### Compiler Warnings
 
 - Enable and enforce comprehensive warnings in CI:
+
   ```cmake
   target_compile_options(mylib PRIVATE
     -Wall -Wextra -Wpedantic -Werror
@@ -33,6 +34,7 @@
     $<$<CXX_COMPILER_ID:Clang>:-Wweak-vtables -Wold-style-cast>
   )
   ```
+
 - Compile with **both GCC and Clang** in CI. They catch different issues.
 - Use **C++20 Modules** for new large-scale projects to reduce compilation times and eliminate macro pollution. Requires CMake 3.28+ with module support.
 
@@ -59,6 +61,7 @@
 
 - **Always use factory functions** `std::make_unique<T>()` and `std::make_shared<T>()` — they are exception-safe and prevent resource leaks in combined expressions.
 - Avoid cyclic `shared_ptr` references — break cycles with **`std::weak_ptr`**:
+
   ```cpp
   struct Node {
     std::shared_ptr<Node> next;    // owns next
@@ -74,22 +77,26 @@
 ### Memory Sanitizers
 
 - Run CI tests with **AddressSanitizer** and **Undefined Behavior Sanitizer**:
+
   ```cmake
   if(CMAKE_BUILD_TYPE STREQUAL "Sanitize")
     add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer -g -O1)
     add_link_options(-fsanitize=address,undefined)
   endif()
   ```
+
 - Use **Valgrind memcheck** on Linux builds for detailed memory error analysis. Use **ThreadSanitizer** (`-fsanitize=thread`) to detect data races.
 
 ## 3. Safety & Undefined Behavior
 
 - Use **`std::vector::at()`** or **`std::array::at()`** for bounds-checked access in debug/test builds (throws `std::out_of_range`). Use `operator[]` only in hot paths where bounds are provably known.
 - Avoid **`reinterpret_cast`**, **`const_cast`**, and C-style casts. If unavoidable, add a comment precisely explaining the invariants that make the cast safe:
+
   ```cpp
   // SAFETY: `bytes` is a `struct Packet` serialized via `memcpy` — trivially copyable
   const Packet* pkt = reinterpret_cast<const Packet*>(bytes.data());
   ```
+
 - Use **`[[nodiscard]]`** on functions returning error codes or resource handles to prevent silent ignore:
 
   ```cpp
@@ -136,6 +143,7 @@
 
 - Use **vcpkg** or **Conan** for dependency management. Never manually copy source code into the repository.
 - Format with **clang-format** (commit `.clang-format`). Lint with **clang-tidy** (commit `.clang-tidy`). Enforce in CI:
+
   ```bash
   clang-format --dry-run --Werror $(find src include -name "*.cpp" -o -name "*.hpp")
   clang-tidy $(find src -name "*.cpp") -- -std=c++20 -Iinclude
@@ -146,6 +154,7 @@
 ### Unit Testing
 
 - Use **Catch2** (header-optional, expressive macros) or **Google Test (gtest)** for unit tests:
+
   ```cpp
   // With Catch2
   TEST_CASE("UserParser — valid JSON", "[parser]") {
@@ -160,12 +169,16 @@
     }
   }
   ```
+
 - Run all tests in CI with sanitizers enabled:
+
   ```bash
   cmake -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined" -DCMAKE_BUILD_TYPE=Debug ..
   ctest --output-on-failure
   ```
+
 - Use **`std::ranges`** and algorithm pipelines over raw loops where possible — they are more expressive, composable, and testable:
+
   ```cpp
   // ✅ Range pipeline — explicit intent, no loop variable
   auto admins = users
@@ -177,6 +190,7 @@
 ### Fuzzing
 
 - For security-critical code parsing untrusted input (file formats, network protocols, config parsers), add **fuzzing** with **libFuzzer**:
+
   ```cpp
   extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     std::string input(reinterpret_cast<const char*>(data), size);
@@ -185,6 +199,7 @@
     return 0;
   }
   ```
+
   ```bash
   clang++ -fsanitize=fuzzer,address src/parser.cpp tests/fuzz_parser.cpp -o fuzz_parser
   ./fuzz_parser -timeout=60 -max_total_time=3600 corpus/

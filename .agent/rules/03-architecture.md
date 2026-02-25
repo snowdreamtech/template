@@ -26,6 +26,7 @@
 ### Standard Project Layout
 
 ```text
+
 project-root/
 ├── .agent/              # AI agent configuration (primary)
 │   ├── rules/           # Unified AI rules (Single Source of Truth)
@@ -42,6 +43,7 @@ project-root/
 ├── tests/               # Test files (mirrors src/ structure)
 ├── docs/                # Documentation (Chinese user-facing, English technical)
 └── scripts/             # Build and utility scripts
+
 ```
 
 ## 3. AI IDE Integration (Symlink Convention)

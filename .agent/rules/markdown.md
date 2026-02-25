@@ -19,6 +19,7 @@
   ```
 
 - Use **only one `#` heading per document**. All subsequent headings follow a strict descending hierarchy (`##` → `###` → `####`) — never skip levels:
+
   ```markdown
   # Document Title (only one per file)
 
@@ -28,6 +29,7 @@
 
   #### Detail Point (four = fourth level — use sparingly)
   ```
+
 - Separate every block element (headings, paragraphs, code blocks, lists, blockquotes, tables) with a **single blank line above and below**:
 
   ````markdown
@@ -70,6 +72,7 @@
 ### Configuration
 
 - Commit a **`.markdownlint.json`** at the repository root to enforce consistent rules across all contributors and CI:
+
   ```json
   {
     "default": true,
@@ -79,7 +82,9 @@
     "MD025": true
   }
   ```
+
 - Run **`markdownlint-cli2`** in CI on all Markdown files:
+
   ```bash
   markdownlint-cli2 "**/*.md" "#node_modules" "#.git" "#dist"
   ```
@@ -120,12 +125,14 @@
 ### Code Blocks
 
 - Use **fenced code blocks** with an explicit language identifier for all code samples. Never use indented code blocks (4-space indent — confusing and fragile):
+
   ````markdown
   ```python
   def greet(name: str) -> str:
       return f"Hello, {name}"
   ```
   ````
+
   ```
   Supported language identifiers: `bash`, `sh`, `python`, `javascript`, `typescript`, `go`, `rust`, `sql`, `yaml`, `json`, `dockerfile`, `html`, `css`, `markdown`, `text`.
   ```
@@ -133,17 +140,21 @@
 ### Lists
 
 - Use **asterisks** (`*`) or **hyphens** (`-`) consistently for unordered lists. Pick one per repository and configure markdownlint `MD004` to enforce it:
+
   ```markdown
   - First item
   - Second item
     - Nested item (indented 2 spaces)
   ```
+
 - For ordered lists, use `1.` for every item — most renderers auto-increment, and it minimizes diff noise when items are reordered:
+
   ```markdown
   1. First step
   1. Second step (renderer shows "2.")
   1. Third step (renderer shows "3.")
   ```
+
 - Use **blockquotes** (`>`) for callouts, notes, or important information. Use **GitHub-style alerts** where supported:
 
   ```markdown
@@ -183,18 +194,23 @@
 ### Images
 
 - Every image MUST include descriptive **alt text** — required for accessibility (screen readers) and shown when images fail to load:
+
   ```markdown
   ✅ ![Screenshot of the login page showing the email and password fields](docs/images/login.png)
   ❌ ![image](docs/images/login.png)
   ❌ ![][login] # missing alt text
   ```
+
 - For images with detailed context, add a figure caption using a blockquote below the image:
+
   ```markdown
   ![Architecture diagram showing three services connected to a shared database](docs/arch.png)
 
   > _Figure 1: Application architecture overview_
   ```
+
 - Validate all links in CI using **`lychee`** or **`markdown-link-check`** to catch broken URLs and dead references:
+
   ```bash
   lychee --timeout 10 --verbose "**/*.md"
   ```
@@ -210,6 +226,7 @@
 ### Tables
 
 - Every table MUST have a **header row** with descriptive column names. Use alignment pipes consistently:
+
   ```markdown
   | Feature    | Supported | Notes          |
   | :--------- | :-------: | :------------- |
@@ -217,6 +234,7 @@
   | OAuth 2.0  |    ✅     | v2.0+ only     |
   | SAML SSO   |    ❌     | Not on roadmap |
   ```
+
 - Avoid tables for information that reads better as a list — tables add visual noise when there is only one data column.
 
 ### Document Navigation

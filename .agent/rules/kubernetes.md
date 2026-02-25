@@ -7,6 +7,7 @@
 ### Resource Requests & Limits
 
 - Always specify **`resources.requests` and `resources.limits`** for CPU and memory on every container. Never deploy without resource constraints — it risks node starvation and unpredictable OOM kills:
+
   ```yaml
   resources:
     requests:
@@ -16,6 +17,7 @@
       cpu: "500m" # max 0.5 CPU cores
       memory: "512Mi" # exceeding this triggers OOM kill
   ```
+
   Use Vertical Pod Autoscaler (VPA) in recommendation mode to right-size requests based on actual usage over time.
 
 ### Health Probes
@@ -52,6 +54,7 @@
 ### Pod Disruption Budgets
 
 - Set **`PodDisruptionBudget`** (PDB) for critical services to ensure minimum availability during node drains and rolling updates:
+
   ```yaml
   apiVersion: policy/v1
   kind: PodDisruptionBudget
@@ -67,6 +70,7 @@
 ### Security Context
 
 - Never run containers as root. Set security context on every container:
+
   ```yaml
   securityContext:
     runAsNonRoot: true
@@ -84,6 +88,7 @@
 ### ConfigMap & Secrets
 
 - Use **`ConfigMap`** for non-sensitive configuration (log levels, feature flags, service URLs). Use **`Secret`** for sensitive data (API keys, passwords, certificates) — reference via `valueFrom.secretKeyRef`:
+
   ```yaml
   env:
     - name: LOG_LEVEL
@@ -97,7 +102,9 @@
           name: app-secrets
           key: database-url
   ```
+
   Or use `envFrom` for bulk loading:
+
   ```yaml
   envFrom:
     - configMapRef: { name: app-config }
@@ -115,6 +122,7 @@
 ### Deployment Best Practices
 
 - Always specify `apiVersion`, `kind`, `metadata.name`, and `metadata.labels` explicitly. Use `metadata.namespace` on every production resource — never rely on the `default` namespace:
+
   ```yaml
   apiVersion: apps/v1
   kind: Deployment
@@ -147,6 +155,7 @@
 ### Autoscaling
 
 - Use **`HorizontalPodAutoscaler`** (HPA) for traffic-driven autoscaling. Scale based on CPU/memory or custom metrics from `kube-metrics-adapter` or Keda:
+
   ```yaml
   apiVersion: autoscaling/v2
   kind: HorizontalPodAutoscaler
@@ -163,6 +172,7 @@
           name: cpu
           target: { type: Utilization, averageUtilization: 70 }
   ```
+
 - Use **KEDA** (Kubernetes Event-Driven Autoscaling) for queue-depth-based scaling (Kafka consumer lag, SQS queue length, Redis list length).
 - Use **Vertical Pod Autoscaler (VPA)** in `Recommendation` mode first — observe recommendations before enabling automatic updates.
 
@@ -171,6 +181,7 @@
 ### Standard Labels
 
 - Apply consistent labels using the **standard Kubernetes well-known labels** on all resources:
+
   ```yaml
   labels:
     app.kubernetes.io/name: my-api
@@ -180,6 +191,7 @@
     app.kubernetes.io/part-of: my-platform
     app.kubernetes.io/managed-by: helm
   ```
+
 - **Do not change `selector.matchLabels`** on existing Deployments after first creation — it requires delete-and-recreate which causes downtime. Plan label schema carefully upfront.
 
 ### Observability
@@ -193,6 +205,7 @@
 ### Network & RBAC Security
 
 - Apply **`NetworkPolicy`** for all namespaces starting with a default-deny-all rule:
+
   ```yaml
   apiVersion: networking.k8s.io/v1
   kind: NetworkPolicy
@@ -203,6 +216,7 @@
       - Ingress
       - Egress # deny all by default, then explicitly allow
   ```
+
 - Use **RBAC** with least privilege. Never use `cluster-admin` for application service accounts. Audit RBAC bindings with `kubectl auth can-i --list --namespace production`.
 
 ### Tooling & Policy Enforcement
@@ -210,13 +224,17 @@
 - Manage manifests with **Helm** (versioned chart packaging) or **Kustomize** (overlay-based configuration). Lint manifests with **`kubeconform`** and **`kube-score`** in CI.
 - Use **Kyverno** or **OPA/Gatekeeper** for admission policy enforcement — require standard labels, prohibit `latest` image tags, enforce resource limits on all containers.
 - Run **Trivy** and **Kubescape** in CI to scan manifests for misconfigurations and CVEs before deploying:
+
   ```bash
   trivy config ./kubernetes/                   # config scanning
   kubescape scan ./kubernetes/ --threshold 60  # fail if score < 60
   ```
+
 - Sign container images with **cosign** and enforce signature verification in the cluster via admission webhooks. Attach a **SBOM** (Software Bill of Materials) using `syft`:
+
   ```bash
   syft my-service:v1.2.3 -o cyclonedx-json > sbom.json
   cosign attest --type cyclonedx --predicate sbom.json my-service:v1.2.3
   ```
+
 - Use **Karpenter** (AWS) or **Cluster Autoscaler** for node-level autoscaling — provision right-sized nodes on-demand based on pending pod requirements instead of over-provisioning.

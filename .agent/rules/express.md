@@ -7,6 +7,7 @@
 ### Structure
 
 - Organize by **feature/domain**, not by technical type (`controllers/`, `models/`, etc.):
+
   ```text
   src/
   ├── app.ts               # Express app factory — exports app, no listen()
@@ -72,6 +73,7 @@
   ```
 
 - Use **TypeScript** for all Express projects. Type request bodies with Zod-inferred types and augment `Request` with custom properties:
+
   ```typescript
   // types/express.d.ts
   declare namespace Express {
@@ -86,6 +88,7 @@
 
 - Use **`express.Router()`** to create modular route groups. Mount with `app.use('/api/v1/users', usersRouter)`.
 - Keep route handlers **thin**: validate input → call service → serialize response. Zero business logic in controllers:
+
   ```typescript
   // users.controller.ts
   export async function createUser(req: Request, res: Response, next: NextFunction) {
@@ -97,6 +100,7 @@
     res.status(201).json({ data: user });
   }
   ```
+
 - Handle **async errors** explicitly. Use `express-async-errors` (patches Express globally) or wrap handlers with an `asyncHandler` utility:
 
   ```typescript
@@ -129,6 +133,7 @@
 
 - Use **Helmet** for security headers. Configure `Content-Security-Policy` explicitly — don't use defaults in production.
 - Use **`cors`** with an explicit `origin` allowlist — never use `origin: true` in production:
+
   ```typescript
   app.use(
     cors({
@@ -138,6 +143,7 @@
     }),
   );
   ```
+
 - Define a **centralized error-handling middleware** with 4 parameters as the last middleware:
 
   ```typescript
@@ -181,6 +187,7 @@
 - Configure **HSTS**, **CSP**, and other security headers via Helmet. Disable the `X-Powered-By` header: `app.disable('x-powered-by')` (Helmet does this by default).
 - **Never log sensitive data** — no passwords, tokens, cookies, API keys, or PII in request logs. Use a redaction list in your logger config.
 - Use `express.json({ limit: '10kb' })` to reject large payloads. Add `Content-Type` validation middleware to reject unexpected content types:
+
   ```typescript
   app.use((req, res, next) => {
     if (["POST", "PUT", "PATCH"].includes(req.method) && !req.is("application/json")) {
@@ -230,6 +237,7 @@
 
 - Integrate **OpenTelemetry** (`@opentelemetry/sdk-node`, `@opentelemetry/auto-instrumentations-node`) for distributed tracing. Express, HTTP clients, and database calls are automatically instrumented.
 - Expose health endpoints for container orchestrators:
+
   ```typescript
   app.get("/health/live", (req, res) => res.json({ status: "ok" }));
   app.get("/health/ready", async (req, res) => {

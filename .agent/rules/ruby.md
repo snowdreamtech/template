@@ -89,6 +89,7 @@
   ```
 
 - Use **Pattern Matching** (`case/in`) for complex structure matching (Ruby 3+):
+
   ```ruby
   case response
   in { status: 200, body: { user: { id: Integer => id, name: String => name } } }
@@ -99,8 +100,10 @@
     puts "Server error"
   end
   ```
+
 - Mix in standard modules to add well-understood capabilities: `Comparable` (adds `<`, `>`, `between?`, `clamp` via `<=>` definition), `Enumerable` (all collection methods via `each` definition).
 - Use **keyword arguments** for methods with multiple parameters to improve call-site readability:
+
   ```ruby
   def create_user(name:, email:, role: :user, verified: false)
     User.new(name: name, email: email, role: role, verified: verified)
@@ -180,28 +183,36 @@
 ### Security
 
 - Run **`bundle-audit`** in CI as a hard gate:
+
   ```bash
   bundle exec bundle-audit update && bundle exec bundle-audit check --ignore GHSA-xxxx
   ```
+
 - Use **`brakeman`** for static analysis of Rails/Sinatra security:
+
   ```bash
   bundle exec brakeman --exit-on-warn --only-files app
   ```
+
   Fix all `High` confidence findings before merging. Document consciously ignored warnings in `.brakeman.ignore`.
 - Sanitize all user output. In Rails, ERB auto-escapes — never use `raw`, `html_safe`, or `sanitize(:safe_list)` with untrusted user content.
 - Use **encrypted credentials** (Rails 7+: `config/credentials.yml.enc` with `RAILS_MASTER_KEY`) for production secrets management:
+
   ```bash
   rails credentials:edit --environment production
   ```
+
   Reference via `Rails.application.credentials.dig(:aws, :access_key_id)`.
 
 ### Ruby Version & Dependency Management
 
 - Pin the **Ruby version** in `.ruby-version` (rbenv/rvm/mise) and `Gemfile`:
+
   ```ruby
   # Gemfile
   ruby "~> 3.3"
   ```
+
 - Use **Bundler** for all dependency management. Pin `Gemfile.lock` to the repository — this is the lockfile for reproducible installs.
 - Audit gems before adding them: check maintenance status, download count, license, and security history. Prefer gems with active maintenance and a clear security disclosure policy.
 

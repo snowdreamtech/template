@@ -7,11 +7,13 @@
 ### Package & Dependency Management
 
 - Use **`{renv}`** for dependency management in all projects. Create and commit `renv.lock` for fully reproducible environments:
+
   ```r
   renv::init()           # initialize renv in the project
   renv::snapshot()       # snapshot current package versions to renv.lock
   renv::restore()        # restore packages from renv.lock (used in CI)
   ```
+
   CI setup: `Rscript -e "renv::restore()"` before running any analysis.
 - Pin the R version alongside `{renv}`. Use `renv::lockfile_read()` to inspect and document the R version used.
 
@@ -36,6 +38,7 @@
 ### Directory Structure
 
 ```text
+
 R/                    # Package functions or sourced analysis functions
 data/
 ├── raw/              # Original, immutable raw data (never modify!)
@@ -47,6 +50,7 @@ _targets/             # targets pipeline cache (add to .gitignore)
 renv/                 # renv library (add to .gitignore except renv/activate.R)
 renv.lock             # ✅ Commit this
 .Rprofile             # ✅ Commit this (renv::autoload() hook)
+
 ```
 
 - **Never modify raw data files directly.** All transformations must be scripted and reproducible from the raw source. Treat `data/raw/` as read-only.
@@ -55,15 +59,18 @@ renv.lock             # ✅ Commit this
 ## 2. Code Style & Conventions
 
 - Follow the **tidyverse style guide**. Format code automatically with **`{styler}`**:
+
   ```r
   styler::style_file("R/analysis.R")       # format single file
   styler::style_dir("R/")                  # format all R files in directory
   ```
+
 - **Naming conventions**:
   - `snake_case`: variables, functions, file names
   - `PascalCase`: R6 class names
   - Descriptive names that reveal intent: `user_count` not `n`, `filter_active_users` not `filter_fun`
 - Use the native **pipe operator** (`|>`, R ≥ 4.1) for readable transformation chains:
+
   ```r
   # ✅ Idiomatic tidyverse pipeline with native pipe
   result <- raw_data |>
@@ -73,11 +80,14 @@ renv.lock             # ✅ Commit this
     dplyr::summarise(count = dplyr::n(), .groups = "drop") |>
     dplyr::arrange(dplyr::desc(count))
   ```
+
   Use `%>%` (magrittr) only in pre-R-4.1 projects or when using the `.` placeholder is necessary.
 - Limit line length to **80 characters**. Break long calls across lines. Lint with **`{lintr}`** in CI:
+
   ```r
   lintr::lint_dir("R/")  # lint all R files
   ```
+
   Commit `.lintr` to configure project-specific rules.
 - Prefer **explicit namespace calls** to prevent masking and improve code clarity in scripts and packages:
 
@@ -93,6 +103,7 @@ renv.lock             # ✅ Commit this
 
 - Write **small, single-purpose functions**. Functions longer than ~30 lines are candidates for decomposition. One function = one task.
 - Document all exported package functions with **`{roxygen2}`**:
+
   ```r
   #' Summarize user activity by region
   #'
@@ -108,12 +119,15 @@ renv.lock             # ✅ Commit this
     ...
   }
   ```
+
 - Use **`{checkmate}`** for expressive input validation at the start of functions. Fail fast with informative messages:
+
   ```r
   checkmate::assert_data_frame(data, min.rows = 1)
   checkmate::assert_character(email, min.len = 1, pattern = "@")
   checkmate::assert_numeric(threshold, lower = 0, upper = 1)
   ```
+
 - **Avoid `<<-`** (global assignment from within a function). It creates hidden state and makes code hard to test and debug. Use return values, environments, or R6 class fields for shared mutable state.
 - Use **`{purrr}`** for functional programming over lists and vectors instead of `for` loops:
 
@@ -129,9 +143,11 @@ renv.lock             # ✅ Commit this
 ## 4. Reproducibility & Reporting
 
 - Set a **random seed** (`set.seed(42)`) at the beginning of any script or function involving randomness (sampling, simulation, ML model training). Document the seed in a comment:
+
   ```r
   set.seed(2024)  # Seed for reproducibility — do not change without updating all outputs
   ```
+
 - Use **`{here}`** for all file path construction — it resolves from the project root regardless of working directory:
 
   ```r
@@ -148,11 +164,14 @@ renv.lock             # ✅ Commit this
   Never use `setwd()` — it is fragile and non-reproducible.
 
 - Use **R Markdown** or **Quarto** for all reports combining code, output, and narrative. Render in CI to verify they execute cleanly:
+
   ```bash
   Rscript -e "rmarkdown::render('reports/analysis.Rmd', output_dir = 'output/')"
   quarto render reports/analysis.qmd --output-dir output/
   ```
+
 - Configure default chunk options globally in R Markdown for consistent output:
+
   ```r
   knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 8, fig.height = 5)
   ```
@@ -163,6 +182,7 @@ renv.lock             # ✅ Commit this
 
 - Use **`{dplyr}`**, **`{tidyr}`**, and **`{purrr}`** for data manipulation. Prefer tidy, rectangular data (one observation per row, one variable per column) over nested lists for analysis.
 - Use **`readr::read_csv()`** over base R `read.csv()` for consistent type inference, faster parsing, and UTF-8 encoding handling:
+
   ```r
   # Explicit column types for safety — prevents type guessing
   data <- readr::read_csv(
@@ -175,6 +195,7 @@ renv.lock             # ✅ Commit this
   )
   readr::problems(data)  # inspect parse warnings
   ```
+
 - Handle missing values explicitly with `dplyr::coalesce()`, `tidyr::replace_na()`, and `dplyr::na_if()`. Document every source of `NA` values and the strategy for handling them.
 
 ### Testing
@@ -202,13 +223,16 @@ renv.lock             # ✅ Commit this
 
 - Test edge cases: empty data frames, `NA` values, single-row inputs, unexpected column types, out-of-range parameters.
 - Use **`{vdiffr}`** for snapshot testing of ggplot2 plots — it compares SVG outputs and detects visual regressions:
+
   ```r
   test_that("activity_plot renders correctly", {
     p <- plot_activity(sample_data)
     vdiffr::expect_doppelganger("activity-by-region", p)
   })
   ```
+
 - Use **`{bench}`** for performance benchmarking. Track timings with `bench::mark()`:
+
   ```r
   bench::mark(
     base  = base_implementation(data),
@@ -216,4 +240,5 @@ renv.lock             # ✅ Commit this
     check = FALSE
   )
   ```
+
 - Run tests in CI with: `Rscript -e "devtools::test()"` or `Rscript -e "testthat::test_dir('tests/testthat/')"`.

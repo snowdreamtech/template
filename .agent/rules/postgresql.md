@@ -6,6 +6,7 @@
 
 - Use `snake_case` for all table, column, index, and constraint names. Avoid camelCase or mixed naming.
 - Always define a primary key. Use **`BIGINT GENERATED ALWAYS AS IDENTITY`** for new tables — it is the SQL standard successor to `SERIAL`:
+
   ```sql
   CREATE TABLE users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -13,6 +14,7 @@
     name TEXT NOT NULL
   );
   ```
+
 - Use **`TIMESTAMPTZ`** (timestamp with time zone) for all datetime columns — never bare `TIMESTAMP`. Store datetimes as UTC:
   - `created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL`
   - `updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL`
@@ -24,6 +26,7 @@
 - Use appropriate data types: `TEXT` over `VARCHAR(n)` unless you specifically need a length constraint enforced at the DB level. Use `JSONB` (not `JSON`) for semi-structured data. Use `UUID` as a primary key when distributed ID generation is needed.
 - Add `NOT NULL` constraints at the database level for columns that must always have a value — do not rely solely on application-level validation.
 - Use **check constraints** for business rule enforcement at the database level:
+
   ```sql
   ALTER TABLE products ADD CONSTRAINT positive_price CHECK (price > 0);
   ALTER TABLE orders ADD CONSTRAINT valid_status CHECK (status IN ('pending', 'fulfilled', 'cancelled'));
@@ -34,28 +37,36 @@
 ### Index Design
 
 - **Always index foreign key columns** — PostgreSQL does not create them automatically. Un-indexed FK columns cause full table scans on joins and cascade operations:
+
   ```sql
   CREATE INDEX idx_orders_user_id ON orders (user_id);
   CREATE INDEX idx_order_items_order_id ON order_items (order_id);
   ```
+
 - Use **partial indexes** for selective queries on subsets of data:
+
   ```sql
   CREATE INDEX idx_orders_pending ON orders (user_id, created_at)
   WHERE status = 'pending';
   ```
+
 - Use **composite indexes** with columns ordered by selectivity (most selective first). Use `INCLUDE (col)` for covering indexes (PostgreSQL 11+) to satisfy queries entirely from the index without a heap fetch:
+
   ```sql
   CREATE INDEX idx_users_email_name ON users (email)
   INCLUDE (name, created_at);  -- query: SELECT name, created_at WHERE email = ?
   ```
+
 - Use `EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)` to verify query plans before deploying. Investigate and eliminate `Seq Scan` on large tables in hot paths.
 - Monitor and remove unused indexes regularly:
+
   ```sql
   SELECT schemaname, tablename, indexname, idx_scan
   FROM pg_stat_user_indexes
   WHERE idx_scan = 0 AND schemaname = 'public'
   ORDER BY tablename;
   ```
+
   Unused indexes slow all write operations (INSERT, UPDATE, DELETE) and consume storage.
 
 ### Specialized Indexes
@@ -67,12 +78,15 @@
 ## 3. Querying & Performance
 
 - Always use **parameterized queries** / prepared statements. Never interpolate user input into SQL strings — this is the primary defense against SQL injection:
+
   ```sql
   -- Application driver: use ? or $1 placeholders
   SELECT id, email FROM users WHERE email = $1 AND active = true;
   ```
+
 - Use explicit column names in `SELECT` — avoid `SELECT *` in application code. It couples application code to schema structure and may over-expose sensitive columns.
 - Use **CTEs** (`WITH`) for readable multi-step queries. In PostgreSQL 12+, use `NOT MATERIALIZED` to allow the optimizer to inline them for better performance:
+
   ```sql
   WITH recent_orders AS NOT MATERIALIZED (
     SELECT * FROM orders WHERE created_at > NOW() - INTERVAL '7 days'
@@ -81,6 +95,7 @@
   FROM users u JOIN recent_orders o ON u.id = o.user_id
   GROUP BY u.name;
   ```
+
 - Use **keyset/cursor pagination** instead of `OFFSET` for large datasets:
 
   ```sql
@@ -97,6 +112,7 @@
 ## 4. Transactions & Locks
 
 - Wrap all multi-step mutations in explicit transactions. Ensure every code path handles rollback on error:
+
   ```sql
   BEGIN;
     UPDATE accounts SET balance = balance - 100 WHERE id = $1;
@@ -104,9 +120,11 @@
   COMMIT;
   -- On error: ROLLBACK;
   ```
+
 - Keep transactions **short** — minimize the time between `BEGIN` and `COMMIT`. Long-running transactions block autovacuum, cause `pg_stat_activity` accumulation, and increase lock contention.
 - **Never call external services** (HTTP requests, file I/O, message queue publishes) inside a database transaction. Network timeouts can hold locks for unbounded time.
 - Use `SELECT ... FOR UPDATE` to lock specific rows before modifying them. Use `SKIP LOCKED` for queue-style workloads:
+
   ```sql
   SELECT id, payload FROM job_queue
   WHERE status = 'pending'
@@ -114,11 +132,14 @@
   LIMIT 1
   FOR UPDATE SKIP LOCKED;
   ```
+
 - For zero-downtime schema migrations, use DDL with `LOCK TIMEOUT`:
+
   ```sql
   SET lock_timeout = '2s';  -- Fail if lock not acquired in 2s
   ALTER TABLE orders ADD COLUMN notes TEXT;  -- Generally safe (no lock required for adding nullable column)
   ```
+
   Avoid `ALTER TABLE ... ADD COLUMN NOT NULL` without a default on large tables — use a 3-step migration instead (add nullable, backfill, add not null constraint with `VALIDATE CONSTRAINT`).
 
 ## 5. Operations, Safety & Observability

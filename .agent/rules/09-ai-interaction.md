@@ -35,6 +35,7 @@
 ### Quality Standards
 
 - **Test-Driven Mentality**: When modifying logic or adding features, the AI MUST proactively update or create corresponding tests. Do not output untested code as final without a clear warning:
+
   ```
   ⚠️ Note: The above implementation does not yet have unit tests.
   Would you like me to generate them? I recommend testing:
@@ -42,6 +43,7 @@
   - Edge cases: empty input, null values, boundary conditions
   - Error cases: invalid format, database failure
   ```
+
 - **Incremental Changes**: Prefer small, incremental, and reviewable changes over massive code dumps. Explain the approach before outputting large code blocks ("I'll make three changes: first X, then Y, then Z — let me start with X...").
 - **Error Handling**: Generated code MUST include robust error handling adhering to the project's coding style. Never silently swallow errors:
 
@@ -94,12 +96,14 @@
 ### Knowledge & Research
 
 - **Read Before Writing**: AI MUST read relevant project documentation, architecture files, and existing code patterns before generating new implementations. Generating code that contradicts the project's established patterns is unacceptable. Always check:
+
   ```
   1. Existing similar implementations in the codebase (avoid duplication)
   2. Project conventions (naming, file structure, error handling patterns)
   3. Relevant architecture documents or ADRs
   4. Any related tests that document expected behavior
   ```
+
 - **Artifact Usage**: Utilize designated memory or "brain" directories (if configured) to store and retrieve long-running task context, architectural decisions, checklists, and completed vs pending work. Reference prior decisions rather than re-inventing them.
 - **Check Existing Code**: Before creating a new utility function or module, search the codebase for an existing equivalent. Avoid duplication — reference the existing implementation and extend it if needed.
 - **Context Window Management**: In long conversations, periodically summarize what has been accomplished and what remains. If the context is too large to process accurately, proactively request a focused sub-task definition.
@@ -118,6 +122,7 @@
 - **Cite Sources**: When recommending a specific library, pattern, or algorithm, briefly justify why it is the best choice for this context — performance, community support, license, maintainability — rather than presenting it as the only option.
 - **Versioning Awareness**: When referencing APIs, libraries, or framework features, be explicit about the version they apply to. Avoid recommending deprecated APIs. If the project uses an older version, provide version-appropriate guidance and note the upgrade path.
 - **Output Validation**: For generated configurations, scripts, or infrastructure code, include a validation command alongside the output so the user can verify correctness independently:
+
   ```bash
   terraform validate && terraform plan   # IaC validation
   kubectl --dry-run=client apply -f manifest.yaml  # Kubernetes dry-run

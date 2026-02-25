@@ -17,19 +17,25 @@
 ### Code Standards
 
 - Follow **PSR-12** coding standards. Enforce automatically with **PHP CS Fixer** (`php-cs-fixer.dist.php` committed to repo):
+
   ```bash
   php-cs-fixer fix --dry-run --diff src/     # CI check
   php-cs-fixer fix src/                       # local auto-fix
   ```
+
 - Use **Composer** for dependency management. Commit `composer.lock`. Build for production:
+
   ```bash
   composer install --no-dev --optimize-autoloader --classmap-authoritative
   ```
+
 - Use **Rector** for automated code upgrades when migrating PHP versions or major dependencies:
+
   ```bash
   vendor/bin/rector process --dry-run   # preview changes
   vendor/bin/rector process             # apply changes
   ```
+
 - Generate and maintain API documentation using **`dedoc/scramble`** (Laravel) or `zircote/swagger-php` for OpenAPI/Swagger docs.
 
 ## 2. Type Safety
@@ -37,10 +43,12 @@
 ### Strict Types
 
 - Enable strict mode at the top of **every PHP file** — it enforces strict scalar type declaration checking:
+
   ```php
   <?php
   declare(strict_types=1);
   ```
+
 - Add explicit type declarations for all function parameters and return types:
 
   ```php
@@ -63,6 +71,7 @@
   ```
 
 - Use **`never`** return type for functions that always throw or terminate:
+
   ```php
   function fail(string $message): never {
     throw new DomainException($message);
@@ -148,6 +157,7 @@
 ### Dependency Injection
 
 - Avoid static methods, global functions, and `Facade::staticCall()` for internal application code. Use **dependency injection** (DI containers) throughout:
+
   ```php
   // ✅ Constructor injection
   class UserService {
@@ -157,6 +167,7 @@
     ) {}
   }
   ```
+
 - Use **PHP-DI**, Symfony's DI Container, or Laravel's Service Container. Prefer autowiring for clean, minimal service registrations.
 
 ### Layered Architecture
@@ -186,15 +197,18 @@
   ```
 
 - Use **PHPStan** at the highest tolerable level (`--level max` or 8+) for static analysis. Run in CI and block merges on errors:
+
   ```bash
   vendor/bin/phpstan analyse --level 8 src/ tests/
   ```
+
 - Use **Infection** (mutation testing) to evaluate test suite quality beyond raw coverage metrics.
 
 ### Coverage & CI Pipeline
 
 - Use **PCOV** in CI for fast code coverage collection. Use **Xdebug** locally for step debugging.
 - Full **CI quality gate**:
+
   ```bash
   php-cs-fixer fix --dry-run --diff   # formatting
   phpstan analyse --level 8 src/      # static analysis

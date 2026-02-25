@@ -75,6 +75,7 @@
   ```
 
 - Use **window functions** for ranking and analytical queries instead of correlated subqueries (which run once per outer row):
+
   ```sql
   -- ✅ Window function — single pass, much more efficient
   SELECT
@@ -86,7 +87,9 @@
   FROM orders
   WHERE status = 'completed';
   ```
+
 - Use **CTEs** (`WITH ... AS (...)`) to break complex queries into readable, named intermediate steps:
+
   ```sql
   WITH active_users AS (
     SELECT id, name FROM users WHERE status = 'active' AND last_login > NOW() - INTERVAL '30 days'
@@ -99,6 +102,7 @@
   LEFT JOIN user_order_counts uoc ON uoc.user_id = au.id
   ORDER BY uoc.order_count DESC NULLS LAST;
   ```
+
 - Avoid `SELECT DISTINCT` as a workaround for duplicate rows — it signals a JOIN or GROUP BY logic issue. Fix the query structure instead.
 
 ## 3. Indexing
@@ -106,21 +110,27 @@
 ### Index Design
 
 - Add indexes on columns frequently used in **`WHERE`**, **`JOIN ON`**, and **`ORDER BY`** clauses. Always explicitly index foreign key columns (they are not automatically indexed in PostgreSQL):
+
   ```sql
   -- After creating orders(user_id) FK:
   CREATE INDEX idx_orders_user_id ON orders (user_id);
   CREATE INDEX idx_orders_status_created ON orders (status, created_at DESC);
   ```
+
 - Use **covering indexes** to serve queries entirely from the index without heap access:
+
   ```sql
   -- Query: SELECT id, status, total FROM orders WHERE user_id = 123
   CREATE INDEX idx_orders_covering ON orders (user_id) INCLUDE (id, status, total);
   ```
+
 - Use **expression indexes** for queries on computed values:
+
   ```sql
   CREATE INDEX idx_users_email_lower ON users (LOWER(email));
   -- Enables: WHERE LOWER(email) = LOWER($1) to use the index
   ```
+
 - For text search, use **full-text search indexes** (`tsvector`/GIN in PostgreSQL, `FULLTEXT` in MySQL) — `LIKE '%term%'` cannot use standard B-tree indexes.
 - Avoid **over-indexing**: each index incurs write-time overhead (every INSERT/UPDATE/DELETE updates all indexes). Use `EXPLAIN ANALYZE` to confirm index usage and remove unused indexes.
 
@@ -139,13 +149,16 @@
 
 - Always declare columns as `NOT NULL` unless they are genuinely optional. Nullable columns complicate queries, make index planning harder, and require three-valued logic in WHERE clauses.
 - Define `FOREIGN KEY` constraints with explicit `ON DELETE`/`ON UPDATE` behavior:
+
   ```sql
   CONSTRAINT fk_orders_user FOREIGN KEY (user_id)
     REFERENCES users(id)
     ON DELETE RESTRICT    -- prevent deleting users with orders
     ON UPDATE CASCADE;    -- propagate user ID changes
   ```
+
 - Use database-level **check constraints** for column-level domain rules:
+
   ```sql
   total    NUMERIC(10, 2) NOT NULL CHECK (total >= 0),
   quantity INT            NOT NULL CHECK (quantity > 0),
@@ -161,21 +174,25 @@
 ### Transaction Management
 
 - Wrap multi-step write operations in explicit transactions with proper error handling:
+
   ```sql
   BEGIN;
   UPDATE accounts SET balance = balance - 100 WHERE id = $1;
   UPDATE accounts SET balance = balance + 100 WHERE id = $2;
   COMMIT;  -- or ROLLBACK on error
   ```
+
 - Keep transactions **as short as possible** to minimize lock contention. Never call external HTTP services, file I/O, or slow operations inside a transaction.
 
 ### Query Performance Analysis
 
 - Use `EXPLAIN (ANALYZE, BUFFERS)` to investigate slow queries before adding indexes or rewriting:
+
   ```sql
   EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)
   SELECT * FROM orders WHERE user_id = 123 AND status = 'pending';
   ```
+
   Look for: `Seq Scan` on large tables (may need an index), `Sort Method: external merge Disk` (memory issue), `Nested Loop` with large outer set (join order issue).
 - Enable slow query logging: `log_min_duration_statement = 1000` (PostgreSQL) — logs queries over 1 second.
 - Use `ANALYZE` (PostgreSQL) or `ANALYZE TABLE` (MySQL) after bulk loads to update planner statistics.

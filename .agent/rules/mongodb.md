@@ -7,6 +7,7 @@
 ### Query-First Design
 
 - Even though MongoDB is schema-flexible, **define and enforce a schema** at the application level using Mongoose, Zod + MongoDB JSON Schema validation, or MongoDB Atlas Schema Validation:
+
   ```javascript
   // MongoDB collection-level $jsonSchema validator
   db.createCollection("users", {
@@ -29,6 +30,7 @@
     validationLevel: "strict", // validate on all inserts and updates
   });
   ```
+
 - Design schemas for your **access patterns (query-first design)** — not to mirror relational tables. Ask: "What queries will run most frequently on this data?"
 
 ### Embedding vs. References
@@ -73,16 +75,21 @@
 
 - Use **compound indexes** to support multi-field query patterns. Field order matters — follow the ESR rule: **Equality** fields first, **Sort** fields second, **Range** fields last.
 - Use `db.collection.explain("executionStats")` to verify queries use indexes. Alert on `COLLSCAN` in production hot paths — they are full collection scans:
+
   ```javascript
   db.orders.explain("executionStats").find({ userId: userId, status: "pending" });
   // Look for: winningPlan.stage === "IXSCAN" (good), "COLLSCAN" (bad)
   ```
+
 - Use **sparse indexes** (`{ sparse: true }`) for optional fields that exist on only a subset of documents. Use **partial indexes** for more selective optimizations:
+
   ```javascript
   // Partial index — only indexes pending orders
   db.orders.createIndex({ createdAt: 1 }, { partialFilterExpression: { status: "pending" } });
   ```
+
 - Remove unused indexes to free memory and reduce write overhead. Identify unused indexes with:
+
   ```javascript
   db.orders.aggregate([{ $indexStats: {} }]).filter((idx) => idx.accesses.ops === 0);
   ```
@@ -92,6 +99,7 @@
 ### Aggregation Pipeline
 
 - Use the **Aggregation Pipeline** for complex data processing. Always place `$match` and `$limit` as early as possible to reduce documents flowing through subsequent pipeline stages:
+
   ```javascript
   db.orders.aggregate([
     // ✅ $match first — uses indexes, reduces flow
@@ -124,6 +132,7 @@
 
 - Use `countDocuments({ filter })` for filtered counts. Use `estimatedDocumentCount()` for fast approximate collection size without filtering.
 - Use **Change Streams** (`collection.watch()`) for real-time CDC (change data capture), cache invalidation, and audit logging in event-driven architectures:
+
   ```javascript
   const changeStream = db.collection("orders").watch([{ $match: { operationType: "insert", "fullDocument.status": "confirmed" } }]);
   changeStream.on("change", (event) => processNewOrder(event.fullDocument));
@@ -135,6 +144,7 @@
 
 - Never expose MongoDB directly to the internet. Place it behind a private VPC network, security groups, or a VPN. Port 27017 must never be publicly accessible.
 - Enable **authentication** at the server level and use RBAC. Application users MUST have only the minimum required roles:
+
   ```javascript
   // Create restricted app user
   db.createUser({
@@ -143,6 +153,7 @@
     roles: [{ role: "readWrite", db: "myapp" }], // only one DB, no admin
   });
   ```
+
 - Sanitize all user input before using it in query operators. Reject or strip values starting with `$` to prevent **NoSQL injection** via `$where`, `$expr`, `$regex`:
 
   ```javascript
@@ -167,11 +178,14 @@
 ### Performance Monitoring
 
 - Enable the **MongoDB profiler** to log slow queries in development and staging:
+
   ```javascript
   db.setProfilingLevel(1, { slowms: 100 }); // log queries > 100ms
   db.system.profile.find().sort({ ts: -1 }).limit(20); // inspect slow queries
   ```
+
 - Configure **connection pooling** from the driver. Do not create a new connection per request:
+
   ```javascript
   const client = new MongoClient(uri, {
     maxPoolSize: 50, // max simultaneous connections

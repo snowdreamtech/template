@@ -9,9 +9,11 @@
 - Target **Python 3.12+** for new projects. Specify the minimum version with `requires-python = ">=3.12"` in `pyproject.toml`.
 - Use **`uv`** (ultrafast Rust-based package manager, preferred) or **`poetry`** for dependency management and virtual environment isolation. Never install project dependencies into the system Python.
 - Pin the Python version in `.python-version` (pyenv/asdf/mise) so all developers and CI use the same interpreter version:
+
   ```bash
   echo "3.12.3" > .python-version
   ```
+
 - Use **`uv lock`** or **`poetry.lock`** for reproducible installs. Always commit the lock file to version control.
 - Commit `pyproject.toml` with fully configured tool settings (ruff, mypy, pytest, coverage):
 
@@ -49,6 +51,7 @@
 ### Project Layout
 
 ```text
+
 myproject/
 ├── pyproject.toml
 ├── uv.lock              # pinned dependencies
@@ -62,6 +65,7 @@ myproject/
     ├── conftest.py
     ├── unit/
     └── integration/
+
 ```
 
 Use **src-layout** to prevent accidental imports from the working directory.
@@ -69,21 +73,28 @@ Use **src-layout** to prevent accidental imports from the working directory.
 ## 2. Formatting, Linting & Static Analysis
 
 - Format all code with **`ruff format`** (drop-in Black replacement). Enforce in CI:
+
   ```bash
   ruff format --check .   # fail CI on unformatted code
   ruff format .           # reformat all files
   ```
+
 - Lint with **`ruff check`** — it replaces `flake8`, `isort`, `pyupgrade`, `pylint` (partially), and more. Enforce in CI with `--no-fix`:
+
   ```bash
   ruff check .             # lint check
   ruff check --fix .       # auto-fix fixable violations
   ```
+
 - Type-check with **`mypy`** (`--strict`) or **`pyright`** (preferred for VS Code users). Run in CI:
+
   ```bash
   mypy . --strict
   ```
+
 - Run **`bandit -r src/`** in CI for security linting: detects hardcoded secrets, `subprocess.shell=True`, insecure YAML parsing, and other common Python security issues.
 - Set up **`pre-commit`** hooks for `ruff check --fix`, `ruff format`, and `mypy` so formatting and type errors are caught before reaching CI:
+
   ```yaml
   # .pre-commit-config.yaml
   repos:
@@ -98,10 +109,12 @@ Use **src-layout** to prevent accidental imports from the working directory.
 ## 3. Type Hints & Type Safety
 
 - Add type annotations to **all** function signatures and class attributes in new code. Backfill annotations as you touch existing code:
+
   ```python
   def fetch_user(user_id: str, *, active_only: bool = True) -> User | None:
       ...
   ```
+
 - Use **modern union syntax** (Python 3.10+):
   - `X | None` instead of `Optional[X]`
   - `X | Y` instead of `Union[X, Y]`
@@ -143,18 +156,23 @@ Use **src-layout** to prevent accidental imports from the working directory.
 ### Patterns
 
 - Use **`pathlib.Path`** for all file system operations instead of `os.path`:
+
   ```python
   from pathlib import Path
   config = Path("config") / "settings.json"
   data = config.read_text(encoding="utf-8")
   ```
+
 - Use **context managers** (`with`) for all managed resources (files, DB connections, locks, HTTP sessions):
+
   ```python
   # ✅ Context manager ensures cleanup on error
   async with aiofiles.open(path, "r") as f:
       content = await f.read()
   ```
+
 - Use `match`/`case` (Python 3.10+ structural pattern matching) for complex conditional logic:
+
   ```python
   match event.type:
       case "user.created":
@@ -164,7 +182,9 @@ Use **src-layout** to prevent accidental imports from the working directory.
       case _:
           logger.debug("Unhandled event type: %s", event.type)
   ```
+
 - Use **generators** and lazy evaluation for large data processing. Never load entire large datasets into memory:
+
   ```python
   def process_records(filepath: Path) -> Iterator[ProcessedRecord]:
       with filepath.open() as f:
@@ -211,10 +231,13 @@ Use **src-layout** to prevent accidental imports from the working directory.
 ### Coverage & CI
 
 - Enforce minimum coverage with `pytest-cov`:
+
   ```bash
   pytest --cov=src --cov-fail-under=80 --cov-report=xml --cov-report=term
   ```
+
 - **CI pipeline order** (fail-fast gates first):
+
   ```bash
   ruff check .                        # linting
   ruff format --check .               # formatting
@@ -222,6 +245,7 @@ Use **src-layout** to prevent accidental imports from the working directory.
   bandit -r src/                      # security scan
   pytest --cov --cov-fail-under=80    # tests + coverage
   ```
+
 - Use **`tox`** or **`nox`** to test against multiple Python versions (3.11, 3.12) in isolation for libraries and packages.
 - Use **`Testcontainers`** (`testcontainers-python`) for integration tests requiring real PostgreSQL, Redis, or Kafka:
 

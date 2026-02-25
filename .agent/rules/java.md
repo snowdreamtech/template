@@ -23,6 +23,7 @@
 ### Records (Immutable Data Carriers)
 
 ```java
+
 // ✅ Use records for immutable DTOs and value objects
 public record CreateUserRequest(
     @NotBlank @Size(max = 100) String name,
@@ -35,11 +36,13 @@ public record UserId(String value) {
     if (value.isBlank()) throw new IllegalArgumentException("UserId must not be blank");
   }
 }
+
 ```
 
 ### Sealed Classes & Pattern Matching
 
 ```java
+
 // Closed type hierarchy with pattern matching
 public sealed interface Result<T> permits Result.Success, Result.Failure {
   record Success<T>(T value) implements Result<T> {}
@@ -51,6 +54,7 @@ String message = switch (result) {
   case Result.Success<User> s -> "Created user: " + s.value().name();
   case Result.Failure<User> f -> "Error: " + f.error();
 };
+
 ```
 
 ### Other Features
@@ -92,6 +96,7 @@ String message = switch (result) {
 - **Never use exceptions for control flow.** Use `Optional`, explicit status checks, or a `Result<T>` type pattern.
 - Use **SLF4J** as the logging facade with **Logback** or **Log4j2** as the implementation. Never use `System.out.println` or `java.util.logging.Logger` directly in production code.
 - Structured logging best practices:
+
   ```java
   // ✅ Use parameterized logging — prevents string concatenation when log level is disabled
   log.info("Processing order {} for user {}", orderId, userId);
@@ -159,16 +164,20 @@ String message = switch (result) {
   ```
 
 - Use **Spring Boot Test slices** for integration tests — use the most narrow slice possible:
+
   | Annotation | What it loads | Use for |
   |---|---|---|
   | `@WebMvcTest` | Web layer only | Controller + filter tests |
   | `@DataJpaTest` | JPA + database | Repository tests |
   | `@SpringBootTest` | Full context | End-to-end integration tests |
+
 - Use **Testcontainers** for integration tests requiring real PostgreSQL, Redis, Kafka, or other external services:
+
   ```java
   @Container
   static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
   ```
+
 - Aim for ≥ 80% coverage on service and repository layers. Use **JaCoCo** for coverage reporting. Gate on coverage in CI with `failOnViolation = true`.
 - Run `./gradlew test jacocoTestReport` or `./mvnw verify` in CI. Include `spotbugs`, `pmd`, and `checkstyle` as build validation steps.
 

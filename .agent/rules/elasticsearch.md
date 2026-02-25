@@ -8,6 +8,7 @@
 
 - Design indexes around **query patterns** first — understand how data will be searched and aggregated before defining the mapping. Index structure should match access patterns, not source data structure.
 - Define an **explicit mapping for every index** before ingesting data. Disable or restrict `dynamic: strict` mapping in production — dynamic mapping silently creates wrong field types (e.g., interpreting a numeric string as `long`) that are hard to fix without full reindexing:
+
   ```json
   PUT /orders
   {
@@ -25,6 +26,7 @@
     }
   }
   ```
+
 - Field type selection:
   - **`keyword`**: exact-match fields — IDs, status codes, tags, enum values, used in filters (`term`), aggregations (`terms agg`), and sorting
   - **`text`**: full-text search fields — product descriptions, comments, titles. Never use `text` for filtering or aggregations
@@ -32,6 +34,7 @@
   - **`date`**: timestamps with ISO 8601 format
   - **`dense_vector`**: embedding vectors for semantic/nearest-neighbor search
 - Use **multi-fields** to index the same field both as `text` (for full-text search) and as `keyword` (for exact filtering and aggregations):
+
   ```json
   "title": {
     "type": "text",
@@ -41,12 +44,14 @@
     }
   }
   ```
+
 - Use **Index Templates** and **Component Templates** to apply consistent mapping across multiple auto-created indexes (e.g., time-series log/event indexes with date patterns: `logs-app-2025.01.15`).
 - Use **Index Lifecycle Management (ILM)** for time-series data: define rollover (by age/size), shrink, warm, cold, and delete phases to automatically tier data and manage storage cost.
 
 ### Vector Search (Elasticsearch 8.x+)
 
 - Use **`dense_vector`** field type with `knn` queries for semantic search and similarity search. Pair with a text-embedding model (ELSER, Vertex AI, OpenAI) to enable hybrid BM25 + vector scoring:
+
   ```json
   "knn": {
     "field":          "content_embedding",
@@ -90,6 +95,7 @@
   ```
 
 - Prefer **`filter` context** over `query` context for binary match conditions (term, range, exists). Filter results are **cached** by Elasticsearch and do NOT affect the relevance `_score`:
+
   ```json
   {
     "bool": {
@@ -103,6 +109,7 @@
     }
   }
   ```
+
 - Always **paginate results**. Avoid deep `from + size` pagination beyond 10,000 total hits (default `index.max_result_window`). Use:
   - **`search_after`** (stateless, production-grade) for deep pagination with a sort cursor
   - **`scroll` API** for batch export/migration (not for real-time search)
@@ -143,6 +150,7 @@
   ```
 
 - Use **Index Aliases** to enable zero-downtime reindexing. Point the read alias at the old index, reindex into a new index, then atomically swap:
+
   ```json
   POST /_aliases
   {
@@ -156,6 +164,7 @@
 ### Source & Field Selection
 
 - Define `_source` includes/excludes to avoid returning large, unused fields in search responses:
+
   ```json
   "_source": { "includes": ["id", "name", "price", "status"] }
   ```
@@ -193,6 +202,7 @@
   - **`yellow`** — unassigned replica shards (degraded — no redundancy)
   - **`red`** — unassigned primary shards (critical — potential data loss, query failures)
 - Set **JVM heap** to no more than **50% of available RAM**, and never exceed **31 GB** — beyond 32 GB, JVM compressed ordinary object pointer (OOP) optimization is disabled and pointer sizes double, degrading performance significantly:
+
   ```bash
   # jvm.options
   -Xms24g
@@ -207,6 +217,7 @@
 ### Backup & Lifecycle
 
 - Use **Snapshot Lifecycle Management (SLM)** to automate regular snapshots to an external repository (S3, GCS, Azure Blob). Test snapshot restores regularly — an untested backup is not a backup:
+
   ```json
   PUT /_slm/policy/daily-snapshots
   {
@@ -216,4 +227,5 @@
     "retention":  { "expire_after": "30d", "min_count": 5, "max_count": 50 }
   }
   ```
+
 - Use **ILM** or **Curator** to manage time-series index lifecycle (hot → warm → cold → delete). Do not rely on manual index deletion.

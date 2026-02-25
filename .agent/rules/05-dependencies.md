@@ -5,6 +5,7 @@
 ## 1. Locking & Versioning
 
 - Lock files **MUST** be committed to version control. Never add lock files to `.gitignore`:
+
   | Ecosystem | Lock File |
   |-----------|----------|
   | Node.js (npm) | `package-lock.json` |
@@ -29,6 +30,7 @@
   ```
 
 - Pin tool and runtime versions in version manager config files committed to the repository:
+
   ```toml
   # .mise.toml — polyglot version manager
   [tools]
@@ -37,7 +39,9 @@
   go     = "1.23.4"
   java   = "21.0.5"
   ```
+
 - Do not upgrade dependencies speculatively. Use automated tools (Dependabot, Renovate) with a scheduled review cadence:
+
   ```yaml
   # .github/dependabot.yml
   version: 2
@@ -53,20 +57,25 @@
 
 - Prioritize **official registries** (npm, PyPI, crates.io, Maven Central, Go module proxy). For enterprise or air-gapped environments, use internal proxies with upstream mirroring (Nexus, Artifactory, Verdaccio).
 - When downloading external resources in scripts or CI, verify downloaded artifacts with **SHA-256 checksum** before use:
+
   ```bash
   # Download with integrity check
   curl -fsSL "https://example.com/tool-v1.2.3-linux-amd64.tar.gz" -o tool.tar.gz
   echo "a3b8c4d... tool.tar.gz" | sha256sum --check   # fail if checksum mismatches
   tar xzf tool.tar.gz
   ```
+
 - Never introduce unreviewed prebuilt binaries, native extensions, or pre-compiled wheels without verified sources and documented justification.
 - Generate a **Software Bill of Materials (SBOM)** in CycloneDX or SPDX format for every production release:
+
   ```bash
   syft <image>           # container image SBOM
   cyclonedx-npm --output sbom.json   # Node.js project SBOM
   ```
+
   Attach SBOM to the release artifact or container registry metadata.
 - Maintain an **allowlist of approved dependency registries** per project. Block unapproved sources:
+
   ```ini
   # .npmrc — restrict to official registry
   registry=https://registry.npmjs.org/
@@ -75,6 +84,7 @@
 ## 3. Dependency Review & Auditing
 
 - Enable **automated vulnerability scanning** in CI — fail the pipeline on HIGH or CRITICAL severity findings:
+
   ```yaml
   # CI security gate
   - name: Audit dependencies
@@ -84,13 +94,16 @@
       cargo audit                                  # Rust
       govulncheck ./...                            # Go
   ```
+
 - CVE remediation SLA:
+
   | Severity | Resolution Deadline |
   |----------|-------------------|
   | **Critical** | 7 days |
   | **High** | 30 days |
   | **Medium** | 90 days |
   | **Low** | Next planned maintenance window |
+
 - Track all **direct dependencies** and minimize transitive dependency sprawl. Before adding a new library, evaluate:
   - **Maintenance**: last commit date, open issues, bus factor (one-person project?)
   - **License**: MIT/Apache 2.0/BSD preferred. GPL/AGPL requires careful review in proprietary projects.
@@ -114,13 +127,16 @@
   | `PATCH`   | Backward-compatible bug fixes                      | `1.5.2` → `1.5.3` |
 
 - Pre-release labels: use the `alpha` → `beta` → `rc` (release candidate) progression:
+
   ```bash
   1.2.0-alpha.1  # unstable, internal testing
   1.2.0-beta.2   # feature complete, external beta testing
   1.2.0-rc.1     # release candidate, freeze features
   1.2.0          # stable production release
   ```
+
 - Tag every release with a signed, annotated tag:
+
   ```bash
   git tag -a -s v1.2.3 -m "Release v1.2.3: Add OAuth2 flow, fix token refresh race condition"
   git push origin v1.2.3

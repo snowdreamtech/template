@@ -12,16 +12,20 @@
   - **HashiCorp Vault**: for multi-cloud, self-hosted, or cross-platform requirements
   - **Azure**: Azure Key Vault
 - Provide a `.env.example` listing all required variables with placeholder values and descriptions. **Never commit a real `.env`** or any equivalent secrets file:
+
   ```bash
   # .env.example — commit this
   DATABASE_URL=postgres://user:password@localhost:5432/mydb   # PostgreSQL connection string
   JWT_SECRET=<replace-with-random-256bit-secret>              # OpenSSL: openssl rand -hex 32
   STRIPE_SECRET_KEY=sk_live_<your-stripe-secret-key>         # From Stripe Dashboard
   ```
+
 - Prevent accidental commits using pre-commit hooks: **git-secrets**, **gitleaks**, or **detect-secrets**. Configure as a CI hard gate that blocks the entire pipeline on any detected secret:
+
   ```bash
   gitleaks detect --source . --report-format json --exit-code 1
   ```
+
 - Rotate secrets immediately upon any suspected or confirmed exposure. Revoke the old credentials before generating new ones. Document the rotation in an incident log with timestamp and actor.
 - Use **short-lived credentials** wherever possible (OAuth 2.0 access tokens with short TTL, AWS STS AssumeRole, GCP Workload Identity, Kubernetes service account tokens) over long-lived static credentials.
 
@@ -30,6 +34,7 @@
 - Apply the **Principle of Least Privilege**: grant users, services, and processes only the permissions they need to perform their specific function. Default to deny-all; explicitly allow required accesses. Review at every permission request.
 - Implement **Role-Based Access Control (RBAC)** with clearly defined roles. Avoid sharing service accounts between unrelated services — each service has its own identity.
 - Retain **audit logs** for all critical operations: secret access, permission changes, deployments, database schema changes, and administrative actions. Log format MUST include:
+
   ```json
   {
     "timestamp": "2025-01-15T10:30:00Z",
@@ -40,6 +45,7 @@
     "requestId": "req-abc-123"
   }
   ```
+
 - Review permissions regularly (at minimum quarterly, or after personnel changes). Revoke stale or over-broad access promptly. Maintain a permission inventory.
 - Use **multi-factor authentication (MFA)** for all human accounts with access to production systems, CI/CD pipelines, or cloud consoles. Enforce MFA at the Identity Provider level (Okta, Google Workspace, Entra ID). Hardware keys (YubiKey) are preferred over TOTP for privileged accounts.
 - For service-to-service communication: use **mTLS** or signed JWT assertions instead of shared secrets where possible.
@@ -63,6 +69,7 @@
 ## 4. Security Scanning & Dependency Hygiene
 
 - Enable **automated dependency vulnerability scanning** in CI as a hard gate:
+
   ```yaml
   # GitHub Actions example
   - name: Security audit
@@ -72,21 +79,27 @@
       cargo audit                                         # Rust
       govulncheck ./...                                   # Go
   ```
+
 - Run **Static Application Security Testing (SAST)** in CI. SAST failures at HIGH or CRITICAL severity MUST block merge:
   - **CodeQL** (GitHub) — supports C/C++, Go, Java, Python, Ruby, JavaScript
   - **Semgrep** — fast, rule-based, supports all major languages
   - **Bandit** (Python), **SpotBugs** (Java), **gosec** (Go), **Brakeman** (Rails)
 - Scan container images for OS and package vulnerabilities before pushing to any registry:
+
   ```bash
   trivy image --exit-code 1 --severity HIGH,CRITICAL myapp:latest
   ```
+
   Pin base images to a specific SHA digest for reproducibility: `FROM node:22-alpine@sha256:<digest>`.
 - Generate a **Software Bill of Materials (SBOM)** in CycloneDX or SPDX format for every production release:
+
   ```bash
   syft myapp:latest -o cyclonedx-json > sbom.json
   cosign attest --type cyclonedx --predicate sbom.json myapp:latest
   ```
+
 - CVE remediation SLA:
+
   | Severity | Resolution Deadline |
   |----------|-------------------|
   | Critical | 7 days |

@@ -7,6 +7,7 @@
 - **System Prompts**: Define the AI's role, persona, output format, behavioral constraints, and response guardrails. Keep it precise and unambiguous — overly long system prompts dilute focus and increase cost. Structure is more important than length.
 - **User Prompts**: Provide clear context, explicit task instructions, and one or more **few-shot examples** for complex or non-obvious tasks. Use delimiters to clearly separate sections.
 - Use a consistent, documented template format for each prompt type. Commit the template to version control alongside the business logic that uses it:
+
   ```text
   ROLE: You are a [role/persona with relevant expertise].
   TASK: Your task is to [specific action].
@@ -27,6 +28,7 @@
   {{user_input}}
   </user_input>
   ```
+
 - **Chain of Thought (CoT)**: For complex reasoning, extraction, or classification tasks, include explicit reasoning instructions: _"Think step by step before providing your final answer."_ Separate reasoning from the final answer using a JSON envelope: `{"reasoning": "...", "answer": "..."}`.
 - **Structured Output**: For JSON or other structured output, include the exact JSON schema in the prompt and a valid example. Use _"Return ONLY valid JSON, no markdown fences, no explanation"_ to prevent formatting errors.
 - Use **XML tags** (not curly braces) to delimit prompt sections — they are more reliable across models at preventing delimiter injection: `<user_input>`, `<document>`, `<context>`.
@@ -34,6 +36,7 @@
 ## 2. Version Control & Documentation
 
 - Treat prompts as code. Store all prompts in version-controlled files under a `prompts/` directory. One file per prompt variant, with a clear naming convention:
+
   ```text
   prompts/
   ├── summarize/
@@ -45,7 +48,9 @@
   └── templates/
       └── base-template.md
   ```
+
 - Include a **header** in every prompt file with machine-readable metadata:
+
   ```yaml
   ---
   version: "1.1"
@@ -57,6 +62,7 @@
   author: "team-ai"
   ---
   ```
+
 - Maintain a **CHANGELOG.md** for each prompt: what changed, why it changed, the evaluation results before/after, and which model version it was tested against. This is essential for root-cause analysis when quality regressions occur.
 - Use semantic versioning for prompt files: **MAJOR** (fundamentally new approach), **MINOR** (improved instructions, added examples), **PATCH** (minor wording corrections):
   - `summarize-v1.2.md` — Added 2 more few-shot examples
@@ -67,11 +73,13 @@
 ### Prompt Injection Defense
 
 - **Always sanitize and delimit user-provided input** before inserting it into a prompt. Use XML tags as clear structural boundaries:
+
   ```text
   <user_input>
   {{sanitized_user_content}}
   </user_input>
   ```
+
   Sanitize: strip control characters, limit length, HTML-encode if rendered, and validate that content matches expected format (e.g., reject inputs containing `</user_input>` or `\n\nIgnore previous instructions`).
 - Implement **layered defense against prompt injection**:
   1. Input sanitization (remove/escape injection markers)
@@ -108,6 +116,7 @@
   - `temperature≈0.7-1.0`: creative tasks — brainstorming, creative writing, ideation
   - **Always use the lowest temperature that produces acceptable output quality.**
 - Log the complete inference configuration alongside every prompt input/output pair for debugging and auditing:
+
   ```json
   {
     "timestamp": "2024-11-15T10:30:00Z",
@@ -123,6 +132,7 @@
     "total_cost_usd": 0.0042
   }
   ```
+
 - Set explicit `max_tokens` limits to prevent runaway costs and enforce output length constraints. Define per-call and per-user/per-session token budget limits with circuit-breakers.
 - Use `seed` parameter (where supported) for reproducible outputs in testing and debugging. Document that seeded outputs are not guaranteed to be identical across model versions.
 
@@ -141,9 +151,11 @@
   - Be reviewed by domain experts, not just engineers
   - Be version-controlled alongside the prompt files
 - Run regression tests against the golden dataset whenever the **prompt, model version, or parameters** change:
+
   ```bash
   npx promptfoo eval --config prompts/summarize/eval-config.yaml
   ```
+
 - Use systematic **A/B testing** before deploying prompt changes to production. Run challenger vs. champion on 10% of production traffic, measure quality metrics for ≥ 48h, then promote if metrics improve.
 
 ### Testing Tools
@@ -155,6 +167,7 @@
 ### Production Monitoring
 
 - Monitor all production LLM calls for key signals. Alert on statistically significant changes:
+
   | Signal | Alert threshold | Action |
   |---|---|---|
   | **Cost** (token usage) | > 2× baseline | Investigate prompt/input changes |
@@ -162,6 +175,7 @@
   | **Error rate** | > 2% | Circuit-breaker, fallback activation |
   | **Format violation** | > 0.5% | Prompt regression, model rollback |
   | **Content policy hits** | Sudden spike | Potential adversarial attack, investigate |
+
 - Implement **fallback strategies** for model outages and quality degradation:
   1. Retry with exponential backoff (3 attempts, max 30s wait)
   2. Route to secondary model (e.g., GPT-4o → GPT-4o-mini → Claude Haiku)

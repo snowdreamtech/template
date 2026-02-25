@@ -101,6 +101,7 @@
   ```
 
 - Use **`local`** for all variables inside functions to prevent polluting the global scope:
+
   ```bash
   install_dependency() {
     local package="${1:?Package name required}"
@@ -109,6 +110,7 @@
     ...
   }
   ```
+
 - Declare constants with **`readonly`**: `readonly MAX_RETRIES=3 TIMEOUT=30`
 - Use **`UPPER_SNAKE_CASE`** for exported/environment variables and `lower_snake_case` for local function variables.
 
@@ -171,6 +173,7 @@
 ### POSIX vs Bash
 
 - When targeting `/bin/sh` (Alpine containers, minimal CI images), avoid Bash-specific syntax:
+
   | Bash-only | POSIX sh alternative |
   |-----------|---------------------|
   | `[[ expr ]]` | `[ expr ]` with careful quoting |
@@ -209,12 +212,15 @@
   ```
 
 - Use **`mktemp`** for temporary files and always clean up in `EXIT` trap:
+
   ```bash
   TMPFILE=$(mktemp /tmp/myscript.XXXXXX)
   TMPDIR=$(mktemp -d /tmp/myscript-dir.XXXXXX)
   trap 'rm -rf "$TMPFILE" "$TMPDIR"' EXIT
   ```
+
 - Use **`printf`** instead of `echo` for formatted output — `echo` behavior for `-n`, `-e`, and backslashes varies across implementations:
+
   ```bash
   printf '%s\n' "$message"           # safe, portable
   printf 'File: %s, Size: %d\n' "$f" "$size"  # formatted output
@@ -225,12 +231,14 @@
 ### Error Patterns
 
 - Print error messages to **stderr** with function context:
+
   ```bash
   log_error() {
     local func="${FUNCNAME[1]:-main}"
     printf '[ERROR] [%s] %s\n' "$func" "$*" >&2
   }
   ```
+
 - Use meaningful exit codes:
   - `0` — success
   - `1` — general error
@@ -242,16 +250,21 @@
 ### CI & Tooling
 
 - Lint all shell scripts with **ShellCheck** in CI — catches common mistakes, portability issues, and quoting bugs:
+
   ```bash
   # CI step
   find . -name "*.sh" -not -path "*/node_modules/*" -exec shellcheck --severity=warning {} +
   ```
+
   Document any necessary `# shellcheck disable=SC2034` exclusions with a reason.
 - Format with **shfmt** for consistent, automated formatting:
+
   ```bash
   shfmt -i 2 -ci -bn -w **/*.sh   # 2-space indent, indent case blocks, binary ops on newlines
   ```
+
 - For complex scripts requiring real testing, use **BATS** (Bash Automated Testing System):
+
   ```bash
   @test "install_dependency fails on empty package name" {
     run install_dependency ""
@@ -259,4 +272,5 @@
     [[ "$output" == *"Package name required"* ]]
   }
   ```
+
 - **Know when to stop writing shell**. When a script exceeds ~200 lines, consider replacing it with Python (`argparse`, `subprocess`, `pathlib`) or Go for better testability, error handling, and cross-platform compatibility.

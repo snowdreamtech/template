@@ -9,6 +9,7 @@
 - Follow Django's **app-based structure**. Each app encapsulates a single domain concept: `users`, `orders`, `products`, `payments`.
 - Keep apps **loosely coupled** — apps MUST NOT import from each other's internal modules. Use signals, shared `core/` utilities, or service objects for cross-app communication.
 - Organize large apps with subdirectories:
+
   ```text
   myapp/
   ├── migrations/
@@ -28,6 +29,7 @@
   ├── services.py         # Business logic service functions/classes
   └── admin.py
   ```
+
 - For platform-level shared utilities, create a `core/` app: `core/models.py` (abstract base models), `core/permissions.py`, `core/exceptions.py`.
 
 ### Settings Management
@@ -54,11 +56,13 @@
 ## 2. Models & Database
 
 - Define **`__str__`** methods on every model for readable admin, shell, and log representations:
+
   ```python
   class User(AbstractUser):
       def __str__(self) -> str:
           return f"{self.get_full_name()} <{self.email}>"
   ```
+
 - Use `select_related()` (for FK/OneToOne) and `prefetch_related()` (for M2M and reverse FK) to prevent **N+1 queries**. Profile with `django-debug-toolbar` or `silk` during development:
 
   ```python
@@ -72,11 +76,14 @@
   ```
 
 - **Migrations**: Always commit all migrations. Never modify an applied migration. Run `python manage.py check` and `python manage.py showmigrations` before deploying:
+
   ```bash
   python manage.py makemigrations --check        # fail if unapplied migration changes exist
   python manage.py migrate --check               # fail if unapplied migrations exist (production)
   ```
+
 - Add `db_index=True` to fields frequently used in `.filter()`, `.order_by()`, or `.get()`. Use `UniqueConstraint` for multi-column uniqueness:
+
   ```python
   class Meta:
       constraints = [
@@ -86,6 +93,7 @@
           models.Index(fields=["status", "created_at"], name="ix_order_status_created"),
       ]
   ```
+
 - Use `Meta.ordering` sparingly — it adds an implicit `ORDER BY` to all QuerySets for the model, which can be an unexpected performance hit.
 
 ## 3. Views, APIs & Serialization
@@ -128,6 +136,7 @@
   ```
 
 - Use **service functions** or service classes for business logic. Keep views thin — a view should validate, delegate to service, and serialize:
+
   ```python
   def cancel_order(order: Order) -> None:
       """Cancel a pending order and process refund."""
@@ -137,6 +146,7 @@
       order.save(update_fields=["status", "updated_at"])
       process_refund.delay(order.id)  # Celery async task
   ```
+
 - Name all URL patterns (`name="order-detail"`). Use `reverse("order-detail", kwargs={"pk": pk})` or `{% url %}` — never hardcode paths.
 
 ## 4. Security
@@ -145,11 +155,14 @@
 
 - Enable **`django-axes`** or **rate limiting** on authentication endpoints to prevent brute-force attacks.
 - Use Django's built-in `AbstractUser` or `AbstractBaseUser`. Never implement custom password hashing — use `set_password()` which defaults to PBKDF2. Upgrade to **Argon2** for new projects:
+
   ```python
   # settings/base.py
   PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher", ...]
   ```
+
 - Set **secure cookie flags** in production:
+
   ```python
   # settings/production.py
   SESSION_COOKIE_SECURE   = True
@@ -175,6 +188,7 @@
 ### Production Hardening
 
 - Set `DEBUG = False` in production. Configure:
+
   ```python
   ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
   SECURE_SSL_REDIRECT              = True
@@ -184,6 +198,7 @@
   SECURE_CONTENT_TYPE_NOSNIFF      = True
   X_FRAME_OPTIONS                  = "DENY"
   ```
+
 - Run `python manage.py check --deploy` in CI to catch insecure settings.
 
 ## 5. Testing, Tooling & Async Tasks

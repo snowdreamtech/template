@@ -7,6 +7,7 @@
 ### Layout
 
 - Organize code by **feature/domain**, not by technical type:
+
   ```text
   app/
   ├── main.py               # App factory — create_app(), lifespan context
@@ -27,6 +28,7 @@
   │   └── deps.py           # Shared Depends(): get_db, get_current_user
   └── tests/
   ```
+
 - **Application Factory Pattern**: instantiate `FastAPI()` in a factory function for testability and flexibility:
 
   ```python
@@ -87,11 +89,13 @@
   ```
 
 - Annotate every endpoint with **`response_model=`** to control the API output schema and automatically filter sensitive fields:
+
   ```python
   @router.post("/", response_model=UserResponse, status_code=201)
   async def create_user(body: CreateUserRequest, svc: UserService = Depends(get_user_service)):
       return await svc.create(body)
   ```
+
 - Use `Annotated` for rich parameter declarations with validators and metadata:
 
   ```python
@@ -170,6 +174,7 @@
 
 - Raise `HTTPException` for client-facing errors with descriptive `detail` fields.
 - Register custom exception handlers for consistent error shapes:
+
   ```python
   @app.exception_handler(ServiceError)
   async def service_error_handler(request: Request, exc: ServiceError) -> JSONResponse:
@@ -178,16 +183,19 @@
           content={"error": exc.code, "message": exc.message},
       )
   ```
+
 - Use `@field_validator` and `@model_validator` in schemas for business-rule constraints beyond type validation.
 
 ### Security
 
 - Use **OAuth2PasswordBearer** or **APIKeyHeader** (via `fastapi.security`) for authentication. Use `PyJWT` for JWT creation and validation.
 - Use `PassLib[bcrypt]` or Argon2 for password hashing:
+
   ```python
   from passlib.context import CryptContext
   pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
   ```
+
 - Configure **CORS** explicitly — use `allow_origins=settings.allowed_origins` in production. Never use `allow_origins=["*"]` for APIs that handle credentials or sensitive data.
 - Use **rate limiting** via `slowapi` or an nginx/gateway layer for production APIs:
 
@@ -231,12 +239,16 @@
 ### Deployment & Observability
 
 - Run in development with `uvicorn app.main:app --reload`. In production, use **Gunicorn + Uvicorn workers**:
+
   ```bash
   gunicorn -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 app.main:app
   ```
+
 - Expose `/health/live` (liveness) and `/health/ready` (readiness) endpoints. Mount `/metrics` using `prometheus-fastapi-instrumentator`:
+
   ```python
   from prometheus_fastapi_instrumentator import Instrumentator
   Instrumentator().instrument(app).expose(app, endpoint="/metrics")
   ```
+
 - **CI pipeline**: `ruff check .` → `ruff format --check .` → `mypy .` → `bandit -r app/` → `pytest --asyncio-mode=auto --cov --cov-fail-under=80`.

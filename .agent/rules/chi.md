@@ -13,6 +13,7 @@
 ### Standard Project Layout
 
 ```text
+
 cmd/
 └── server/
     └── main.go              # Entry point — router creation, server config, graceful shutdown
@@ -27,9 +28,11 @@ internal/
 └── model/                   # Domain models, request DTOs, response DTOs
 config/
 └── config.go                # Configuration from environment variables
+
 ```
 
 - Register routes per domain in `routes.go` files that return an `http.Handler` (a `chi.Router`):
+
   ```go
   // internal/handler/routes.go
   func Routes(svc *service.UserService) http.Handler {
@@ -45,7 +48,9 @@ config/
       return r
   }
   ```
+
 - Mount sub-routers in `main.go`:
+
   ```go
   r := chi.NewRouter()
   r.Use(middleware.RequestID, middleware.RealIP, middleware.Logger, middleware.Recoverer)
@@ -57,6 +62,7 @@ config/
 
 - All handlers use the **standard `http.HandlerFunc` signature**: `func(w http.ResponseWriter, r *http.Request)` — no framework-specific types.
 - Extract URL path parameters with `chi.URLParam(r, "id")` or `chi.URLParamFromCtx(ctx, "id")`:
+
   ```go
   func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
       id := chi.URLParam(r, "id")
@@ -68,7 +74,9 @@ config/
       writeJSON(w, http.StatusOK, user)
   }
   ```
+
 - Define a `writeJSON(w, code, payload)` helper to avoid repetitive JSON response boilerplate:
+
   ```go
   func writeJSON(w http.ResponseWriter, code int, v any) {
       w.Header().Set("Content-Type", "application/json")
@@ -78,6 +86,7 @@ config/
       }
   }
   ```
+
 - **Pass values between middleware and handlers** using `r.Context()`. Always use an **unexported custom type** as context key to prevent namespace collisions with other packages:
 
   ```go
@@ -102,6 +111,7 @@ config/
 - Chi middleware follows the **standard `func(http.Handler) http.Handler` signature** — fully composable with any `net/http`-compatible middleware.
 - Apply global middleware with `r.Use()`. Mount sub-routers with `r.Mount()`. **Order of `r.Use()` calls determines execution order** — apply in reverse: first `Use` = outermost (first to receive, last to complete).
 - Use Chi's built-in middleware (`github.com/go-chi/chi/v5/middleware`) for standard concerns:
+
   | Middleware | Purpose |
   |---|---|
   | `middleware.RequestID` | Generates a unique request ID |
@@ -113,7 +123,9 @@ config/
   | `middleware.Throttle(n)` | Simple in-process concurrency limiter |
   | `middleware.CleanPath` | Normalize URL paths (remove double slashes) |
   | `middleware.RedirectSlashes` | Redirect trailing slashes |
+
 - Write custom middleware that wraps `next.ServeHTTP(w, r.WithContext(ctx))`. Return early (without calling `next`) to short-circuit the chain (e.g., auth failure):
+
   ```go
   func AuthMiddleware(next http.Handler) http.Handler {
       return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +140,9 @@ config/
       })
   }
   ```
+
 - Apply group-scoped middleware to protect specific route groups:
+
   ```go
   r.Group(func(r chi.Router) {
       r.Use(AuthMiddleware)
@@ -139,6 +153,7 @@ config/
 ## 4. Error Handling & Response Patterns
 
 - Define a consistent **error response structure** across all endpoints:
+
   ```go
   type ErrorResponse struct {
       Error   string            `json:"error"`
@@ -146,7 +161,9 @@ config/
       Details map[string]string `json:"details,omitempty"`
   }
   ```
+
 - Centralize HTTP error mapping in a `handleError(w, err)` helper. Map domain errors to appropriate HTTP codes:
+
   ```go
   func handleError(w http.ResponseWriter, err error) {
       var notFound *NotFoundError
@@ -165,6 +182,7 @@ config/
       }
   }
   ```
+
 - Never expose internal error messages, database errors, or stack traces in error responses. Log them server-side; return sanitized messages to clients.
 - Use `chi.SetRouteNotFound(r, handler)` and the default 405 behavior for missing routes and methods to return consistent machine-readable error responses.
 
@@ -198,12 +216,15 @@ config/
 ### Observability
 
 - Use **`log/slog`** (Go 1.21+) with a JSON handler for structured production request logging:
+
   ```go
   slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
       Level: slog.LevelInfo,
   })))
   ```
+
 - Integrate `middleware.RequestID` globally. Propagate the request ID in all log entries:
+
   ```go
   func requestLogger(next http.Handler) http.Handler {
       return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -218,6 +239,7 @@ config/
       })
   }
   ```
+
 - Expose standard health probes: `GET /healthz` (liveness — always 200 OK, no dependency checks) and `GET /readyz` (readiness — checks DB, cache, downstream service availability).
 - Generate API documentation using **Swaggo/swag** (`go:generate swag init`) or **ogen** from OpenAPI specs. Keep documentation annotations co-located with handler code.
 - Expose Prometheus metrics at a `/metrics` endpoint using `prometheus/client_golang`. Track: request count, request latency (labeled by route and method), error rates, and Go runtime metrics.

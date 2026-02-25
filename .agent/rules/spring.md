@@ -26,6 +26,7 @@
 ### Package Structure
 
 - Structure packages by **feature slice**, not by technical layer. Related classes live together:
+
   ```text
   src/main/java/com/example/
   ├── user/
@@ -44,6 +45,7 @@
 
 - Use **Spring Boot Actuator** for health checks, metrics, and environment info. Secure sensitive actuator endpoints — expose only `/actuator/health` and `/actuator/info` publicly. Protect `/actuator/env`, `/actuator/heapdump` behind admin authentication.
 - For cloud-native deployments with fast startup requirements, use **Spring AOT + GraalVM Native Image** (Spring Boot 3+) to compile to a native executable:
+
   ```bash
   ./gradlew nativeCompile   # produces native binary in build/native/nativeCompile/
   ```
@@ -119,6 +121,7 @@
 ### Validation & Error Handling
 
 - Validate all request bodies and parameters with **Bean Validation** (`@NotNull`, `@Email`, `@Size`, `@Valid`):
+
   ```java
   public record CreateUserRequest(
     @NotBlank @Size(max = 100) String name,
@@ -126,6 +129,7 @@
     @NotNull                    UserRole role
   ) {}
   ```
+
 - Handle validation and domain errors globally in a `@ControllerAdvice` class:
 
   ```java
@@ -169,6 +173,7 @@
 
 - Inject secrets via environment variables or a secrets manager. Never hardcode credentials — never commit them to version control.
 - Use **`@ConfigurationProperties`** with `@Validated` for type-safe configuration binding:
+
   ```java
   @ConfigurationProperties(prefix = "app")
   @Validated
@@ -213,18 +218,23 @@
 ### Observability & Operations
 
 - Emit **structured JSON logs** via Logback + `logstash-logback-encoder`. Include correlation IDs (using MDC):
+
   ```java
   MDC.put("requestId", request.getHeader("X-Request-ID"));
   ```
+
 - Export metrics to Prometheus via **Micrometer** (`micrometer-registry-prometheus`). Create custom metrics for business KPIs with `MeterRegistry`.
 - Use **JaCoCo** for code coverage. Enforce minimum coverage in Gradle:
+
   ```kotlin
   tasks.test { finalizedBy(tasks.jacocoTestReport) }
   tasks.jacocoTestCoverageVerification {
     violationRules { rule { limit { minimum = "0.80".toBigDecimal() } } }
   }
   ```
+
 - Enable **Virtual Threads** (Spring Boot 3.2+ with Java 21) for near-zero-cost thread-per-request concurrency in I/O-bound applications:
+
   ```yaml
   spring.threads.virtual.enabled: true
   ```

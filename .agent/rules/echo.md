@@ -10,6 +10,7 @@
 ### Standard Project Layout
 
 ```text
+
 cmd/
 └── server/
     └── main.go              # Entry point: Echo setup, dependency injection, server lifecycle
@@ -24,6 +25,7 @@ internal/
 └── model/                   # Domain models, request DTOs, response DTOs
 config/
 └── config.go                # Configuration loading (from env)
+
 ```
 
 - Initialize Echo in `main.go` or an `app.go` factory function to separate construction from serving:
@@ -50,6 +52,7 @@ config/
   ```
 
 - Configure server timeouts immediately — never run Echo with default indefinite timeouts in production:
+
   ```go
   server := &http.Server{
       Addr:         ":" + cfg.Port,
@@ -59,11 +62,13 @@ config/
       Handler:      e,
   }
   ```
+
 - Implement graceful shutdown with `e.Shutdown(ctx)` on `SIGTERM`/`SIGINT` signals. Allow 30 seconds for in-flight requests to complete.
 
 ## 2. Routing & Handlers
 
 - Use `e.Group()` to group routes by path prefix and apply group-level middleware (auth, rate limiting, logging):
+
   ```go
   func RegisterRoutes(api *echo.Group, h *UserHandler) {
       users := api.Group("/users")
@@ -75,7 +80,9 @@ config/
       users.DELETE("/:id", h.Delete)
   }
   ```
+
 - **Handler signature MUST be**: `func(c echo.Context) error`. Always return an error from handler — never call `c.JSON()` on an error path and then return `nil`:
+
   ```go
   func (h *UserHandler) Get(c echo.Context) error {
       id := c.Param("id")
@@ -89,7 +96,9 @@ config/
       return c.JSON(http.StatusOK, user)
   }
   ```
+
 - Bind and validate request DTOs with `c.Bind(&req)` followed by `c.Validate(&req)`. Register a custom validator implementing `echo.Validator`:
+
   ```go
   type CustomValidator struct {
       validator *validator.Validate
@@ -102,12 +111,14 @@ config/
   }
   e.Validator = &CustomValidator{validator: validator.New()}
   ```
+
 - Use `c.Param("id")`, `c.QueryParam("page")`, `c.FormValue("name")` for type-safe parameter extraction.
 
 ## 3. Middleware
 
 - Apply global middleware with `e.Use()`. Use `g.Use()` for group-scoped middleware. **Order matters** — apply `Recover()` and `RequestID()` first (outermost), then logging, then business middleware.
 - Use Echo's built-in middleware (`github.com/labstack/echo/v4/middleware`):
+
   | Middleware | Purpose | Configuration |
   |---|---|---|
   | `middleware.Logger()` | Structured access logs | Use `middleware.LoggerWithConfig()` for JSON format |
@@ -118,8 +129,10 @@ config/
   | `middleware.Gzip()` | Response compression | Set min ratio to avoid compressing small payloads |
   | `middleware.RequestID()` | Unique request ID | Auto-generates UUID if not present |
   | `middleware.Timeout()` | Per-request timeout | `middleware.TimeoutWithConfig()` |
+
 - Use `c.Set(key, value)` / `c.Get(key)` to pass values (authenticated user, request ID, tenant) between middleware and handlers within a request lifecycle.
 - Configure structured JSON logging for production:
+
   ```go
   e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
       Format: `{"time":"${time_rfc3339_nano}","id":"${id}","remote_ip":"${remote_ip}","host":"${host}","method":"${method}","uri":"${uri}","status":${status},"error":"${error}","latency":${latency},"latency_human":"${latency_human}"}` + "\n",
@@ -130,6 +143,7 @@ config/
 ## 4. Error Handling
 
 - Define a **custom `HTTPErrorHandler`** on the Echo instance for centralized, consistent error formatting. This is the single place where all errors are converted to HTTP responses:
+
   ```go
   func customErrorHandler(e *echo.Echo) echo.HTTPErrorHandler {
       return func(err error, c echo.Context) {
@@ -152,8 +166,10 @@ config/
       }
   }
   ```
+
 - Return errors from handlers; let the global error handler format the response. **Never** call `c.JSON()` for an error path and then return `nil`.
 - Map domain-specific errors to HTTP errors in a helper or in the error handler — not in individual handlers:
+
   ```go
   func domainErrToHTTP(err error) error {
       switch {
@@ -166,6 +182,7 @@ config/
       }
   }
   ```
+
 - Use `echo.NewHTTPError(code, message)` for well-known HTTP errors. Use `fmt.Errorf("operation: %w", err)` for wrapped domain errors that are unwrapped in the error handler.
 
 ## 5. Testing, Performance & Observability
@@ -200,11 +217,13 @@ config/
 
 - Configure server timeouts (see section 1). Never run Echo with default `http.Server` (infinite timeouts) in production.
 - Use connection pooling for databases. Configure max idle/open connections and connection lifetime:
+
   ```go
   db.SetMaxIdleConns(10)
   db.SetMaxOpenConns(100)
   db.SetConnMaxLifetime(5 * time.Minute)
   ```
+
 - Benchmark critical endpoints with `wrk` or `k6` under realistic load before major releases.
 - Use `pprof` to profile hot endpoints. Expose the `pprof` handler on a management port (not the API port) in production environments.
 
@@ -212,8 +231,10 @@ config/
 
 - Use `log/slog` (Go 1.21+) or `uber-go/zap` for structured logging. Integrate via a custom Echo logger adapter.
 - Add **distributed tracing** with OpenTelemetry: instrument the Echo router with `go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho`:
+
   ```go
   e.Use(otelecho.Middleware("my-service"))
   ```
+
 - Expose Prometheus metrics using the Echo middleware from `echo-contrib/prometheus` or `labstack/echo-contrib`. Track: request count, latency histograms (by route/method/status), and error rates.
 - Expose health probes: `GET /health/live` (always 200) and `GET /health/ready` (checks DB, cache, downstream dependencies).

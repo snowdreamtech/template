@@ -202,6 +202,7 @@
   - Dramatically reduce request payload sizes
   - Enable CDN caching of GET-based queries
 - Implement **field-level authorization** in resolvers — never expose protected fields without checking permissions. Use a directive-based approach for consistency:
+
   ```graphql
   type User {
     email: String! @auth(requires: SELF_OR_ADMIN)
@@ -227,6 +228,7 @@
 ### Code Generation
 
 - Use **GraphQL Code Generator** to generate type-safe code from the schema:
+
   ```yaml
   # codegen.yml
   generates:
@@ -235,6 +237,7 @@
     src/graphql/hooks.ts: # for React clients
       plugins: [typescript, typescript-operations, typescript-react-query]
   ```
+
   Run in CI: `graphql-codegen --check` to fail if generated code is out of sync with the schema.
 
 ### Schema Linting & Breaking Changes

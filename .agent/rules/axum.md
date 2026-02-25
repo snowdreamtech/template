@@ -10,6 +10,7 @@
 ### Standard Project Layout
 
 ```text
+
 src/
 ├── main.rs              # Entry point: tokio::main, server setup, signal handling
 ├── app.rs               # Application factory: builds Router with state and layers
@@ -24,9 +25,11 @@ src/
 ├── repositories/        # Data access layer (DB, cache)
 ├── middleware/          # Custom middleware implementations
 └── models/              # Domain models and request/response DTOs
+
 ```
 
 - Initialize with a `#[tokio::main]` entry point. Build the router in an `app()` factory function to separate construction from serving — this makes it testable:
+
   ```rust
   #[tokio::main]
   async fn main() {
@@ -39,18 +42,22 @@ src/
           .unwrap();
   }
   ```
+
 - Pin Axum's version explicitly in `Cargo.toml`. Breaking changes between minor versions are common in the 0.x ecosystem — review the changelog before upgrading.
 - Implement graceful shutdown with `with_graceful_shutdown()`, listening for `SIGTERM` and `SIGINT` signals to allow in-flight requests to complete.
 
 ## 2. Routing & Extractors
 
 - Define routes with HTTP method-routing helpers:
+
   ```rust
   Router::new()
       .route("/users", get(list_users).post(create_user))
       .route("/users/:id", get(get_user).put(update_user).delete(delete_user))
   ```
+
 - Use **Extractors** as typed handler parameters — Axum injects them based on type through the `FromRequest`/`FromRequestParts` traits:
+
   | Extractor | Source | Notes |
   |---|---|---|
   | `Path<T>` | URL path parameters | `T: Deserialize` |
@@ -60,6 +67,7 @@ src/
   | `Extension<T>` | Middleware-injected values | Per-request data |
   | `TypedHeader<T>` | Typed request header | Requires `headers` feature |
   | `ConnectInfo<T>` | Client IP/socket | Requires `connect_info` feature |
+
 - Handler functions can accept any number of extractors as arguments (up to 16 by default) — the order does not matter for request-parts extractors.
 - Use `axum::middleware::from_fn` or `from_fn_with_state` for concise async middleware functions without implementing the full Tower `Service` trait manually.
 - Use `Router::nest()` to mount sub-routers at a path prefix. Use `Router::merge()` to combine routes defined in different modules.
@@ -90,6 +98,7 @@ src/
 ### Middleware & Layers
 
 - Axum uses **Tower** layers. Apply with `.layer()` on routers or specific routes. Use `ServiceBuilder::new().layer(...).layer(...)` to compose multiple layers in the correct order (top of `ServiceBuilder` = outermost layer = first to process requests):
+
   ```rust
   let app = Router::new()
       .route("/", get(handler))
@@ -101,6 +110,7 @@ src/
               .layer(CorsLayer::permissive()),   // restrict in production
       );
   ```
+
 - Key `tower-http` layers to use: `TraceLayer` (OpenTelemetry-compatible request tracing), `TimeoutLayer` (request timeout), `CompressionLayer` (gzip/brotli/zstd), `CorsLayer` (CORS), `RequestIdLayer` (unique request ID), `ValidateRequestHeaderLayer` (API key auth).
 - Implement rate limiting with `tower_governor` or `tower-http`'s `SetRequestHeader` with a custom rate limiter backed by Redis.
 
@@ -141,6 +151,7 @@ src/
 ### Testing
 
 - Test handlers without starting a real TCP server using `tower::ServiceExt::oneshot()`:
+
   ```rust
   #[tokio::test]
   async fn test_get_user() {
@@ -156,6 +167,7 @@ src/
       assert_eq!(body.id, 1);
   }
   ```
+
 - Use `axum_test::TestClient` for a higher-level test helper API that simplifies request construction and response assertion.
 - Use **Testcontainers** (`testcontainers-modules::postgres`) for integration tests requiring a real PostgreSQL instance.
 - Run `cargo test` with `--nocapture` for detailed output in CI. Enable the race detector in async tests: `RUST_BACKTRACE=1 cargo test`.
@@ -163,12 +175,14 @@ src/
 ### Observability
 
 - Use `tracing` + `tracing-subscriber` with `EnvFilter` and JSON formatting (`tracing_subscriber::fmt::json()`) for structured request and application logging:
+
   ```rust
   tracing_subscriber::registry()
       .with(EnvFilter::from_default_env())
       .with(tracing_subscriber::fmt::layer().json())
       .init();
   ```
+
 - Integrate `TraceLayer::new_for_http()` with `tower_http::trace` for automatic per-request tracing. Propagate `traceparent` headers for distributed tracing with OpenTelemetry.
 - Expose Prometheus metrics at `/metrics` using `prometheus` + `axum_prometheus` (or manual `axum-metrics` integration). Track: request count, latency (p50/p95/p99), error rate, and active connections.
 - Expose health check endpoints: `GET /healthz` (liveness — always 200 OK) and `GET /readyz` (readiness — checks DB, cache, downstream dependencies).

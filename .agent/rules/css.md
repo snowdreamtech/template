@@ -5,12 +5,14 @@
 ## 1. Methodology & Architecture
 
 - Choose and consistently apply **one** CSS methodology across the entire project. Do not mix strategies:
+
   | Methodology | Best for | Key pattern |
   |---|---|---|
   | **BEM** | Traditional class-based projects | `.block__element--modifier` |
   | **SMACSS** | Large, structured applications | Base, Layout, Module, State, Theme layers |
   | **Utility-First (Tailwind)** | Rapid UI with co-located styles | `flex items-center gap-4` |
   | **CSS Modules** | Component-scoped styles in frameworks | `styles.button` — hashed class names |
+
 - For **BEM**: use `.block__element--modifier` naming. Avoid chaining elements beyond two levels (`.card__header__title` is wrong — extract `.card-title` as a new block).
 - Organize stylesheets using **CSS Cascade Layers** for explicit precedence control:
 
@@ -60,6 +62,7 @@
   ```
 
 - Define **dark mode tokens** by overriding light mode tokens in a media query or class:
+
   ```css
   @media (prefers-color-scheme: dark) {
     :root {
@@ -69,6 +72,7 @@
   }
   /* Or theme class: [data-theme="dark"] { ... } */
   ```
+
 - For complex design systems, use **Style Dictionary** to generate tokens from a single JSON/YAML source of truth, producing CSS custom properties, SCSS variables, iOS Swift files, and Android XML simultaneously.
 - Document all design tokens with comments explaining their purpose and acceptable value range. Group related tokens together.
 
@@ -98,6 +102,7 @@
 ## 4. Responsive Design & Layout
 
 - Follow a **mobile-first** approach: write base styles for the smallest viewport, then layer enhancements for larger viewports with `@media (min-width: ...)`:
+
   ```css
   .grid {
     display: grid;
@@ -114,12 +119,14 @@
     } /* desktop */
   }
   ```
+
 - Use **relative units** for responsive, accessible scaling:
   - `rem` for font sizes (relative to root font size, respects user preferences)
   - `em` for spacing that should scale with the local font size
   - `%`, `fr`, `vw`, `vh`, `svh`, `dvh` for layout dimensions
   - Avoid fixed `px` for font sizes — it ignores user browser font-size preferences
 - Use **CSS Grid** for two-dimensional layouts, **Flexbox** for one-dimensional arrangements. Avoid float-based or position-based layout hacks:
+
   ```css
   /* Reusable auto-fill grid */
   .auto-grid {
@@ -128,6 +135,7 @@
     gap: var(--space-4);
   }
   ```
+
 - Use **`@container` queries** for component-level responsive design — adapting based on the container's size, not the viewport. This enables truly reusable, context-aware components:
 
   ```css
@@ -170,6 +178,7 @@
 
 - Use `will-change: transform` only for elements with confirmed complex animations. Overuse wastes GPU memory — add and remove it dynamically via JavaScript when needed.
 - Use `prefers-reduced-motion` to respect user accessibility preferences:
+
   ```css
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -180,6 +189,7 @@
     }
   }
   ```
+
 - Use `content-visibility: auto` on below-the-fold sections to skip rendering work until they are near the viewport — can significantly reduce initial paint time for long pages.
 
 ### CSS Bundle & Tooling

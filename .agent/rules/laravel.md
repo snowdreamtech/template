@@ -7,6 +7,7 @@
 ### Directory Organization
 
 - Follow Laravel's **Convention over Configuration** principle. Use Artisan generators for all scaffolding:
+
   ```bash
   php artisan make:model User -mfs    # model + migration + factory + seeder
   php artisan make:controller UserController --resource --api
@@ -14,7 +15,9 @@
   php artisan make:resource UserResource
   php artisan make:job SendWelcomeEmail
   ```
+
 - Keep controllers **thin and RESTful**. A resource controller implements: `index`, `store`, `show`, `update`, `destroy` — delegate everything else to dedicated classes:
+
   ```php
   // ✅ Thin controller — delegates to action
   class UserController extends Controller {
@@ -24,6 +27,7 @@
     }
   }
   ```
+
 - Use **Action Classes** (`app/Actions/`) for complex business logic that spans multiple models. Actions are single-purpose, testable, injectable:
 
   ```php
@@ -108,9 +112,11 @@
 ### Mass Assignment & Scopes
 
 - Define `$fillable` explicitly on all models. **Never use `$guarded = []`** — it allows mass-assigning every attribute:
+
   ```php
   protected $fillable = ['name', 'email', 'role'];  // explicit allowlist only
   ```
+
 - Use **Eloquent scopes** for reusable query logic:
 
   ```php
@@ -125,6 +131,7 @@
 
 - Avoid Eloquent **observers** for business logic — they are invisible side effects. Use explicit service/action calls instead.
 - Use **Model Factories** for test data generation. Use **Seeders** only for reference data that belongs in every environment (countries, permission roles):
+
   ```php
   // Factory
   User::factory()->count(10)->create(['role' => UserRole::VIEWER]);
@@ -163,6 +170,7 @@
 
 - Never commit `.env` files. Commit `.env.example` with placeholder values. Production environments should load secrets via secret managers (Vault, AWS Secrets Manager).
 - Set `APP_ENV=production` and `APP_DEBUG=false` in production. Enable caches before deployment:
+
   ```bash
   php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan event:cache
   ```
@@ -197,6 +205,7 @@
 
 - Use **Laravel Horizon** for monitoring Redis queues in production. Define worker priorities and timeout values in `config/horizon.php`.
 - Use **Laravel Scheduler** for recurring tasks. Deploy a single cron entry rather than multiple cron jobs:
+
   ```php
   // In routes/console.php (Laravel 10+)
   Schedule::job(new SyncExchangeRates)->hourly()->withoutOverlapping();
@@ -232,6 +241,7 @@
 
 - Use `RefreshDatabase` trait for tests needing a clean database state. Use `WithFaker` and model factories for realistic test data.
 - Mock external services with Laravel's built-in fakes to prevent real external calls in tests:
+
   ```php
   Http::fake(['stripe.com/*' => Http::response(['id' => 'ch_123'], 200)]);
   Mail::fake();

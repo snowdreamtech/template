@@ -8,6 +8,7 @@
 
 - Use the **App Router** (`app/` directory) for all new Next.js 13+ projects. Avoid mixing with the Pages Router in the same project — they have fundamentally different data fetching models.
 - Co-locate related files (components, styles, tests, utils) with their route segment using **private folders** (`_components/`, `_lib/`) — underscore prefix prevents the folder from being treated as a route:
+
   ```text
   app/
   ├── (marketing)/         # Route Group — no URL impact
@@ -28,6 +29,7 @@
   │           └── not-found.tsx
   └── layout.tsx           # Root layout
   ```
+
 - Use **Route Groups** (`(groupName)/`) to organize routes without affecting the URL path — enables different layouts for the same path prefix.
 - Use **Parallel Routes** (`@slot/`) and **Intercepting Routes** (`(..)segment`) for complex UX: modals while preserving URL state, split-view dashboards — without JavaScript-only hacks.
 - Define `not-found.tsx` (404), `error.tsx` (error boundaries), and `loading.tsx` (Suspense fallback) at each route segment level as needed. Use `global-error.tsx` for root-level unhandled errors.
@@ -103,6 +105,7 @@
   ```
 
 - Use **React Suspense** and `loading.tsx` for streaming and progressive rendering. Wrap slow data-fetching blocks in `<Suspense>` to unblock the rest of the page:
+
   ```tsx
   export default function Dashboard() {
     return (
@@ -115,7 +118,9 @@
     );
   }
   ```
+
 - Use **on-demand ISR** (`revalidateTag()` / `revalidatePath()`) from API route handlers or Server Actions when upstream data changes (CMS webhook, payment event):
+
   ```tsx
   // api/webhooks/cms/route.ts
   export async function POST(req: Request) {
@@ -124,6 +129,7 @@
     return Response.json({ revalidated: true });
   }
   ```
+
 - For client-side data and real-time updates, use **TanStack Query** (`useQuery`, `useMutation`) or SWR. Seed initial data from `initialData` passed from a Server Component.
 
 ## 4. Performance
@@ -131,6 +137,7 @@
 ### Image & Font Optimization
 
 - Use **`next/image`** for all images — automatic AVIF/WebP conversion, lazy loading, and layout shift prevention via required `width`/`height` or `fill` + `sizes` attribute:
+
   ```tsx
   <Image
     src="/hero.jpg"
@@ -141,7 +148,9 @@
     sizes="(max-width: 768px) 100vw, 1400px"
   />
   ```
+
 - Use **`next/font`** for all web fonts — eliminates layout shift, removes external font requests, and self-hosts fonts automatically:
+
   ```tsx
   import { Inter } from "next/font/google";
   const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -150,12 +159,14 @@
 ### Bundle & Rendering
 
 - Use **`next/dynamic`** to lazy-load heavy Client Components and reduce the initial bundle:
+
   ```tsx
   const HeavyChart = dynamic(() => import("./_components/HeavyChart"), {
     loading: () => <ChartSkeleton />,
     ssr: false, // for browser-only libraries (e.g., chart.js, mapbox)
   });
   ```
+
 - Use **Partial Prerendering (PPR)** (Next.js 14+) to statically prerender the shell and stream dynamic content — combines static performance with dynamic data.
 - Measure and target Core Web Vitals (LCP, CLS, INP) with Vercel Analytics, Datadog RUM, or the Web Vitals API. Target LCP < 2.5s, CLS < 0.1.
 
@@ -195,6 +206,7 @@
   ```
 
 - Set security headers in `next.config.js`:
+
   ```javascript
   const headers = [
     { key: "X-Frame-Options", value: "DENY" },
@@ -204,4 +216,5 @@
     { key: "Content-Security-Policy", value: cspHeader },
   ];
   ```
+
 - In **Next.js 15**, enable `experimental.dynamicIO` to enforce explicit caching intent for all data fetching — catching accidental cache misses and over-caching during development.

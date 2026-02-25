@@ -34,6 +34,7 @@
   - Decorative images: empty alt (`alt=""`) — screen reader skips them
   - Images conveying data: use long descriptions or adjacent text
 - Use **landmark roles** to structure the page — this enables screen reader users to jump between major sections:
+
   ```html
   <header role="banner">...</header>
   <!-- or just <header> at top level -->
@@ -48,11 +49,13 @@
 ### Contrast Requirements
 
 - Text and interactive elements MUST meet **WCAG 2.2 AA** minimum contrast ratios (as measured against adjacent background):
+
   | Text Size | Minimum Ratio | AA | AAA |
   |---|---|---|---|
   | Normal text (< 18pt / 14pt bold) | **4.5:1** | ✓ required | 7:1 target |
   | Large text (≥ 18pt or ≥ 14pt bold) | **3:1** | ✓ required | 4.5:1 target |
   | UI components (borders, focus rings, icons) | **3:1** | ✓ required | — |
+
 - Use contrast checkers to verify: [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/), [Colour Contrast Analyser](https://www.tpgi.com/color-contrast-checker/) (desktop app, picks screen colors).
 - **Dark mode** MUST maintain the same contrast ratios as light mode. Verify both themes in CI and during manual review.
 
@@ -105,6 +108,7 @@
   The focus indicator must have a **3:1 contrast ratio** between focused and unfocused states.
 
 - Implement **focus trapping** inside modal dialogs using `inert` attribute or focus trap libraries:
+
   ```javascript
   // When modal opens:
   // 1. Set `inert` on the background content
@@ -113,12 +117,16 @@
   // 1. Remove `inert` from background content
   // 2. Return focus to the trigger element (the button that opened the modal)
   ```
+
 - Provide a **"Skip to main content"** link as the first focusable element on every page:
+
   ```html
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <main id="main-content">...</main>
   ```
+
   Style the skip link to become visible on focus (commonly positioned off-screen by default):
+
   ```css
   .skip-link {
     position: absolute;
@@ -195,12 +203,14 @@
 
 - **Keyboard-only testing** (do before every release): Walk through every interactive flow without a mouse. Verify focus order, visible indicators, modal trapping, and dialog return focus.
 - **Screen reader testing matrix** (test monthly or before major releases):
+
   | Screen Reader | Browser | Priority |
   |---|---|---|
   | NVDA | Firefox | High (Windows, most used) |
   | JAWS | Chrome | High (Windows, enterprise) |
   | VoiceOver | Safari | High (macOS/iOS) |
   | TalkBack | Chrome Mobile | Medium (Android) |
+
 - **Zoom testing**: Test at 200% and 400% browser zoom. No content should be cut off, overlap unintentionally, or require horizontal scrolling.
 
 ### Compliance Documentation

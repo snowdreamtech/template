@@ -5,6 +5,7 @@
 ## 1. Project Structure
 
 - Organize by **feature/domain**, not by technical type:
+
   ```text
   cmd/
   └── server/
@@ -23,6 +24,7 @@
   │   └── response.go
   └── config/                  # Config struct and loading logic
   ```
+
 - Use `cmd/` for application entry points and `internal/` to prevent external package imports. Export intentionally public packages via `pkg/`.
 - Wire dependencies in `main.go` using manual injection or a DI library (`wire`, `uber/fx`). Avoid `init()` functions for dependency setup — they run in undefined order and are hard to test.
 
@@ -31,6 +33,7 @@
 ### Router Setup
 
 - Use **`gin.New()`** (not `gin.Default()`) in production for explicit control over which middleware is loaded and in what order:
+
   ```go
   r := gin.New()
   r.Use(
@@ -41,7 +44,9 @@
     middleware.CORS(cfg.AllowedOrigins),
   )
   ```
+
 - Use `router.Group()` to organize related routes. Apply middleware at the group level — not per individual route:
+
   ```go
   api := r.Group("/api/v1")
   api.Use(middleware.JWTAuth(jwtSecret))  // applied to all routes in group
@@ -145,6 +150,7 @@
   ```
 
 - Use **`c.Abort()`** (not just `return`) in middleware to stop the request chain when a request should not proceed:
+
   ```go
   func JWTAuth(secret string) gin.HandlerFunc {
     return func(c *gin.Context) {
@@ -169,6 +175,7 @@
 ### Security
 
 - Use **`gin-contrib/cors`** with an explicit origin allowlist:
+
   ```go
   r.Use(cors.New(cors.Config{
     AllowOrigins:     []string{"https://app.example.com"},
@@ -178,6 +185,7 @@
     MaxAge:           12 * time.Hour,
   }))
   ```
+
 - Add **rate limiting** on authentication and sensitive endpoints using `ulule/limiter` with Redis backend for distributed rate limiting.
 - Set `GIN_MODE=release` in production to disable debug validations and verbose startup logging.
 
@@ -213,12 +221,15 @@
 ### Observability
 
 - Integrate **OpenTelemetry** via `otelgin` middleware for distributed tracing. Propagate trace context across service boundaries:
+
   ```go
   import "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
   r.Use(otelgin.Middleware("my-api-service"))
   ```
+
 - Use **`slog`** (Go 1.21+) with a JSON handler for structured request logging. Log method, path, status, duration, and request ID on every request.
 - Generate API documentation with **`swaggo/swag`**. Keep swagger comments synchronized with handler signatures and run `swag init` in CI:
+
   ```bash
   //go:generate swag init --parseDependency --generalInfo cmd/server/main.go --output docs/
   ```

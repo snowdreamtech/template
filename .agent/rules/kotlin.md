@@ -19,6 +19,7 @@
   ```
 
 - Use **`object`** for singletons. Use **companion objects** for factory methods, constants, and `@JvmStatic` helpers. Avoid Java-style static utility classes:
+
   ```kotlin
   class User private constructor(val id: UUID, val email: String) {
     companion object {
@@ -26,7 +27,9 @@
     }
   }
   ```
+
 - Use **scope functions** appropriately. Each has a specific idiom:
+
   | Function | Receiver | Return | Idiom |
   |---|---|---|---|
   | `let` | `it` | Lambda result | Null check + transformation |
@@ -45,11 +48,13 @@
   ```
 
 - Use **extension functions** over utility classes for adding functionality to existing types. Keep related extensions in dedicated files:
+
   ```kotlin
   // extensions/UserExtensions.kt
   fun User.displayName() = fullName ?: email.substringBefore('@')
   fun User.isAdmin() = roles.contains(Role.ADMIN)
   ```
+
 - For **Kotlin Multiplatform (KMP)**: place all shared business logic in `commonMain`. Use `expect`/`actual` for platform-specific implementations (crypto, filesystem, HTTP). Never expose platform-specific APIs directly in `commonMain`.
 
 ## 2. Null Safety
@@ -74,6 +79,7 @@
   ```
 
 - Design APIs to be **null-free** at boundaries. Use `sealed class` or `Result<T>` to represent absence or failure rather than nullable return types from service methods:
+
   ```kotlin
   sealed class UserResult {
     data class Found(val user: User) : UserResult()
@@ -81,6 +87,7 @@
     data class Error(val message: String) : UserResult()
   }
   ```
+
 - Use **Kotlin's nullable types** (`T?`) to represent absence. Never use Java's `Optional<T>` in Kotlin code — it is verbose and non-idiomatic.
 - Annotate **Java interop boundaries** with `@Nullable`/`@NotNull` (or JSR-305 `@Nullable`/`@Nonnull`) to prevent unexpected `!` (platform) types in Kotlin call sites.
 
@@ -121,6 +128,7 @@
 
 - Use `withContext(Dispatchers.IO)` explicitly when switching contexts within a suspend function. Never call blocking functions directly in coroutines without switching to `Dispatchers.IO`.
 - Use `async`/`await` for parallel concurrent execution:
+
   ```kotlin
   coroutineScope {
     val profileDeferred = async { fetchProfile(userId) }
@@ -144,6 +152,7 @@
   ```
 
 - Use `Sequence` for large or multi-step collection pipelines to enable **lazy evaluation** (avoids creating intermediate lists):
+
   ```kotlin
   val result = largeList.asSequence()
     .filter { it.isValid() }
@@ -151,6 +160,7 @@
     .take(100)
     .toList()   // evaluated here, each element passes through all steps
   ```
+
 - Use standard functional operations (`map`, `filter`, `fold`, `groupBy`, `flatMap`, `partition`) over explicit `for` loops for collection transformations.
 - Prefer **named data classes** over `Pair`/`Triple` for public API return types. `Pair` is fine for internal/local use:
 
@@ -199,6 +209,7 @@
   - `advanceTimeBy()` — controls `delay()` timing
   - `TestCoroutineScheduler` — manual scheduler control
 - Run tests with `./gradlew test` in CI. Set `allWarningsAsErrors = true` in Gradle to catch potential issues:
+
   ```kotlin
   // build.gradle.kts
   kotlin { compilerOptions { allWarningsAsErrors = true } }
@@ -207,20 +218,26 @@
 ### Tooling
 
 - Lint with **Detekt** (configurable static analysis for Kotlin) committed as `detekt.yml`:
+
   ```bash
   ./gradlew detekt               # in CI
   ./gradlew detektMain           # main sources only
   ```
+
 - Format with **Ktlint** via Gradle plugin or standalone. Configure code style in `.editorconfig`:
+
   ```ini
   [*.{kt,kts}]
   indent_size = 4
   continuation_indent_size = 4
   max_line_length = 120
   ```
+
 - Use **Kover** (JetBrains) for Kotlin code coverage reporting in Gradle projects. Set minimum coverage gates:
+
   ```kotlin
   koverReport { verify { rule { minBound(80) } } }
   ```
+
 - Use **Kotlin Power Assert** (Kotlin 2.0+) for expressive assertion failure messages without external libraries.
 - For Android projects, use **`lint`** (Android's built-in static analysis) and the **`compose-lint-checks`** plugin for Compose-specific lint rules.

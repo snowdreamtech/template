@@ -12,6 +12,7 @@
 ### Standard Project Layout
 
 ```text
+
 project-root/
 ├── cmd/server/          # Entry point (if not using bee scaffold)
 ├── controllers/         # HTTP handlers — thin; delegate to services
@@ -24,6 +25,7 @@ project-root/
 ├── static/              # Static assets
 ├── tests/               # Test files
 └── main.go              # Entry point
+
 ```
 
 - Keep controllers **thin**. Delegate all business logic to a `services/` layer. Controllers should only: parse input, call a service, handle the response/error.
@@ -49,6 +51,7 @@ project-root/
   ```
 
 - Return JSON with `c.Data["json"] = payload; c.ServeJSON()`. Always use a **consistent response envelope** structure across endpoints:
+
   ```go
   type APIResponse struct {
       Code    int         `json:"code"`
@@ -56,9 +59,11 @@ project-root/
       Data    interface{} `json:"data,omitempty"`
   }
   ```
+
 - Use `c.GetString("key")`, `c.GetInt("key", 0)`, `c.GetBool("key", false)` for safe request parameter parsing with defaults. Always validate input explicitly.
 - Use `beego.Include(&controllers.UserController{})` for namespace-based RESTful routing — it automatically registers GET, POST, PUT, DELETE, PATCH, HEAD for the controller struct.
 - For URL namespacing and versioning, use `beego.NewNamespace`:
+
   ```go
   ns := beego.NewNamespace("/api/v1",
       beego.NSInclude(&controllers.UserController{}),
@@ -80,12 +85,14 @@ project-root/
 ### Middleware (Filters)
 
 - Use `beego.InsertFilter()` to register middleware (called "filters" in Beego). Apply globally or to specific URL patterns:
+
   ```go
   // Before route matched — auth, rate limiting
   beego.InsertFilter("*", beego.BeforeRouter, AuthFilter)
   // After route matched — logging, metrics
   beego.InsertFilter("/api/*", beego.BeforeExec, LoggingFilter)
   ```
+
 - Filter execution points: `BeforeRouter`, `BeforeStatic`, `BeforeExec`, `AfterExec`, `FinishRouter`.
 - Enable CSRF protection: `beego.BConfig.WebConfig.EnableXSRF = true`. Configure the XSRF token key and cookie TTL. Validate the XSRF token on all state-modifying requests (POST, PUT, DELETE).
 - Enable HTTPS-only globally by setting `beego.BConfig.WebConfig.AutoTLS = true` (uses Let's Encrypt) or redirect HTTP to HTTPS in a `BeforeRouter` filter.
@@ -96,11 +103,14 @@ project-root/
 ### Beego ORM
 
 - Register models and databases at startup before using the ORM:
+
   ```go
   orm.RegisterDataBase("default", "mysql", dsn)
   orm.RegisterModel(&User{}, &Post{}, &Comment{})
   ```
+
 - Define models with tagged structs. Use `orm:"..."` tags explicitly for column names, sizes, indexes, and relationships:
+
   ```go
   type User struct {
       Id       int    `orm:"auto;pk"`
@@ -109,12 +119,14 @@ project-root/
       Created  time.Time `orm:"auto_now_add;type(datetime)"`
   }
   ```
+
 - Use `orm.RunSyncdb("default", false, true)` **in development only** to synchronize schema. **Never use `force=true` in production** — it drops and recreates tables, destroying all data.
 - For production schema management, use a dedicated migration tool:
   - **golang-migrate**: `migrate -database "mysql://..." -path ./migrations up`
   - **Atlas**: `atlas schema apply --url "mysql://..."`
   - **goose**: `goose -dir migrations mysql "..." up`
 - Prefer explicit transactions for multi-step operations:
+
   ```go
   o := orm.NewOrm()
   err := o.Begin()
@@ -138,6 +150,7 @@ project-root/
 ### Testing
 
 - Test controllers using `httptest.NewRecorder()` and Beego's test helpers. Create a test application instance that mirrors the real one:
+
   ```go
   func TestGetUser(t *testing.T) {
       r, _ := http.NewRequest("GET", "/api/v1/users/1", nil)
@@ -146,6 +159,7 @@ project-root/
       assert.Equal(t, http.StatusOK, w.Code)
   }
   ```
+
 - Use **Testify** (`github.com/stretchr/testify`) for assertions.
 - Use **Testcontainers** for integration tests requiring a real MySQL/PostgreSQL database instance. Run integration tests in a separate `go test -tags integration ./...` suite.
 - Mock service dependencies with interfaces — define service interfaces in `services/` and inject mocks in tests. Beego controllers receive services via constructor injection.
@@ -154,9 +168,11 @@ project-root/
 ### Logging
 
 - Use Beego's built-in logging (`beego/logs` package) with structured adapters. Configure the `console` adapter for development and the `file` adapter for production:
+
   ```go
   beego.SetLogger(logs.AdapterFile, `{"filename":"logs/app.log","level":7,"maxlines":100000,"maxsize":0,"daily":true,"maxdays":30}`)
   ```
+
 - Log levels: `Emergency > Alert > Critical > Error > Warning > Notice > Info > Debug`. Use `Info` for normal, `Error` for recoverable failures, `Critical` for service-threatening conditions.
 - Always include context in log entries: request ID, user ID, operation name, and relevant input data (sanitized of PII/secrets).
 - In production, disable debug-level logging and Beego's built-in request log to reduce log volume. Configure a structured JSON format for integration with log aggregation systems (ELK, Loki, CloudWatch).

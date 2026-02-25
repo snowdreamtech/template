@@ -10,6 +10,7 @@
 ### Standard Project Layout
 
 ```text
+
 src/
 ├── main.rs              # Entry point: HttpServer setup, bind, run
 ├── app.rs               # App factory function returning App<...>
@@ -24,9 +25,11 @@ src/
 ├── repositories/        # Data access layer (sqlx, sea-orm, diesel)
 ├── middleware/          # Custom Actix middleware
 └── models/              # Domain models, request DTOs, response DTOs
+
 ```
 
 - Extract the app factory into `app.rs` for testability:
+
   ```rust
   pub fn create_app(
       db_pool: web::Data<PgPool>,
@@ -44,8 +47,10 @@ src/
           .wrap(middleware::Compress::default())
   }
   ```
+
 - Set worker thread count explicitly based on CPU cores and I/O workload: `.workers(num_cpus::get())`. For CPU-bound workloads, use physical core count; for I/O-bound, 2-4× physical cores.
 - Configure server limits explicitly to protect against resource exhaustion:
+
   ```rust
   HttpServer::new(...)
       .client_request_timeout(Duration::from_secs(30))
@@ -57,6 +62,7 @@ src/
 ## 2. Handlers & Extractors
 
 - Handler functions are `async fn` with **typed extractors** as parameters — Actix-web automatically injects them via the `FromRequest` trait:
+
   | Extractor | Source | Failure behavior |
   |---|---|---|
   | `web::Json<T>` | JSON request body | Returns 400/422 on failure |
@@ -87,6 +93,7 @@ src/
   ```
 
 - Define a custom **`JsonConfig`** error handler to return consistent JSON error responses for malformed request bodies:
+
   ```rust
   web::JsonConfig::default().error_handler(|err, _req| {
       let message = err.to_string();
@@ -96,7 +103,9 @@ src/
       ).into()
   })
   ```
+
 - Register routes using `.service()` with `web::resource()` or `web::scope()`. Use the `#[get]`, `#[post]`, etc. proc-macro attributes on handler functions for cleaner route registration:
+
   ```rust
   pub fn config(cfg: &mut web::ServiceConfig) {
       cfg.service(
@@ -113,6 +122,7 @@ src/
 ### Shared State
 
 - Use `web::Data<T>` to share state across worker threads. `Data<T>` is an `Arc<T>` wrapper — `T` does not need to implement `Clone` or `Send + Sync` explicitly (Arc handles it).
+
   ```rust
   let pool = web::Data::new(db_pool);
   let config = web::Data::new(config);
@@ -122,6 +132,7 @@ src/
           .app_data(config.clone())
   })
   ```
+
 - Never use `Mutex<T>` for frequently-written shared state — prefer `RwLock<T>`, lock-free structures (`DashMap`, `Arc<AtomicUsize>`), or message-passing via channels.
 
 ### Concurrency & Blocking
@@ -132,6 +143,7 @@ src/
   - Blocking ORMs/drivers: run in `web::block()` or migrate to async equivalents
 - Use **`sqlx`** or **`sea-orm`** for fully async database access. Avoid `diesel` in async handlers unless using `diesel-async`.
 - Pool configuration for the database connection pool:
+
   ```rust
   let pool = PgPoolOptions::new()
       .max_connections(20)
@@ -141,6 +153,7 @@ src/
       .connect(&database_url)
       .await?;
   ```
+
 - Use `awc` (Actix Web Client) or `reqwest` for outbound HTTP calls. **Always** configure timeouts on outbound requests to prevent cascading failures.
 
 ## 4. Error Handling & Middleware
@@ -197,6 +210,7 @@ src/
 ### Testing
 
 - Test handlers using the built-in `actix_web::test` module — no real TCP server needed:
+
   ```rust
   #[actix_web::test]
   async fn test_get_user_returns_ok() {
@@ -211,19 +225,23 @@ src/
       assert_eq!(body.id, 1);
   }
   ```
+
 - Use **Testcontainers** (`testcontainers-modules::postgres`) for integration tests requiring real PostgreSQL. Initialize the pool once for the test suite using `tokio::sync::OnceCell` or `rstest` fixtures.
 - Run `cargo test` in CI with `RUST_BACKTRACE=1` for detailed error output on test failures.
 
 ### Observability
 
 - Use `tracing` + `tracing-actix-web` for structured, per-request span instrumentation compatible with OpenTelemetry:
+
   ```toml
   [dependencies]
   tracing-actix-web = "0.7"
   ```
+
   ```rust
   App::new().wrap(TracingLogger::default())
   ```
+
 - Output structured JSON logs using `tracing_subscriber::fmt::json()` for integration with log aggregation (ELK, Loki, Datadog).
 - Expose Prometheus metrics at a separate `/metrics` endpoint using `actix-web-prometheus` or manual `prometheus` crate integration.
 - Expose health probes: `GET /health/live` (always 200) and `GET /health/ready` (checks DB connectivity and downstream dependencies).
@@ -233,8 +251,10 @@ src/
 - Build production binaries with `--release` and strip debug symbols: set `[profile.release] strip = true` in `Cargo.toml` for smaller binaries.
 - Use `cargo audit` for CVE scanning and `cargo deny` for license and dependency policy enforcement. Run both in CI as a hard gate.
 - Configure TLS with `rustls` (preferred over `openssl` for pure-Rust builds):
+
   ```rust
   HttpServer::new(...)
       .bind_rustls_0_23("0.0.0.0:443", tls_config)?
   ```
+
 - Use Docker multi-stage builds with `rust:alpine` or `distroless/cc` as the final image to produce minimal production containers.

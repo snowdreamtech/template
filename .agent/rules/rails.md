@@ -9,6 +9,7 @@
   - `User` model → `app/models/user.rb`, `users` table
   - `users_path` URL helper, `@users` instance variable convention in controllers
 - **Skinny Controllers, Fat Service Objects**: move all business logic out of controllers. Controllers should only: authorize the request, parse and permit params, call a service or model method, and render/redirect.
+
   ```ruby
   # ✅ Thin controller
   def create
@@ -21,6 +22,7 @@
     end
   end
   ```
+
 - Use **Service Objects** (`app/services/`) for complex operations that span multiple models, external APIs, or require transactional coordination. Name them as actions: `UserRegistrationService`, `OrderFulfillmentService`.
 - Use **Query Objects** (`app/queries/`) for complex ActiveRecord queries to keep models clean:
 
@@ -82,6 +84,7 @@
 
 - Use Rails resourceful routing (`resources :users`) as the default. Only create custom named routes when there is a genuine reason that a standard resource action cannot accommodate.
 - Namespace API routes with version prefixes:
+
   ```ruby
   # config/routes.rb
   namespace :api do
@@ -91,12 +94,15 @@
     end
   end
   ```
+
 - Avoid nesting routes deeper than 2 levels. Use **shallow routes** (`shallow: true`) to automatically generate non-nested routes for member actions (show, edit, update, destroy):
+
   ```ruby
   resources :posts, shallow: true do
     resources :comments  # GET /posts/:post_id/comments, GET /comments/:id
   end
   ```
+
 - Use `only:` or `except:` on resource declarations to expose exactly the routes your controller implements, preventing 404 routes from showing up in `rails routes`.
 - For JSON APIs, consider `ActionController::API` as the base class — it strips middleware not needed for API-only apps (views, cookies, session).
 
@@ -106,6 +112,7 @@
 
 - Use **Devise** for authentication or Rails 8's built-in authentication generator. Never implement custom password hashing (`bcrypt` with appropriate cost) or session management.
 - Use **Pundit** or **CanCanCan** for authorization. Enforce authorization on every controller action — never rely on "hidden" UI to protect routes.
+
   ```ruby
   # Pundit — policy-based
   def update
@@ -114,7 +121,9 @@
     ...
   end
   ```
+
 - Always use **Strong Parameters** — never use `.permit!`:
+
   ```ruby
   def user_params
     params.require(:user).permit(:name, :email, :bio)
@@ -126,10 +135,12 @@
 
 - Enable and configure **Content Security Policy** in `config/initializers/content_security_policy.rb`.
 - Use `bundle audit` and **Brakeman** in CI as hard gates:
+
   ```bash
   bundle exec bundle-audit check --update  # checks for vulnerable gems
   bundle exec brakeman --exit-on-warn      # Rails-specific security analysis
   ```
+
 - HTML output is automatically escaped by ERB. Use `raw` or `html_safe` only when absolutely required, and **never** with user-provided content.
 - Enable `config.force_ssl = true` in production. Set `config.session_store :cookie_store, secure: true, httponly: true, same_site: :strict`.
 - Use `rack-attack` for rate limiting and IP blocking to protect against brute-force and abuse.
@@ -184,8 +195,10 @@
 - Use **Rails application health checks** with `rails/health` (Rails 7.1+) at `GET /up` for load balancer readiness.
 - Instrument with **OpenTelemetry** (`opentelemetry-ruby`) for distributed tracing across microservices or external API calls.
 - Use **Lograge** to replace Rails' multi-line request logs with single JSON log lines:
+
   ```ruby
   config.lograge.enabled = true
   config.lograge.formatter = Lograge::Formatters::Json.new
   ```
+
 - Monitor N+1 queries in production with **rack-mini-profiler** (development) and **Scout APM** or **Datadog** (production). Set up alerts on slow database queries exceeding 100ms.

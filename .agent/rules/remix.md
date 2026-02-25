@@ -24,12 +24,14 @@
 
 - **Never fetch data inside React components** if it can be fetched in a `loader`. This is the most critical Remix anti-pattern — loaders enable parallel data loading, SSR, and progressive enhancement.
 - Use **`typeof loader`** for `useLoaderData()` typing — eliminates manual type annotations:
+
   ```typescript
   export default function UserProfile() {
     const { user } = useLoaderData<typeof loader>();
     // `user` is fully typed from the loader return
   }
   ```
+
 - Use **`defer()` + `<Suspense>` + `<Await>`** for streaming non-critical slow data, allowing the page shell to render immediately:
 
   ```typescript
@@ -115,6 +117,7 @@
 ### File-Based Routing
 
 - Remix and React Router v7 use **file-based routing** in `app/routes/`. Use dot notation for route nesting:
+
   ```text
   app/
   ├── root.tsx                    # Root layout (renders <Outlet />)
@@ -128,15 +131,19 @@
   │   └── _auth.signup.tsx        # Pathless layout route (prefixed with _)
   └── components/                 # Shared components
   ```
+
 - Use **Nested Routes** for shared layouts. Parent routes render `<Outlet />` where child routes appear. Nested routes share data loading in parallel — both parent and child loaders run simultaneously.
 - Use **`handle`** exports for route-level metadata accessible to parent layouts:
+
   ```typescript
   export const handle = { breadcrumb: "User Settings" };
   // In root layout:
   const matches = useMatches();
   const breadcrumbs = matches.filter((m) => m.handle?.breadcrumb);
   ```
+
 - Use **`ErrorBoundary`** exports on route modules to catch loader/action errors:
+
   ```typescript
   export function ErrorBoundary() {
     const error = useRouteError();
@@ -162,10 +169,12 @@
   ```
 
 - Route params are always strings — validate and coerce before use:
+
   ```typescript
   const id = z.string().uuid().safeParse(params.id);
   if (!id.success) throw new Response("Invalid ID", { status: 400 });
   ```
+
 - Use `invariant` (or native `if (!condition) throw`) for defensive param validation in loaders.
 
 ## 5. Performance & Deployment
@@ -173,16 +182,19 @@
 ### Prefetching
 
 - Use **`<Link prefetch="intent">`** to preload route data and assets when the user hovers or focuses a link — reduces perceived navigation latency to near-zero:
+
   ```typescript
   <Link to={`/users/${user.id}`} prefetch="intent">
     {user.name}
   </Link>
   ```
+
   Use `prefetch="render"` for links that are very likely to be clicked.
 
 ### Revalidation Control
 
 - Use **`shouldRevalidate`** to skip unnecessary loader re-runs:
+
   ```typescript
   export function shouldRevalidate({ actionResult, currentUrl, nextUrl }: ShouldRevalidateFunctionArgs) {
     // Only revalidate if navigating to a different user
@@ -193,6 +205,7 @@
 ### SEO & Metadata
 
 - Use the **`meta`** export for per-page SEO metadata (runs on server during SSR):
+
   ```typescript
   export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: `${data?.user.name} — MyApp` }, { name: "description", content: `Profile page for ${data?.user.name}` }];
   ```

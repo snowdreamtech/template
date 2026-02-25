@@ -39,6 +39,7 @@
   ```
 
 - Use **named parameters** with `required` for functions and constructors with more than two arguments. This makes call sites self-documenting:
+
   ```dart
   // ✅ Named params — readable and enforced
   UserCard(
@@ -80,6 +81,7 @@
   ```
 
 - Use Dart collection operators: **spread** (`...`), **if** in collection literals, and **for** in collection literals:
+
   ```dart
   final items = [
     ...baseItems,
@@ -110,9 +112,11 @@
 - Prefer **`StatelessWidget`** wherever possible. Use `StatefulWidget` only when local mutable state (that affects the UI, is ephemeral, and does not need to survive navigation) is required.
 - Place business logic and data access in dedicated classes — never in `build()` methods. Widgets should be pure visual representations of state.
 - Use **`RepaintBoundary`** to isolate frequently repainted subtrees (animations, progress indicators, video players) from the rest of the widget tree:
+
   ```dart
   RepaintBoundary(child: AnimatedProgressRing(progress: value))
   ```
+
 - Use **`freezed`** + **`json_serializable`** for immutable data models with copyWith, serialization, and pattern matching:
 
   ```dart
@@ -165,9 +169,11 @@
   ```
 
 - Use `select()` to minimize rebuilds when only a subset of state changes:
+
   ```dart
   final name = ref.watch(userProvider.select((user) => user.name));
   ```
+
 - Use **`flutter_hooks`** (`HookWidget`, `HookConsumerWidget`) to encapsulate stateful widget logic into composable hook functions.
 
 ## 4. Performance
@@ -178,9 +184,11 @@
 - Use `ListView.builder`, `GridView.builder`, `SliverList.builder` for all dynamic-size lists — never `ListView(children: [...])` for more than a dozen items.
 - Use `cached_network_image` for remote image caching with placeholder and error states. Use `flutter_svg` for SVG rendering.
 - Use **`compute()`** to offload heavy computation to a background isolate, keeping the UI thread smooth:
+
   ```dart
   final parsedData = await compute(parseHeavyJson, rawJsonString);
   ```
+
 - Use **`dart:isolate`** or `IsolateNameServer` for long-running, CPU-intensive background operations.
 
 ## 5. Testing & Build
@@ -188,6 +196,7 @@
 ### Testing
 
 - Use **`flutter_test`** for unit and widget tests. Use `mocktail` (preferred) or `mockito` for mocking:
+
   ```dart
   testWidgets('UserCard shows user name', (tester) async {
     await tester.pumpWidget(
@@ -197,22 +206,27 @@
     expect(find.byIcon(Icons.verified), findsNothing);
   });
   ```
+
 - Use **`integration_test`** for end-to-end tests on real device or emulator in CI.
 - Use **`golden_toolkit`** or **`alchemist`** for visual regression testing with golden image snapshots. Update golden files deliberately and version-control them.
 
 ### CI & Production Builds
 
 - Run in CI:
+
   ```bash
   flutter analyze --fatal-warnings     # linting
   flutter test --coverage               # unit + widget tests
   dart run build_runner build --delete-conflicting-outputs  # code gen (freezed, json_serializable)
   flutter test integration_test/        # E2E (requires emulator)
   ```
+
 - Use production release builds with obfuscation and debug symbol splitting:
+
   ```bash
   flutter build apk --release --obfuscate --split-debug-info=./debug_info
   flutter build ios --release --obfuscate --split-debug-info=./debug_info
   ```
+
   Upload `*.symbols` files and `app.dSYM` to **Sentry** or **Firebase Crashlytics** for crash stack de-obfuscation in production.
 - Use **Shorebird** for OTA (Over-the-Air) code push to update Flutter apps without going through the app store review process.

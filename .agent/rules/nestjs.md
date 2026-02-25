@@ -9,6 +9,7 @@
 - NestJS enforces a **modular architecture** inspired by Angular. Every feature lives in a `@Module` that declares its `controllers`, `providers` (services), and `imports`. A module is the unit of organization and encapsulation.
 - Keep modules **focused on a single bounded domain**: `UsersModule`, `OrdersModule`, `AuthModule`. Export only the providers that other modules genuinely need.
 - Define a clean module hierarchy:
+
   ```text
   src/
   ├── app.module.ts           # Root — imports all feature modules
@@ -28,7 +29,9 @@
   │   └── orders/
   └── shared/                 # Cross-cutting: exceptions, interceptors, pipes
   ```
+
 - Use `forRoot()`/`forRootAsync()` for global library modules (database, configuration):
+
   ```typescript
   TypeOrmModule.forRootAsync({
     imports: [ConfigModule],
@@ -41,6 +44,7 @@
     inject: [ConfigService],
   });
   ```
+
 - Avoid **circular dependencies** between feature modules. Use a shared `SharedModule` or event emitters for cross-module communication.
 - Use **lazy-loaded modules** (`LazyModuleLoader`) for large applications where not all modules are needed at startup (admin CLI commands, background workers with Queues).
 
@@ -132,6 +136,7 @@
   ```
 
 - Enable the **global `ValidationPipe`** in `main.ts`:
+
   ```typescript
   app.useGlobalPipes(
     new ValidationPipe({
@@ -142,6 +147,7 @@
     }),
   );
   ```
+
 - Use `@Exclude()` on sensitive fields in response DTOs and apply `ClassSerializerInterceptor` globally:
 
   ```typescript
@@ -165,6 +171,7 @@
 
 - Throw NestJS built-in `HttpException` subclasses for HTTP errors: `NotFoundException`, `BadRequestException`, `ConflictException`, `UnauthorizedException`, `ForbiddenException`.
 - Create custom domain exceptions extending `HttpException` for business-rule errors:
+
   ```typescript
   export class InsufficientCreditsException extends HttpException {
     constructor(required: number, available: number) {
@@ -172,6 +179,7 @@
     }
   }
   ```
+
 - Define a **global Exception Filter** for centralized error formatting, logging, and request ID inclusion:
 
   ```typescript
@@ -192,11 +200,14 @@
 ### Security
 
 - Use **Helmet** for security headers, **`@nestjs/throttler`** for rate limiting, and **`@nestjs/cors`** with an explicit origins allowlist:
+
   ```typescript
   app.use(helmet());
   app.enableCors({ origin: ["https://app.example.com"], credentials: true });
   ```
+
 - Use **`@nestjs/config`** with **Joi** schema validation for type-safe configuration. Fail fast on missing required env vars at startup:
+
   ```typescript
   ConfigModule.forRoot({
     isGlobal: true,
@@ -241,12 +252,15 @@
 ### Observability
 
 - Use **`nestjs-pino`** for structured JSON logging with automatic request correlation IDs and Pino's performance:
+
   ```typescript
   LoggerModule.forRoot({
     pinoHttp: { level: process.env.LOG_LEVEL ?? "info", transport: process.env.NODE_ENV === "development" ? { target: "pino-pretty" } : undefined },
   });
   ```
+
 - Expose health check endpoints via **`@nestjs/terminus`** for Kubernetes probes:
+
   ```typescript
   @Get("health")
   @HealthCheck()
@@ -257,4 +271,5 @@
     ]);
   }
   ```
+
 - Generate **OpenAPI documentation** via `@nestjs/swagger`. Expose `/api-docs` in development and staging only — keep production clean.

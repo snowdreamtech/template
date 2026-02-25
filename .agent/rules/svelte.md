@@ -17,6 +17,7 @@
 ### Standard Project Layout (SvelteKit)
 
 ```text
+
 src/
 ├── routes/
 │   ├── +layout.svelte        # Root layout
@@ -30,18 +31,22 @@ src/
 │   └── utils/                 # Client-safe utilities
 ├── params/                    # Route param matchers
 └── app.html                   # HTML shell
+
 ```
 
 ## 2. Reactivity (Runes API)
 
 - Use **`$state()`** for mutable reactive state. Keep state as close to where it is used as possible — lift only when sharing is needed:
+
   ```svelte
   <script lang="ts">
     let count = $state(0);
     let todos = $state<Todo[]>([]);
   </script>
   ```
+
 - Use **`$derived()`** for computed values. **Never recompute in template expressions** or `$effect` blocks — `$derived()` re-computes automatically when dependencies change:
+
   ```svelte
   <script lang="ts">
     let todos = $state<Todo[]>([]);
@@ -50,6 +55,7 @@ src/
     // ❌ Don't: let remaining = $state(0); $effect(() => { remaining = todos.filter(t => !t.done).length })
   </script>
   ```
+
 - Use **`$effect()`** for side effects (DOM manipulation, subscriptions, timers). Return a cleanup function to prevent leaks:
 
   ```svelte
@@ -67,12 +73,14 @@ src/
   ```
 
 - Use **`$props()`** to receive props — always type them with TypeScript. Props are read-only; never mutate props directly:
+
   ```svelte
   <script lang="ts">
     interface Props { title: string; count?: number; onClose?: () => void }
     let { title, count = 0, onClose }: Props = $props();
   </script>
   ```
+
 - Use **`$state.raw()`** for non-reactive state objects that do not need deep reactivity tracking (large arrays, external library instances).
 - Use **`$bindable()`** for two-way bindings in custom components (Svelte 5 replacement for `bind:value`).
 
@@ -170,6 +178,7 @@ src/
 
 - Use **`+server.ts`** for pure JSON API endpoints (not HTML forms): `export const GET: RequestHandler = async ({ url }) => json(await fetchData(url.searchParams))`.
 - Use **`hooks.server.ts`** for cross-cutting server concerns: session validation, request ID injection, populating `event.locals`:
+
   ```typescript
   // hooks.server.ts
   export const handle: Handle = async ({ event, resolve }) => {
@@ -207,18 +216,22 @@ src/
   ```
 
 - Use **Playwright** for E2E tests. Generate tests with `npx playwright codegen` and run with `npx playwright test` in CI:
+
   ```bash
   npx playwright test --project=chromium --reporter=html
   ```
+
 - Run `svelte-check --tsconfig ./tsconfig.json` in CI to catch Svelte-specific TypeScript errors and warnings in `.svelte` files.
 - Use `vite build && vite preview` for acceptance testing the production build before deployment.
 
 ### Tooling & CI
 
 - Lint with **`eslint-plugin-svelte`** + TypeScript ESLint. Format with **`prettier-plugin-svelte`**. Run both in CI:
+
   ```bash
   npx eslint . && npx prettier --check .
   ```
+
 - Configure TypeScript with `"strict": true` and `"checkJs": true` in `tsconfig.json`. Use typed `$props()` interfaces for all components.
 - Pin Svelte and SvelteKit versions. Subscribe to release notes — Runes API and routing changes can be breaking.
 - Use `adapter-auto` in development. Choose the appropriate adapter for production deployment:

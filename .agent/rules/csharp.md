@@ -7,6 +7,7 @@
 ### Version & SDK Pinning
 
 - Target the latest stable **.NET LTS version** (currently .NET 8; or .NET 10 when released) for new projects. Pin the SDK in `global.json`:
+
   ```json
   {
     "sdk": {
@@ -15,7 +16,9 @@
     }
   }
   ```
+
 - Enable language features in `.csproj`:
+
   ```xml
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -50,6 +53,7 @@
 
 - Enable all Roslyn analyzers. Use `#pragma warning disable` sparingly — always add a comment explaining why. Configure analyzer severity in `.editorconfig`.
 - Use **`required` members** (C# 11+) on DTOs and configuration types to enforce initialization:
+
   ```csharp
   public class AppSettings {
     public required string ConnectionString { get; init; }
@@ -63,10 +67,12 @@
 
 - Enable **nullable reference types** in all projects (`<Nullable>enable</Nullable>`). Treat all non-annotated reference types as guaranteed non-null. This eliminates entire classes of `NullReferenceException`.
 - Use `?` to explicitly annotate nullable types. Use `??` and `?.` operators:
+
   ```csharp
   string? name = user?.Profile?.DisplayName;
   string displayName = name ?? user.Email.Split('@')[0];
   ```
+
 - Avoid `null` return values from public APIs. Prefer patterns that make the absence explicit:
 
   ```csharp
@@ -81,12 +87,14 @@
   ```
 
 - Use **`ArgumentNullException.ThrowIfNull()`** (C# 10+) for null guard clauses:
+
   ```csharp
   public UserService(IUserRepository repo) {
     ArgumentNullException.ThrowIfNull(repo);
     _repo = repo;
   }
   ```
+
 - Use **`is` pattern matching** for type narrowing and null checks:
 
   ```csharp
@@ -111,13 +119,16 @@
 
 - Suffix **all async method names with `Async`**: `GetUserAsync()`, `SaveOrderAsync()`.
 - Always accept and honor **`CancellationToken`** in public async APIs. Pass it to all downstream async calls:
+
   ```csharp
   public async Task<User?> GetUserAsync(string id, CancellationToken ct = default) {
     return await _db.Users
       .FirstOrDefaultAsync(u => u.Id == id, ct);   // pass ct here
   }
   ```
+
 - Use **`IAsyncEnumerable<T>`** with `await foreach` for streaming data instead of loading datasets into memory:
+
   ```csharp
   public async IAsyncEnumerable<User> StreamActiveUsersAsync(
     [EnumeratorCancellation] CancellationToken ct = default)
@@ -126,11 +137,14 @@
       yield return user;
   }
   ```
+
 - For CPU-bound parallelism, use **`Parallel.ForEachAsync`** (C# 10+) or `Channel<T>` for producer-consumer:
+
   ```csharp
   await Parallel.ForEachAsync(items, new ParallelOptions { MaxDegreeOfParallelism = 8, CancellationToken = ct },
     async (item, ct) => await ProcessItemAsync(item, ct));
   ```
+
 - Configure `ConfigureAwait(false)` in **library code** (not in ASP.NET Core applications) to avoid capturing unnecessary synchronization contexts.
 
 ## 4. Dependency Injection & Architecture
@@ -138,15 +152,18 @@
 ### DI & Service Registration
 
 - Use the built-in **`Microsoft.Extensions.DependencyInjection`** container. Register services with the appropriate lifetime:
+
   ```csharp
   // Startup.cs / Program.cs
   builder.Services.AddSingleton<IEmailTemplateCache, InMemoryEmailTemplateCache>();
   builder.Services.AddScoped<IUserService, UserService>();      // per-request in ASP.NET Core
   builder.Services.AddTransient<IEmailSender, SmtpEmailSender>(); // new instance per injection
   ```
+
   Use `Scoped` for most services in ASP.NET Core (tied to the HTTP request lifetime). Use `Singleton` only for genuinely stateless, thread-safe services.
 - Prefer **constructor injection**. Do not use the service locator anti-pattern (`IServiceProvider` injected into business logic classes).
 - Use **primary constructors** (C# 12) for clean DI:
+
   ```csharp
   public class UserService(IUserRepository repo, IEmailSender email, ILogger<UserService> logger) {
     public async Task<User> CreateUserAsync(CreateUserRequest req, CancellationToken ct) {
@@ -200,6 +217,7 @@
   ```
 
 - Use **`WebApplicationFactory<TProgram>`** for ASP.NET Core integration tests:
+
   ```csharp
   public class UserEndpointTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>> {
     [Fact]
@@ -210,6 +228,7 @@
     }
   }
   ```
+
 - Use **Testcontainers for .NET** for real database integration tests.
 - Use **Bogus** for realistic test data generation.
 

@@ -7,11 +7,14 @@
 ### Toolchain
 
 - **Formatting**: Format all code with `goimports` before committing (it manages both formatting AND import grouping). Configure as a save-on-format action in IDEs. Reject unformatted code in CI:
+
   ```bash
   goimports -l ./...   # list unformatted files
   gofmt -l ./...       # for pure formatting (no import management)
   ```
+
 - **Linting**: Use `golangci-lint` as the standard linter aggregator. Run `golangci-lint run ./...` and fail CI on any finding. Commit `.golangci.yml` to the repository:
+
   ```yaml
   linters:
     enable:
@@ -27,6 +30,7 @@
       - gochecknoglobals # discourage global variables
       - contextcheck # context propagation checks
   ```
+
 - **Build**: Use `go build -trimpath ./...` for reproducible binaries (strips local path prefixes from debug info). Use `go vet ./...` in CI as a lightweight static check.
 
 ### Modules
@@ -48,6 +52,7 @@
 ## 2. Project Layout
 
 - Follow [Standard Go Project Layout](https://github.com/golang-standards/project-layout) conventions:
+
   ```text
   cmd/
   └── server/
@@ -62,6 +67,7 @@
   api/                     # OpenAPI/Protobuf definitions
   scripts/                 # build, migration, dev scripts
   ```
+
 - Use `internal/` to enforce package boundaries — packages in `internal/` cannot be imported by code outside the parent module. This is a compile-time constraint, not a convention.
 - Keep `main.go` minimal: parse CLI flags/config, construct dependencies (DB pool, HTTP client), wire them into services and handlers, start the server, handle graceful shutdown. Zero business logic in `main.go`.
 - **Package naming**: short, lowercase, no underscores, no stutter. `user.User` is wrong — use `user.Profile` or rename the package. Package name == directory name.
@@ -86,6 +92,7 @@
   ```
 
 - Define **sentinel errors** with `errors.New()` for errors that callers need to distinguish:
+
   ```go
   var (
     ErrNotFound   = errors.New("not found")
@@ -93,7 +100,9 @@
     ErrConflict   = errors.New("conflict")
   )
   ```
+
 - Use **typed errors** for structured error data:
+
   ```go
   type ValidationError struct {
     Field   string
@@ -103,6 +112,7 @@
     return fmt.Sprintf("validation: %s — %s", e.Field, e.Message)
   }
   ```
+
 - Handle **every returned error**. The `errcheck` linter enforces this. Use `_ = expr` only for documented, intentional ignores with a clear comment (`// explicitly ignoring — always returns nil for this input`).
 - Avoid deeply nested error handling. Inject sentinel returns with `if err != nil { return ... }` and keep the happy path at the leftmost indentation level.
 
@@ -110,12 +120,15 @@
 
 - **Never start a goroutine without knowing how and when it will stop.** Goroutine leaks are undetected memory leaks that accumulate and degrade production services.
 - Use **`context.Context`** for cancellation, deadlines, and request-scoped values. Pass context as the **first parameter** of every blocking, I/O-bound, or long-running function:
+
   ```go
   func (s *UserService) GetByEmail(ctx context.Context, email string) (*User, error) {
     return s.repo.FindByEmail(ctx, email)
   }
   ```
+
 - Use **`errgroup.Group`** (`golang.org/x/sync/errgroup`) for launching goroutines that can fail — it collects the first non-nil error and cancels the shared context:
+
   ```go
   g, ctx := errgroup.WithContext(ctx)
   g.Go(func() error { return fetchUsers(ctx) })
@@ -124,6 +137,7 @@
     return fmt.Errorf("parallel fetch: %w", err)
   }
   ```
+
 - Prefer **channels** for communication between concurrent goroutines. Use `sync.Mutex` / `sync.RWMutex` for simple, local shared-state protection. Use `sync/atomic` for simple counters and booleans requiring atomic updates.
 - Use **`-race` flag** in all tests and in CI: `go test -race ./...`. The race detector catches real data races that are otherwise non-deterministic.
 - Use **`sync.Pool`** for frequently allocated, short-lived objects to reduce GC pressure in hot paths (e.g., byte buffers, encoder instances).
@@ -133,6 +147,7 @@
 ### Testing
 
 - Use **table-driven tests** with `t.Run()` for comprehensive input coverage:
+
   ```go
   func TestParseEmail(t *testing.T) {
     tests := []struct {
@@ -156,6 +171,7 @@
     }
   }
   ```
+
 - Use **Testify** (`github.com/stretchr/testify`) for assertions: `require.NoError(t, err)` (fails immediately), `assert.Equal(t, expected, actual)` (continues on failure).
 - Use **Testcontainers** for integration tests requiring real databases, Redis, Kafka, or other services. Spin up containers per-test-suite, not per-test.
 - Use **`net/http/httptest`** for HTTP handler tests without running a real server. Use `httptest.NewServer()` for full-server integration tests.

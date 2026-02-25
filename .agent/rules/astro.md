@@ -6,6 +6,7 @@
 
 - Astro renders pages to **static HTML by default**. JavaScript is only sent to the browser for explicitly interactive "islands." Default to **zero client-side JavaScript** — add a client directive only when explicit interactivity is required.
 - Choose the correct **client directive** to control when an island is hydrated:
+
   | Directive | When it hydrates | Use case |
   |---|---|---|
   | `client:load` | Immediately on page load | Above-the-fold critical interactive elements |
@@ -13,6 +14,7 @@
   | `client:visible` | On scroll into viewport | Carousels, accordions, lazy content |
   | `client:media="(query)"` | When media query matches | Responsive interactive element |
   | `client:only="framework"` | Browser-only, no SSR | Auth-gated or browser-API-dependent components |
+
 - Prefer **`.astro` components** over framework components for purely presentational UI — they produce zero JavaScript overhead on the client.
 - Astro's multi-framework support (React, Vue, Svelte, Solid, Preact) allows using the best tool for each island. Standardize on **one framework** per project unless there is a compelling reason to mix.
 - Pin the Astro version and adapter in `package.json`. Review Astro's changelog carefully between major versions — breaking changes often affect content collections, routing, and middleware APIs.
@@ -22,6 +24,7 @@
 ### Standard Project Layout
 
 ```text
+
 src/
 ├── pages/              # File-based routes (*.astro, *.ts, *.js for API)
 │   └── api/            # API endpoints (server-only, Astro API routes)
@@ -36,6 +39,7 @@ src/
 └── middleware.ts        # Request/response middleware (SSR mode)
 public/                 # Static assets served verbatim (favicon, robots.txt)
 astro.config.mjs        # Astro configuration (integrations, adapter, output)
+
 ```
 
 - Use `src/pages/` for all routes. File path maps directly to URL path. Use `[param].astro` for dynamic routes and `[...slug].astro` for catch-all routes.
@@ -84,11 +88,13 @@ astro.config.mjs        # Astro configuration (integrations, adapter, output)
 
 - Always validate front matter with a schema. AccessType never access front matter without type checking from the collection API.
 - Use `getCollection()` and `getEntry()` helpers to query content — never read files from the file system directly (`fs.readFileSync`):
+
   ```ts
   const allPosts = await getCollection("blog", ({ data }) => !data.draft);
   const post = await getEntry("blog", "my-first-post");
   const { Content, headings } = await render(post);
   ```
+
 - Use **`render()`** (Astro 5+) or `entry.render()` (Astro 4) to compile Markdown/MDX entries into `Content` component and `headings` data.
 - For data collections (YAML/JSON reference data), use `type: 'data'` in the collection definition. Zod schema is enforced on all items.
 - Use `reference()` to create typed relations between collections (e.g., a blog post references an author from an `authors` collection).
@@ -98,6 +104,7 @@ astro.config.mjs        # Astro configuration (integrations, adapter, output)
 ### Image Optimization
 
 - Use Astro's built-in `<Image />` component from `astro:assets` for **all** images. It automatically generates optimized formats (WebP/AVIF), correct `srcset`, `width`/`height`, and prevents Cumulative Layout Shift (CLS):
+
   ```astro
   ---
   import { Image } from 'astro:assets';
@@ -105,6 +112,7 @@ astro.config.mjs        # Astro configuration (integrations, adapter, output)
   ---
   <Image src={heroImage} alt="Hero image" width={1200} height={600} />
   ```
+
 - For images from external URLs or CMS, use the `inferSize` prop or explicitly set `width` and `height`. Configure allowed image domains in `astro.config.mjs`.
 - Place source images in `src/assets/` so Astro can process and optimize them. Images in `public/` are served verbatim without optimization.
 
@@ -116,6 +124,7 @@ astro.config.mjs        # Astro configuration (integrations, adapter, output)
 - Run `astro build` with `--verbose` to identify slow build steps. For large sites with many images, consider incremental builds with a build cache.
 - Measure Core Web Vitals targets: LCP < 2.5s, CLS < 0.1, INP < 200ms. Run Lighthouse CI or `unlighthouse` against all pages on each release.
 - Use **`astro:env`** (Astro 5+) for type-safe, schema-validated environment variables — catches missing or malformed env vars at build time, not at runtime:
+
   ```ts
   // env.d.ts
   import { defineEnv } from "astro/env";

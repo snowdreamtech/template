@@ -17,14 +17,17 @@
   ```
 
 - Apply the **Medallion Architecture** (popularized by Databricks Delta Lake):
+
   ```text
   Bronze (Raw):   exact copy of source data — never modified, timestamped ingestion
   Silver (Clean): validated, deduplicated, cast to correct types, business key unified
   Gold (Curated): aggregated metrics, business-ready fact/dimension tables, domain marts
   ```
+
   Never write directly to Gold from raw input. Data flows through every layer sequentially.
 - Make **data lineage** traceable end-to-end. Use **dbt** (SQL transforms with automatic lineage graph) or **OpenLineage** (runtime lineage events from Spark, Airflow) to document how each dataset derives from its sources.
 - Prefer **incremental processing** (watermark-based loads) over full table scans as the default pattern. Full reloads should be exceptional:
+
   ```sql
   -- Incremental dbt model: only processes new/updated records
   {% if is_incremental() %}
@@ -44,6 +47,7 @@
 ### Documentation & Naming
 
 - Every dbt model MUST have a `.yml` file with description for the model and all key columns. Documentation is the contract:
+
   ```yaml
   # models/silver/stg_orders.yml
   version: 2
@@ -59,6 +63,7 @@
         - name: status
           tests: [not_null, { accepted_values: { values: ["pending", "confirmed", "cancelled", "delivered"] } }]
   ```
+
 - Follow naming conventions strictly:
   - `stg_` — staging: source mirror, minimal cleaning, one-to-one with source table
   - `int_` — intermediate: single-domain logic, not user-facing
@@ -69,11 +74,14 @@
 ### Testing & CI
 
 - Run **`dbt build`** (combines `dbt run` + `dbt test`) in CI. Block on test failures — never ignore them:
+
   ```bash
   dbt build --target prod --select state:modified+  # only changed models + dependencies
   dbt source freshness                               # alert on stale sources
   ```
+
 - Use **`dbt-expectations`** (port of Great Expectations) for statistical and distributional data quality tests:
+
   ```yaml
   - name: revenue
     tests:
@@ -114,6 +122,7 @@
 ### At-Least-Once Safety
 
 - Design consumers to be **at-least-once safe**. All downstream write operations must be idempotent or perform deduplication using a unique business key:
+
   ```python
   # Deduplicate using a unique event ID within a window
   df.dropDuplicates(["event_id"]).writeStream \
@@ -125,6 +134,7 @@
 ### Schema Registry
 
 - Define an explicit **schema** for all Kafka messages using **Apache Avro** or **Protobuf** with a **Confluent Schema Registry**. Never produce schema-less JSON for production topics:
+
   ```python
   # Producer with schema registry
   schema          = avro_schema_from_file("order_event.avsc")
@@ -136,6 +146,7 @@
 
 - Monitor **consumer lag** as the primary health signal for streaming pipelines. Alert when lag exceeds your SLA threshold.
 - Use **dead-letter topics** for messages that fail to process after retries. Never silently discard failed messages:
+
   ```python
   def process_event(event):
     try:
@@ -143,6 +154,7 @@
     except Exception as e:
       dlq_producer.produce(topic="orders.dlq", value=serialize_error(event, e))
   ```
+
 - Use **Flink** for stateful stream processing with event-time semantics and exactly-once guarantees. Use **Kafka Streams** for lightweight per-topic stream transformations without a separate cluster.
 
 ## 5. Data Quality & Governance

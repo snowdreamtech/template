@@ -7,6 +7,7 @@
 - **Hono** is an ultrafast, multi-runtime web framework with a unified API surface. It runs on **Cloudflare Workers, Deno, Bun, Node.js, AWS Lambda, Vercel Edge**, and other WinterCG-compliant runtimes.
 - Hono's primary advantage is **multi-runtime portability** combined with first-class TypeScript support and near-zero overhead. Design your application logic to be runtime-agnostic — keep runtime-specific code (bindings, platform env access) confined to entry points.
 - Choose the appropriate adapter for the target runtime:
+
   | Runtime | Entry Point | Import |
   |---|---|---|
   | Cloudflare Workers | `export default app` | `hono` |
@@ -15,11 +16,13 @@
   | Bun | `Bun.serve({ fetch: app.fetch })` | `hono` |
   | AWS Lambda | `handle(app)` | `hono/aws-lambda` |
   | Vercel | `app.fire()` or `export default handle(app)` | `@hono/vercel` |
+
 - Pin the Hono version in `package.json`/`deno.json`. Hono follows semantic versioning but may have minor breaking changes in adapter APIs between versions.
 
 ### Standard Project Layout
 
 ```text
+
 src/
 ├── index.ts             # Entry point: runtime adapter, app.export/serve
 ├── app.ts               # App factory: creates Hono instance, registers routes + middleware
@@ -34,6 +37,7 @@ src/
 │   └── common.ts
 ├── services/            # Business logic layer
 └── repositories/        # Data access layer
+
 ```
 
 - Create the Hono app in a factory function for testability:
@@ -55,6 +59,7 @@ src/
 ## 2. Routing & Handlers
 
 - Define routes with HTTP method helpers on the main app or a sub-app:
+
   ```ts
   const users = new Hono<Env>();
   users.get("/", listUsers);
@@ -64,8 +69,10 @@ src/
   users.delete("/:id", deleteUser);
   export const userRoutes = users;
   ```
+
 - Use `app.route('/path', subApp)` to compose sub-applications. Use `new Hono().basePath('/api')` for a root prefix.
 - **Handler signature**: `async (c: Context) => Response`. Return responses with `c.json()`, `c.text()`, `c.html()`, or `c.body()`:
+
   ```ts
   const getUser: Handler<Env> = async (c) => {
     const id = c.req.param("id");
@@ -74,6 +81,7 @@ src/
     return c.json(user, 200);
   };
   ```
+
 - Access typed request data with Hono helpers:
   - `c.req.param('id')` — URL path parameter
   - `c.req.query('page')` — query string
@@ -115,12 +123,14 @@ src/
 - Use `zValidator("param", schema)` for path parameters and `zValidator("query", schema)` for query string parameters.
 - Define Zod schemas in a shared `schemas/` directory. Derive TypeScript types from schemas: `type CreateUserRequest = z.infer<typeof createUserSchema>`.
 - Use Hono's **RPC client** (`hc<AppType>()`) for end-to-end type-safe API calls from a TypeScript frontend — eliminates schema duplication between server and client:
+
   ```ts
   import { hc } from "hono/client";
   const client = hc<AppType>("http://localhost:3000");
   const res = await client.api.v1.users.$get();
   const users = await res.json(); // fully typed
   ```
+
 - Export `AppType = typeof app` from the server and import it (type-only) on the client for the RPC client.
 
 ## 4. Middleware, Authentication & Context
@@ -128,6 +138,7 @@ src/
 ### Middleware
 
 - Use `app.use('*', middleware)` for global middleware. Use `app.use('/api/*', middleware)` for prefix-scoped middleware:
+
   ```ts
   // Global middleware
   app.use("*", logger());
@@ -135,7 +146,9 @@ src/
   app.use("*", secureHeaders());
   app.use("/api/*", corsMiddleware);
   ```
+
 - Hono ships built-in middleware for common concerns:
+
   | Middleware | Import | Purpose |
   |---|---|---|
   | `logger` | `hono/logger` | Request logging |
@@ -250,6 +263,7 @@ src/
 - Minimize middleware overhead: apply middleware as close to the routes that need it as possible (route-scoped, not global) when they are not universally required.
 - Use `etag` middleware for GET endpoints returning stable data — reduces bandwidth and serves 304 responses for unchanged resources.
 - For Cloudflare Workers, use **`c.env.CACHE` (KV)** or the **Cache API** for caching computed responses:
+
   ```ts
   const cache = await caches.open("v1");
   const cached = await cache.match(request);
@@ -258,4 +272,5 @@ src/
   cache.put(request, response.clone());
   return response;
   ```
+
 - Run Lighthouse and `wrk`/`k6` load tests for Node.js deployments. Monitor p95/p99 latency in Cloudflare Analytics for Workers deployments.

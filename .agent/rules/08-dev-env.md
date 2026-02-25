@@ -54,6 +54,7 @@
 ### devcontainer.json
 
 - Provide a **`devcontainer.json`** (VS Code Dev Containers / GitHub Codespaces) or a **`docker-compose.yml`** for the full development stack. This ensures any developer can reproduce the environment in one command:
+
   ```json
   // .devcontainer/devcontainer.json
   {
@@ -73,6 +74,7 @@
     "mounts": ["source=${localWorkspaceFolder}/.env,target=/workspaces/myapp/.env,type=bind"]
   }
   ```
+
 - The devcontainer image MUST be pinned to a specific tag or SHA digest. Never use `latest` in a devcontainer image reference — it breaks reproducibility.
 - For services requiring GPU compute (ML/AI workloads), provide a separate `devcontainer.gpu.json` or Docker Compose profile.
 
@@ -116,6 +118,7 @@
 ### Hook Configuration
 
 - Use **Husky + lint-staged** (Node.js), **pre-commit** (Python), or equivalent to run fast checks before every commit:
+
   ```json
   // package.json — lint-staged config
   {
@@ -127,6 +130,7 @@
     }
   }
   ```
+
   ```yaml
   # .pre-commit-config.yaml (Python projects)
   repos:
@@ -142,12 +146,15 @@
         - id: detect-private-key
         - id: check-merge-conflict
   ```
+
 - Keep pre-commit hooks **fast** (target < 5 seconds). Run hooks only on staged files. Move slow checks (full test suite, E2E) to CI.
 - Commit message validation with **commitlint** enforcing Conventional Commits:
+
   ```javascript
   // commitlint.config.js
   export default { extends: ["@commitlint/config-conventional"] };
   ```
+
 - Pre-commit configuration MUST be committed to the repository so all team members use identical hooks. Document how to install hooks in `CONTRIBUTING.md`.
 
 ## 5. Debugging & Observability
@@ -155,12 +162,15 @@
 ### Debug Configuration
 
 - Configure **structured local logging** with log-level support. Provide one-line instructions to enable verbose logging:
+
   ```bash
   LOG_LEVEL=debug npm run dev     # Node.js
   RUST_LOG=debug cargo run        # Rust
   DEBUG=* node server.js          # Express/Node.js debug namespace
   ```
+
 - Provide **launch configurations** committed to the repository for debugger attach:
+
   ```json
   // .vscode/launch.json
   {
@@ -184,6 +194,7 @@
     ]
   }
   ```
+
 - Maintain a `CONTRIBUTING.md` with step-by-step local setup instructions, prerequisites, and a **troubleshooting section**. A new team member MUST be able to run the project within 15 minutes.
 - Document the approved **profiling approach** per language:
   - Node.js: `node --prof server.js` + `node --prof-process isolate-*.log`

@@ -20,6 +20,7 @@
   ```
 
 - Use **object and array destructuring** for cleaner code:
+
   ```javascript
   const { id, name, email = "unknown" } = user;
   const [first, second, ...rest] = items;
@@ -28,16 +29,21 @@
     data: { results, total },
   } = response;
   ```
+
 - Use **spread operator** for shallow cloning and merging:
+
   ```javascript
   const updated = { ...original, name: "New Name" };
   const merged = [...arrayA, ...arrayB];
   ```
+
 - Use **`structuredClone()`** for deep cloning — it handles Date, RegExp, Map, Set, TypedArray correctly:
+
   ```javascript
   const clone = structuredClone(complexObject); // ✅ Native, handles all types
   // ❌ JSON.parse/stringify loses Dates, undefined, functions, Maps, Sets
   ```
+
 - Use **private class fields** (`#field`) and **static class blocks** for modern, encapsulated class design.
 
 ## 2. Modules & Imports
@@ -72,6 +78,7 @@
 ## 3. Async Programming
 
 - Use **`async`/`await`** for all asynchronous operations. Avoid raw `.then()`/`.catch()` chains for complex logic — they produce deeply nested, hard-to-follow code:
+
   ```javascript
   // ✅ async/await — clear sequential flow
   async function loadUserProfile(userId) {
@@ -80,7 +87,9 @@
     return { ...user, permissions };
   }
   ```
+
 - Wrap `await` calls in `try...catch` blocks for explicit error handling:
+
   ```javascript
   async function submitOrder(cart) {
     try {
@@ -93,6 +102,7 @@
     }
   }
   ```
+
 - Use `Promise.all()` for concurrent independent operations; use `Promise.allSettled()` when you need all results regardless of failures:
 
   ```javascript
@@ -122,13 +132,16 @@
   ```
 
 - Handle **unhandled Promise rejections** explicitly. Register a global handler in Node.js:
+
   ```javascript
   process.on("unhandledRejection", (reason, promise) => {
     logger.error("Unhandled Promise rejection", { reason, promise });
     process.exit(1); // crash and let orchestrator restart
   });
   ```
+
 - Offload **CPU-intensive** synchronous work to Web Workers (browser) or `worker_threads` (Node.js) to avoid blocking the event loop:
+
   ```javascript
   // Web Worker for CPU-bound image processing
   const worker = new Worker("./image-processor.worker.js");
@@ -187,6 +200,7 @@
   ```
 
 - Use the `cause` option to chain errors (ES2022+):
+
   ```javascript
   throw new ServiceError("User registration failed", { cause: dbError });
   ```
@@ -222,6 +236,7 @@
 ### Tooling
 
 - Lint with **ESLint** using `@eslint/js` + environment-appropriate plugins. Enforce in CI with `eslint --max-warnings 0`:
+
   ```bash
   # Recommended rules to enable:
   no-console: "warn"
@@ -233,8 +248,10 @@
   no-eval: "error"
   no-implied-eval: "error"
   ```
+
 - Format with **Prettier**. Commit `.prettierrc`. Enforce in CI: `prettier --check .`.
 - Use **JSDoc** for public function documentation in non-TypeScript projects:
+
   ```javascript
   /**
    * Creates a new user account.
@@ -244,4 +261,5 @@
    */
   async function createUser(params) { ... }
   ```
+
 - Profile performance-critical paths with browser DevTools Performance tab or Node.js `--prof` before optimizing. Never prematurely optimize without profiling data.

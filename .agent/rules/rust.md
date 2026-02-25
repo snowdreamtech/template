@@ -7,31 +7,40 @@
 ### Toolchain Setup
 
 - Use **`rustup`** to manage Rust versions. Pin the project's toolchain in `rust-toolchain.toml`:
+
   ```toml
   [toolchain]
   channel = "1.77.0"     # or "stable" for always-latest-stable
   components = ["rustfmt", "clippy"]
   ```
+
 - Define the **Minimum Supported Rust Version (MSRV)** in `Cargo.toml`. Test against the MSRV in CI to prevent accidental breakage of downstream users:
+
   ```toml
   [package]
   name       = "mylib"
   version    = "1.0.0"
   rust-version = "1.70"   # MSRV
   ```
+
 - Use **`cargo`** for all standard operations. Commit `Cargo.lock` for **binary projects** for reproducibility. Libraries should check in `Cargo.lock` to CI but not distribute it.
 
 ### Formatting & Linting
 
 - Format all code with **`cargo fmt`** before committing. Enforce in CI:
+
   ```bash
   cargo fmt --all --check    # fail if formatting differs
   ```
+
 - Run **`cargo clippy`** with all warnings treated as errors:
+
   ```bash
   cargo clippy --all-targets --all-features -- -D warnings
   ```
+
   Enable additional lints in new projects:
+
   ```rust
   #![warn(
       clippy::pedantic,
@@ -40,7 +49,9 @@
       missing_docs,
   )]
   ```
+
 - Run **`cargo audit`** in CI to check all dependencies for known CVEs against the RustSec advisory database. Block builds on high-severity advisories:
+
   ```bash
   cargo audit --deny warnings
   ```
@@ -59,27 +70,32 @@
 
 - **Minimize `unsafe` blocks** — use only for FFI, hardware access, or proven extreme-performance bottlenecks where safe alternatives are measurably insufficient.
 - Every `unsafe` block MUST have a leading `// SAFETY:` comment documenting the invariants that make the code sound:
+
   ```rust
   // SAFETY: We verified allocation succeeded (ptr != null) and size is non-zero.
   //         The allocation was made by the system allocator, matching the dealloc call.
   unsafe { std::alloc::dealloc(ptr, layout); }
   ```
+
 - Track `unsafe` usage in CI with **`cargo-geiger`**. Alert on new `unsafe` additions in PRs.
 
 ### Lifetimes
 
 - Name lifetimes descriptively when the scope is non-trivial: `'conn`, `'buf`, `'session` — not just `'a`, `'b`:
+
   ```rust
   struct DbQuery<'conn> {
     connection: &'conn DbConnection,
     sql:        String,
   }
   ```
+
 - Avoid explicit lifetime annotations in public APIs where owned types are a reasonable alternative. Prefer `String` over `&str` in struct fields unless lifetime is critical to your use case.
 
 ## 3. Error Handling
 
 - Use **`Result<T, E>`** and **`Option<T>`** for error and absence handling. Propagate errors with the `?` operator:
+
   ```rust
   async fn get_user(id: Uuid) -> Result<User, AppError> {
     let user = db.find_user(id).await?;     // ? propagates errors
@@ -87,11 +103,14 @@
     Ok(User { user, profile })
   }
   ```
+
 - **Avoid `.unwrap()` and `.expect()`** in production code — use them only in tests or documented panic-safe contexts. When you must use `.expect()`, provide a meaningful error message:
+
   ```rust
   // ✅ Acceptable in tests
   let user = repo.find_by_email("alice@example.com").expect("test user must exist in fixtures");
   ```
+
 - Use **`thiserror`** for library error types with structured variants:
 
   ```rust
@@ -123,6 +142,7 @@
   ```
 
 - Use **`serde`** with `#[derive(Serialize, Deserialize)]` for serialization. Annotate field naming conventions explicitly:
+
   ```rust
   #[derive(serde::Serialize, serde::Deserialize)]
   #[serde(rename_all = "camelCase")]
@@ -137,6 +157,7 @@
 ### Async/Await with Tokio
 
 - Use **`tokio`** as the standard async runtime for production I/O-bound services:
+
   ```rust
   #[tokio::main]
   async fn main() -> anyhow::Result<()> {
@@ -146,6 +167,7 @@
     Ok(())
   }
   ```
+
 - **Never block the async executor** with synchronous I/O or CPU-bound work. Offload to a thread pool:
 
   ```rust
@@ -214,7 +236,9 @@
 ### Documentation
 
 - Document all public items with rustdoc. Enforce in CI:
+
   ```bash
   RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --document-private-items
   ```
+
 - Write examples that compile and pass as doctests. Use `# use mylib::prelude::*;` in hidden lines to reduce boilerplate in examples.

@@ -126,6 +126,7 @@
 ## 4. Error Handling
 
 - Use **`pcall(func, ...)`** to call functions in protected mode, capturing errors without crashing the Lua VM:
+
   ```lua
   local ok, result = pcall(function()
     return parse_config(filename)
@@ -137,6 +138,7 @@
   end
   return result
   ```
+
 - Use **`xpcall(func, handler, ...)`** when you want to run a custom error handler (e.g., to add stack trace information):
 
   ```lua
@@ -179,6 +181,7 @@
 ### Performance
 
 - Cache frequently accessed standard library functions and table fields in `local` variables at the top of performance-critical files or hot functions. Local variable access is ~2-3× faster than global table lookup in standard Lua:
+
   ```lua
   -- At the top of the module or function
   local pairs, ipairs, type, tostring = pairs, ipairs, type, tostring
@@ -186,7 +189,9 @@
   local tbl_insert, tbl_concat = table.insert, table.concat
   local math_floor, math_max = math.floor, math.max
   ```
+
 - Avoid creating large numbers of short-lived tables or closures in hot loops. Lua's GC (generational in Lua 5.4) handles this, but frequent micro-allocation still impacts throughput. Pre-allocate and reuse tables:
+
   ```lua
   -- Reuse a scratch table instead of creating a new one each iteration
   local scratch = {}
@@ -195,12 +200,15 @@
     process(scratch)
   end
   ```
+
 - Use **LuaJIT** where performance is critical and the runtime supports it. LuaJIT can be 10–100× faster than standard Lua on x86_64 for numerical and loop-heavy code. LuaJIT supports `ffi.cdecl` for calling C functions with near-zero overhead.
 - Use `table.move()` (Lua 5.3+) for bulk table operations instead of manual loops:
+
   ```lua
   -- Copy array elements [1..n] from src to dst starting at dst[1]
   table.move(src, 1, #src, 1, dst)
   ```
+
 - Profile with `jit.p` (LuaJIT profiler), `lprof`, or timing wrappers before optimizing. Premature micro-optimization harms readability without measurable benefit.
 
 ### Testing
@@ -225,6 +233,7 @@
   Run with: `busted --coverage spec/`
 
 - Use **`luacheck`** for static analysis and linting. Commit `.luacheckrc` to enforce project rules:
+
   ```lua
   -- .luacheckrc
   std = "lua54"
@@ -232,6 +241,7 @@
   max_line_length = 120
   ignore = { "212" }                   -- unused argument (when intentional)
   ```
+
   Integrate `luacheck` into CI as a hard gate: `luacheck . --no-cache`.
 - For **OpenResty/nginx** projects, use the `lua-resty-*` ecosystem for Redis, MySQL, HTTP clients. Test with:
   - `Test::Nginx` (Perl-based integration tests for nginx Lua code)
@@ -244,6 +254,7 @@
 - Pin the Lua version in CI (`lua5.4`, `luajit2.1`). Use `hererocks` or `luaenv` for version management.
 - Use **LuaRocks** as the package manager. Pin package versions in a `rockspec` file committed to the repository. Use a local rockspec for project-specific dependencies.
 - Document all public module functions with `---` (LuaDoc/EmmyLua) style annotations for IDE support (VSCode Lua extension, IntelliJ EmmyLua):
+
   ```lua
   --- Processes the given input string.
   --- @param input string The input to process (must be non-empty)

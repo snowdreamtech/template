@@ -37,6 +37,7 @@
 ### Project Layout
 
 ```text
+
 project/
 ├── app/
 │   ├── __init__.py          # create_app() factory
@@ -56,6 +57,7 @@ project/
 │   ├── conftest.py          # app fixture, client fixture
 │   └── test_users.py
 └── wsgi.py                  # WSGI entry point
+
 ```
 
 - Organize code using **Blueprints** for each feature domain (`auth`, `api/v1`, `admin`). Each Blueprint is a self-contained module with its own routes, schemas, and services.
@@ -116,6 +118,7 @@ project/
 ### Extensions
 
 - Use Flask ecosystem extensions for standard concerns:
+
   | Concern | Extension |
   |---|---|
   | ORM | Flask-SQLAlchemy 3.x + SQLAlchemy 2.x |
@@ -158,13 +161,16 @@ project/
 ### Authentication & CSRF
 
 - Enable **CSRF protection** via Flask-WTF for all HTML form submissions:
+
   ```python
   from flask_wtf.csrf import CSRFProtect
   csrf = CSRFProtect()
   csrf.init_app(app)
   ```
+
   For JSON REST APIs, use **JWT token authentication** (`Authorization: Bearer`) with Flask-JWT-Extended instead of CSRF tokens.
 - Set `SECRET_KEY` from an environment variable — never hardcode. Use a cryptographically random 256-bit key:
+
   ```bash
   python -c "import secrets; print(secrets.token_hex(32))"
   ```
@@ -172,6 +178,7 @@ project/
 ### Security Headers & TLS
 
 - Use **Flask-Talisman** to enforce security headers in production:
+
   ```python
   from flask_talisman import Talisman
   talisman = Talisman(
@@ -184,6 +191,7 @@ project/
       }
   )
   ```
+
 - Configure rate limiting with **Flask-Limiter** to protect against brute-force attacks:
 
   ```python
@@ -200,13 +208,16 @@ project/
 ### Deployment
 
 - **Never use `flask run` in production.** Deploy with **Gunicorn**:
+
   ```bash
   # Sync workers (WSGI)
   gunicorn -w 4 --bind 0.0.0.0:8000 wsgi:application
   # Async workers (ASGI, with Flask-async support)
   gunicorn -w 4 -k uvicorn.workers.UvicornWorker wsgi:application
   ```
+
 - Run behind a reverse proxy (Nginx, Caddy) — never expose Gunicorn directly to the internet. Set `ProxyFix` middleware to correctly parse `X-Forwarded-For`:
+
   ```python
   from werkzeug.middleware.proxy_fix import ProxyFix
   app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
@@ -245,6 +256,7 @@ project/
 - Use `pytest-flask` for convenience fixtures (`client`, `live_server`). Use the `client.post("/api/v1/users", json={...})` pattern for API tests.
 - Use **Factory Boy** with **Faker** for realistic test data generation. Pair with `pytest-factoryboy` for fixture auto-registration.
 - Configure `pytest-cov` with a minimum coverage threshold in `pyproject.toml`:
+
   ```toml
   [tool.pytest.ini_options]
   addopts = "--cov=app --cov-fail-under=80 --cov-report=xml"

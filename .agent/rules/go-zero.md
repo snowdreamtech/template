@@ -23,6 +23,7 @@
 - Use `goctl api new` for HTTP API services and `goctl rpc new` for gRPC services. Adhere to the generated layout — deviations require strong justification and team alignment:
 
 ```text
+
 service/
 ├── api/                        # HTTP API layer
 │   ├── service.api             # API DSL spec (source of truth)
@@ -42,6 +43,7 @@ service/
         ├── config/
         ├── logic/              # Business logic for each RPC method
         └── svc/
+
 ```
 
 - Treat generated files (`handler/`, router registration, `types/`) as **read-only** — they are overwritten on regeneration. Write logic only in `logic/` and `svc/`.
@@ -88,6 +90,7 @@ service/
   ```
 
 - Validate `.api` files in CI before regeneration:
+
   ```bash
   goctl api validate --api service.api
   ```
@@ -95,12 +98,14 @@ service/
 ### gRPC (.proto)
 
 - Define RPC services in standard Protobuf files. Use `goctl rpc protoc` to generate both gRPC stubs and go-zero RPC wrappers:
+
   ```bash
   goctl rpc protoc service.proto \
     --go_out=. \
     --go-grpc_out=. \
     --zrpc_out=.
   ```
+
 - Keep `.api` and `.proto` files as the **single source of truth**. Treat them with the same care as database migration files — review changes carefully, as they break client compatibility.
 
 ## 4. ServiceContext & Dependency Injection
@@ -140,13 +145,16 @@ service/
 ### Built-in Resilience
 
 - go-zero provides **adaptive circuit breaking, rate limiting, timeout, and load shedding** via built-in middleware. Configure thresholds in `config.yaml`:
+
   ```yaml
   # config.yaml
   Timeout: 2000 # HTTP/RPC timeout in milliseconds
   CpuThreshold: 900 # load shedding — CPU usage threshold (0-1000)
   ```
+
   Never reimplement these mechanisms with third-party libraries — go-zero's implementations are production-hardened for high concurrency.
 - Use go-zero's `core/stores/cache` with Redis for **single-flight cache-aside patterns**. This prevents cache stampedes automatically:
+
   ```go
   // Users are fetched from DB on miss, preventing thundering herd
   val, err := l.svcCtx.UserCache.Take(
@@ -159,14 +167,17 @@ service/
 ### Observability
 
 - Use `logx` for structured logging. Configure in `main.go` with `logx.SetUp(c.Log)`. Use `logx.WithContext(ctx)` in logic handlers to propagate trace IDs:
+
   ```go
   logx.WithContext(l.ctx).Infof("processing user request: userId=%d", req.Id)
   ```
+
 - Expose **Prometheus metrics** using go-zero's built-in support. Integrate with Grafana for SLO dashboards:
   - Request latency histograms (`p50`, `p95`, `p99`)
   - Error rate counters by service and method
   - Circuit breaker state changes and rejections
 - Integrate **OpenTelemetry** for distributed tracing. Configure the `otlp` exporter in `config.yaml`:
+
   ```yaml
   Telemetry:
     Name: user-api
@@ -202,6 +213,7 @@ service/
 ### Performance & Deployment
 
 - Configure **database and Redis connection pools** explicitly in `config.yaml` — go-zero defaults can be too conservative for high-concurrency services:
+
   ```yaml
   DataSource:
     Host: localhost:3306
@@ -209,7 +221,9 @@ service/
     MaxOpenConns: 50
     ConnMaxLifetime: 1h
   ```
+
 - go-zero includes **built-in graceful shutdown** (SIGTERM handling). Ensure logic handlers release resources within the shutdown window. Set `ShutdownTimeout` in config:
+
   ```yaml
   Rest:
     Port: 8080
@@ -217,6 +231,7 @@ service/
     MaxConns: 10000 # max concurrent connections
     ShutdownTimeout: 10 # seconds to allow in-flight requests to complete
   ```
+
 - **Docker image**: use multi-stage builds — compile the Go binary in a `golang:alpine` stage, then copy the binary into a `scratch` or `gcr.io/distroless/static-debian12` final image for a minimal attack surface and fast image pulls:
 
   ```dockerfile
