@@ -1,58 +1,189 @@
 # C Language Development Guidelines
 
-> Objective: Define standards for safe, portable, and maintainable C code.
+> Objective: Define standards for safe, portable, and maintainable C code, covering C standards, memory safety, pointer discipline, build systems, and security tooling.
 
-## 1. C Standard & Compiler Warnings
+## 1. C Standard, Compiler Configuration & Portability
 
-- Target **C11** (`-std=c11`) for new projects. Use **C99** as the minimum for maximum portability to embedded and legacy platforms.
-- Use `<stdint.h>` for **fixed-width integer types** (`uint8_t`, `int32_t`, `uint64_t`). Never rely on `int` or `long` having a specific size — it varies by platform and compiler.
-- Enable all warnings and treat them as errors in CI: `gcc -Wall -Wextra -Wpedantic -Werror -Wformat=2 -Wshadow -Wconversion -Wundef -Wstrict-prototypes`.
-- Use `_Static_assert(condition, "message")` for compile-time invariant checks (C11).
-- Compile with multiple compilers in CI (GCC and Clang) to catch compiler-specific bugs and maximize portability.
+### Standard Selection
+
+- Target **C11** (`-std=c11`) for new projects — use `_Static_assert`, anonymous structs/unions, and improved Unicode/threading support.
+- Use **C99** as the minimum for maximum portability to embedded and legacy platforms where C11 compilers are unavailable.
+- Use **`<stdint.h>`** for fixed-width integer types: `uint8_t`, `int16_t`, `uint32_t`, `int64_t`. Never rely on `int`, `long`, or `short` having a specific size — these vary by platform, data model (LP64, ILP64, LLP64), and compiler:
+
+  ```c
+  // ❌ Platform-dependent size
+  int  counter = 0;       // 16, 32, or 64 bits depending on platform
+  long offset  = 0L;      // 32 or 64 bits
+
+  // ✅ Explicit, portable sizes
+  uint32_t counter = 0;
+  int64_t  offset  = 0;
+  size_t   length  = 0;   // for sizes/counts — always unsigned
+  ptrdiff_t diff   = 0;   // for pointer differences — always signed
+  ```
+
+### Compiler Warnings as Errors
+
+- Enable comprehensive warnings and treat them as errors in CI:
+  ```makefile
+  CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -Werror \
+           -Wformat=2 -Wshadow -Wconversion -Wundef \
+           -Wstrict-prototypes -Wmissing-prototypes \
+           -Wwrite-strings -Wuninitialized
+  ```
+- Compile with **both GCC and Clang** in CI to catch compiler-specific bugs and maximize portability (`CC=gcc make && CC=clang make`).
+- Use `_Static_assert(sizeof(int) >= 4, "int must be at least 32 bits")` for compile-time invariant checks.
 
 ## 2. Memory Safety
 
-- Every `malloc()` / `calloc()` call **MUST check for a `NULL` return** before using the pointer. OOM conditions are real, especially on embedded systems:
+### Allocation & Ownership
+
+- Every **`malloc()`/`calloc()`/`realloc()`** call MUST check for `NULL` before use. OOM conditions are real on embedded systems and under memory pressure:
 
   ```c
-  int *buf = malloc(n * sizeof(int));
-  if (!buf) { perror("malloc"); return -1; }
+  // ✅ Always check allocation result
+  uint8_t *buf = malloc(n * sizeof(uint8_t));
+  if (buf == NULL) {
+      perror("malloc");
+      return ERR_NOMEM;
+  }
+
+  // Prefer calloc() for zero-initialized arrays
+  int *arr = calloc(count, sizeof(int));
+  if (arr == NULL) { return ERR_NOMEM; }
   ```
 
-- Every allocated resource **MUST have a corresponding `free()`**. Use structured ownership: document in comments which function owns each allocation and is responsible for freeing it.
-- Set pointers to `NULL` after `free()` to prevent use-after-free and double-free bugs: `free(p); p = NULL;`.
-- Use **AddressSanitizer** (`-fsanitize=address,leak`) and **Undefined Behavior Sanitizer** (`-fsanitize=undefined`) in CI builds. Use **Valgrind** for detailed memory analysis on Linux.
-- Prefer stack allocation for small, fixed-size objects. Heap-allocate only when the object lifetime must outlive its lexical scope or when size is dynamic.
+- Document **ownership** clearly in comments: which function or struct owns each allocation and is responsible for freeing it. Use a consistent naming pattern (e.g., `*_create()` allocs, `*_destroy()` frees):
+  ```c
+  // Caller owns the returned Connection — must call connection_destroy()
+  Connection *connection_create(const char *host, uint16_t port);
+  void connection_destroy(Connection *conn);
+  ```
+- Set pointers to `NULL` immediately after `free()` to prevent use-after-free and double-free bugs:
+  ```c
+  free(buf);
+  buf = NULL;  // prevents accidental use-after-free
+  ```
+- Prefer **stack allocation** for small, fixed-size objects. Heap-allocate only when the object lifetime must outlive its lexical scope, or when size is dynamic/large.
+
+### Memory Error Detection
+
+- Always run CI tests with **AddressSanitizer** (`-fsanitize=address,leak`) and **Undefined Behavior Sanitizer** (`-fsanitize=undefined`):
+  ```makefile
+  sanitize:
+  	$(CC) $(CFLAGS) -fsanitize=address,leak,undefined -g -O1 src/*.c -o bin/sanitized_test
+  	./bin/sanitized_test
+  ```
+- Use **Valgrind** (`valgrind --leak-check=full --error-exitcode=1 ./test`) for detailed memory analysis on Linux.
+- Use **`-fsanitize=thread`** (ThreadSanitizer) to detect data races in multithreaded code.
 
 ## 3. Pointers & Strings
 
-- Prefer `const T *` for pointer parameters that must not modify the pointed-to data. Apply `const` correctness throughout — it is a form of documentation and enables compiler optimizations.
-- **Never use `gets()`** (removed in C11). Always use `fgets(buf, sizeof(buf), stdin)` with an explicit buffer size.
-- Use `snprintf()` over `sprintf()` for all formatted string output. Always pass `sizeof(buf)` as the size argument.
-- Use `strncat()` / `strncpy()` over `strcat()` / `strcpy()`. Prefer `strlcat` / `strlcpy` (BSD/macOS) where available, or implement a safe equivalent for Linux.
-- Avoid pointer arithmetic beyond the bounds of an array. Use `ptrdiff_t` for differences between pointers.
+### Const Correctness
+
+- Apply **`const`** to pointer parameters that must not modify the pointed-to data. This is documentation and enables compiler optimizations:
+
+  ```c
+  // ✅ const-correct — caller knows str won't be modified
+  size_t count_chars(const char *str, char target);
+
+  // ✅ Both levels: pointer immutable, and data immutable
+  int process_config(const Config * const cfg);
+  ```
+
+### Safe String Operations
+
+- **Never use `gets()`** — it was removed in C11 for a reason (buffer overflow). Use `fgets(buf, sizeof(buf), stdin)` with explicit buffer size.
+- Use **`snprintf()`** over `sprintf()` for all formatted string output:
+
+  ```c
+  // ❌ Buffer overflow
+  char msg[64];
+  sprintf(msg, "User: %s", username);
+
+  // ✅ Bounded — cannot overflow
+  char msg[64];
+  snprintf(msg, sizeof(msg), "User: %s", username);
+  ```
+
+- Use `strncpy()` with size limit, or implement an explicit-length copy. Note: `strncpy()` may not null-terminate — always set the last byte: `buf[sizeof(buf) - 1] = '\0'`.
+- Avoid pointer arithmetic beyond array bounds. Never dereference a pointer more than `(array + length)`.
 
 ## 4. Macros & Preprocessor
 
-- Use `enum` or `static const T` instead of `#define` for typed constants — they participate in type checking and are visible to debuggers.
-- Always wrap multi-statement macros in `do { ... } while(0)` to make them behave correctly in `if`/`else` contexts.
-- Protect all header files with include guards. Prefer `#pragma once` for modern compilers, or the traditional `#ifndef` guard:
+- Use **`enum`** or **`static const T`** instead of `#define` for typed constants — they participate in type checking, scope, and are visible to debuggers:
 
   ```c
-  #pragma once
-  /* OR */
+  // ❌ No type, no scope
+  #define MAX_CONNECTIONS 1024
+
+  // ✅ Typed, scoped constant
+  static const uint32_t MAX_CONNECTIONS = 1024;
+
+  // ✅ Enum for related constants
+  typedef enum { HTTP_OK = 200, HTTP_NOT_FOUND = 404, HTTP_ERROR = 500 } HttpStatus;
+  ```
+
+- Wrap multi-statement macros in **`do { ... } while(0)`** to make them work correctly in `if`/`else` chains:
+
+  ```c
+  // ❌ Breaks with if/else
+  #define LOG_ERROR(msg) fprintf(stderr, msg); error_count++;
+
+  // ✅ Safe in all contexts
+  #define LOG_ERROR(msg) do { fprintf(stderr, "%s\n", msg); error_count++; } while(0)
+  ```
+
+- Protect all header files from double inclusion:
+  ```c
+  #pragma once          // preferred on modern compilers
+  /* OR traditional guard: */
   #ifndef MY_HEADER_H
   #define MY_HEADER_H
   /* ... */
   #endif /* MY_HEADER_H */
   ```
+- Minimize macro usage. Prefer `inline` functions for type safety and debuggability. Use macros only for functionality that genuinely cannot be expressed as a function (stringification, token pasting, X-macros).
 
-- Minimize macro usage. Prefer `inline` functions for type safety. Use macros only for functionality that cannot be expressed as a function (e.g., stringification, token pasting).
+## 5. Build, Testing & Security
 
-## 5. Build & Tooling
+### Build System
 
-- Use **CMake** (3.20+) as the primary build system for cross-platform projects. Structure with `src/`, `include/`, `tests/` directories. Use `target_compile_features` and `target_compile_options` for per-target settings.
-- Format with **clang-format** (commit `.clang-format` to the repository). Lint with **clang-tidy** and **cppcheck**. Enforce both in CI.
-- Use **Unity** or **cmocka** for unit testing. Aim for coverage of all public API functions. Run tests with sanitizers enabled in CI.
-- For security-critical code parsing untrusted input (file formats, network protocols), add **fuzzing** with **AFL++** or **libFuzzer**.
-- Use **`compilation_commands.json`** (generated by CMake with `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`) to enable accurate IDE analysis and clang-tidy integration.
+- Use **CMake** (≥ 3.20) as the primary build system for cross-platform projects:
+
+  ```cmake
+  cmake_minimum_required(VERSION 3.20)
+  project(mylib VERSION 1.0.0 LANGUAGES C)
+
+  add_library(mylib STATIC src/mylib.c)
+  target_include_directories(mylib PUBLIC include)
+  target_compile_features(mylib PRIVATE c_std_11)
+  target_compile_options(mylib PRIVATE
+    -Wall -Wextra -Wpedantic -Werror
+    $<$<CONFIG:Debug>:-fsanitize=address,undefined>
+  )
+
+  add_executable(mylib_test tests/test_mylib.c)
+  target_link_libraries(mylib_test PRIVATE mylib)
+  enable_testing()
+  add_test(NAME unit_test COMMAND mylib_test)
+  ```
+
+- Set `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` to generate `compile_commands.json` for IDE analysis and clang-tidy integration.
+- Format with **clang-format** (commit `.clang-format`). Lint with **clang-tidy** (commit `.clang-tidy`). Enforce both in CI:
+  ```bash
+  clang-format --dry-run --Werror src/**/*.c include/**/*.h
+  clang-tidy src/*.c -- -std=c11 -Iinclude
+  ```
+
+### Testing
+
+- Use **Unity** (embedded-friendly) or **cmocka** (mock support) for unit testing. Test all public API functions. Run tests with sanitizers enabled.
+- For security-critical code parsing untrusted input (file formats, network protocols, config parsers), add **fuzzing** with **AFL++** or **libFuzzer**:
+  ```bash
+  # LibFuzzer target
+  clang -fsanitize=fuzzer,address src/parser.c tests/fuzz_parser.c -o fuzz_parser
+  ./fuzz_parser -timeout=60 -max_total_time=3600 corpus/
+  ```
+- Use **`cppcheck`** for additional static analysis: `cppcheck --enable=all --error-exitcode=1 src/`.
+- Run `nm -u` on your objects to audit external symbol dependencies. Use `size` to measure code/data section sizes for embedded targets.

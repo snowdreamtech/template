@@ -1,47 +1,235 @@
 # Python Development Guidelines
 
-> Objective: Define standards for modern, clean, and maintainable Python code.
+> Objective: Define standards for modern, clean, and maintainable Python code, covering version management, tooling, type hints, code style, async patterns, and testing.
 
-## 1. Version & Environment
+## 1. Version, Environment & Project Structure
 
-- Target **Python 3.11+** for new projects. Use `requires-python` in `pyproject.toml` to enforce the minimum version.
-- Use **`uv`** (preferred for speed) or **`poetry`** for dependency management and virtual environment isolation. Never install project dependencies into the system Python.
-- Always provide a `pyproject.toml` in the project root (PEP 517/518). Use `uv lock` or `poetry.lock` for reproducible installs. Commit the lock file.
-- Pin the Python version in `.python-version` (pyenv/mise) so all developers and CI use the same interpreter.
+### Version & Environment
 
-## 2. Formatting & Linting
+- Target **Python 3.12+** for new projects. Specify the minimum version with `requires-python = ">=3.12"` in `pyproject.toml`.
+- Use **`uv`** (ultrafast Rust-based package manager, preferred) or **`poetry`** for dependency management and virtual environment isolation. Never install project dependencies into the system Python.
+- Pin the Python version in `.python-version` (pyenv/asdf/mise) so all developers and CI use the same interpreter version:
+  ```bash
+  echo "3.12.3" > .python-version
+  ```
+- Use **`uv lock`** or **`poetry.lock`** for reproducible installs. Always commit the lock file to version control.
+- Commit `pyproject.toml` with fully configured tool settings (ruff, mypy, pytest, coverage):
 
-- Format all code with **`ruff format`**. Enforce formatting in CI (`ruff format --check .`).
-- Lint with **`ruff`** for fast, comprehensive static analysis — it replaces `flake8`, `isort`, `pyupgrade`, `pyflakes`, and more. Configure via `[tool.ruff]` in `pyproject.toml`.
-- Use **`mypy`** (strict) or **`pyright`** (basic) for type checking. Run in CI. Prefer `pyright` for projects using VS Code.
-- Remove dead code and unused imports automatically with Ruff's autofix (`ruff check --fix`).
+  ```toml
+  [project]
+  name = "myproject"
+  version = "1.0.0"
+  requires-python = ">=3.12"
+  dependencies = [
+    "fastapi>=0.115",
+    "sqlalchemy>=2.0",
+  ]
 
-## 3. Type Hints
+  [project.optional-dependencies]
+  dev = ["pytest", "pytest-cov", "ruff", "mypy"]
 
-- Add type annotations to **all** function signatures and class attributes in new code. Backfill as you touch legacy code.
-- Use `from __future__ import annotations` for forward-compatible annotation syntax on Python < 3.10.
-- Prefer modern union syntax: `X | None` over `Optional[X]`, `X | Y` over `Union[X, Y]` (Python 3.10+).
-- Use `TypeVar`, `Generic`, `Protocol`, and `TypedDict` for complex typing patterns. Prefer `Protocol` over `ABC` for structural subtyping.
-- Never use `Any` without an explanatory comment. Use `cast()` sparingly and only when the type system genuinely cannot infer the type.
+  [tool.ruff]
+  line-length = 120
+  target-version = "py312"
 
-## 4. Code Style & Patterns
+  [tool.ruff.lint]
+  select = ["E", "W", "F", "I", "UP", "B", "C4", "SIM"]
+  ignore = ["E501"]
 
-- Follow **PEP 8**. Use `snake_case` for variables/functions/modules, `PascalCase` for classes, `UPPER_SNAKE_CASE` for constants.
-- Prefer **f-strings** over `%` formatting or `.format()`. Use `f"{value!r}"` for debugging output.
-- Use **dataclasses** (`@dataclass`) or **Pydantic v2** models for structured data. Avoid plain `dict` for typed domain objects.
-- Use `pathlib.Path` instead of `os.path` for all file system operations.
-- Use **context managers** (`with`) for all resources (files, DB connections, locks) to ensure proper cleanup.
-- Use the **`logging`** module for all diagnostic output. Never use `print()` for logging, debugging, or status messages in production code. Configure loggers per module: `logger = logging.getLogger(__name__)`.
-- Write **generators** and use lazy evaluation where possible for large data processing. Avoid loading entire datasets into memory.
-- Follow **PEP 257** for docstring conventions. Use Google-style or NumPy-style docstrings consistently in a project. Document all public functions, classes, and modules.
-- Set up **`pre-commit`** hooks for `ruff check --fix`, `ruff format`, and `mypy` so formatting and type errors are caught before they reach CI.
+  [tool.mypy]
+  strict = true
+  python_version = "3.12"
+  ignore_missing_imports = true
+
+  [tool.pytest.ini_options]
+  asyncio_mode = "auto"
+  testpaths = ["tests"]
+  ```
+
+### Project Layout
+
+```text
+myproject/
+├── pyproject.toml
+├── uv.lock              # pinned dependencies
+├── src/
+│   └── myproject/       # src-layout (preferred for installable packages)
+│       ├── __init__.py
+│       ├── models/
+│       ├── services/
+│       └── api/
+└── tests/
+    ├── conftest.py
+    ├── unit/
+    └── integration/
+```
+
+Use **src-layout** to prevent accidental imports from the working directory.
+
+## 2. Formatting, Linting & Static Analysis
+
+- Format all code with **`ruff format`** (drop-in Black replacement). Enforce in CI:
+  ```bash
+  ruff format --check .   # fail CI on unformatted code
+  ruff format .           # reformat all files
+  ```
+- Lint with **`ruff check`** — it replaces `flake8`, `isort`, `pyupgrade`, `pylint` (partially), and more. Enforce in CI with `--no-fix`:
+  ```bash
+  ruff check .             # lint check
+  ruff check --fix .       # auto-fix fixable violations
+  ```
+- Type-check with **`mypy`** (`--strict`) or **`pyright`** (preferred for VS Code users). Run in CI:
+  ```bash
+  mypy . --strict
+  ```
+- Run **`bandit -r src/`** in CI for security linting: detects hardcoded secrets, `subprocess.shell=True`, insecure YAML parsing, and other common Python security issues.
+- Set up **`pre-commit`** hooks for `ruff check --fix`, `ruff format`, and `mypy` so formatting and type errors are caught before reaching CI:
+  ```yaml
+  # .pre-commit-config.yaml
+  repos:
+    - repo: https://github.com/charliermarsh/ruff-pre-commit
+      rev: v0.4.0
+      hooks:
+        - id: ruff
+          args: [--fix]
+        - id: ruff-format
+  ```
+
+## 3. Type Hints & Type Safety
+
+- Add type annotations to **all** function signatures and class attributes in new code. Backfill annotations as you touch existing code:
+  ```python
+  def fetch_user(user_id: str, *, active_only: bool = True) -> User | None:
+      ...
+  ```
+- Use **modern union syntax** (Python 3.10+):
+  - `X | None` instead of `Optional[X]`
+  - `X | Y` instead of `Union[X, Y]`
+  - `list[str]` instead of `List[str]`, `dict[str, Any]` instead of `Dict[str, Any]`
+- Use `from __future__ import annotations` for forward-compatible annotation evaluation on Python < 3.10.
+- Use **`Protocol`** for structural subtyping (duck-typing contracts) instead of ABCs when possible:
+
+  ```python
+  from typing import Protocol
+
+  class Serializable(Protocol):
+      def to_dict(self) -> dict[str, object]: ...
+
+  def serialize(obj: Serializable) -> str:
+      return json.dumps(obj.to_dict())
+  ```
+
+- Use **`TypeVar`** and `Generic[T]` for reusable generic types. Use `ParamSpec` for forwarding callable signatures and `TypeAlias` for readable type aliases.
+- Use **Pydantic v2** or **`@dataclass`** for structured domain models — avoid plain `dict` with string keys for typed data:
+
+  ```python
+  from pydantic import BaseModel, EmailStr
+
+  class CreateUserRequest(BaseModel):
+      name: str
+      email: EmailStr
+      role: Literal["admin", "viewer"] = "viewer"
+  ```
+
+- Never use `Any` without an explanatory comment. Use `cast()` sparingly — only when the type system genuinely cannot infer the type.
+
+## 4. Code Style, Patterns & Anti-Patterns
+
+### Naming & Style
+
+- Follow **PEP 8** naming: `snake_case` for variables/functions/modules, `PascalCase` for classes, `UPPER_SNAKE_CASE` for module-level constants.
+- Prefer **f-strings** for string interpolation: `f"Hello {name!r}"`. Use `f"{value:.2f}"` for number formatting. Avoid `.format()` and `%` formatting in new code.
+
+### Patterns
+
+- Use **`pathlib.Path`** for all file system operations instead of `os.path`:
+  ```python
+  from pathlib import Path
+  config = Path("config") / "settings.json"
+  data = config.read_text(encoding="utf-8")
+  ```
+- Use **context managers** (`with`) for all managed resources (files, DB connections, locks, HTTP sessions):
+  ```python
+  # ✅ Context manager ensures cleanup on error
+  async with aiofiles.open(path, "r") as f:
+      content = await f.read()
+  ```
+- Use `match`/`case` (Python 3.10+ structural pattern matching) for complex conditional logic:
+  ```python
+  match event.type:
+      case "user.created":
+          await handle_user_created(event)
+      case "order.placed" if event.total > 1000:
+          await handle_high_value_order(event)
+      case _:
+          logger.debug("Unhandled event type: %s", event.type)
+  ```
+- Use **generators** and lazy evaluation for large data processing. Never load entire large datasets into memory:
+  ```python
+  def process_records(filepath: Path) -> Iterator[ProcessedRecord]:
+      with filepath.open() as f:
+          for line in f:
+              yield transform(line)
+  ```
+
+### Logging
+
+- Use the **`logging`** module for all diagnostic output. Never use `print()` in production:
+
+  ```python
+  import logging
+  logger = logging.getLogger(__name__)
+
+  logger.info("Processing user %s started", user_id)
+  logger.error("Failed to process user %s: %s", user_id, exc, exc_info=True)
+  ```
+
+- Use **`structlog`** or `python-json-logger` for structured JSON log output in production services.
 
 ## 5. Testing & CI
 
-- Use **`pytest`** for all tests. Use `pytest-cov` for coverage reporting with minimum threshold enforcement.
-- Aim for ≥ 80% coverage on business logic. Use `pytest.mark.parametrize` for table-driven tests.
-- Use `pytest-asyncio` for async test functions. Configure `asyncio_mode = "auto"` in `pytest.ini` or `pyproject.toml`.
-- Use `pytest-mock` or `unittest.mock` for mocking. Prefer dependency injection for testability over patching globals.
-- **CI pipeline commands**: `ruff check .` → `ruff format --check .` → `mypy .` → `pytest --cov --cov-fail-under=80`.
-- Use **`tox`** or **`nox`** to test against multiple Python versions in isolation.
-- Run **`bandit -r .`** for security linting in CI to detect common Python security issues (hardcoded secrets, use of `subprocess.shell=True`, insecure deserialization).
+### pytest
+
+- Use **`pytest`** for all tests. Organize tests under `tests/unit/` and `tests/integration/`:
+
+  ```python
+  import pytest
+
+  @pytest.mark.parametrize("email,valid", [
+      ("user@example.com", True),
+      ("invalid", False),
+      ("", False),
+  ])
+  def test_validate_email(email: str, valid: bool) -> None:
+      assert validate_email(email) == valid
+  ```
+
+- Use **`pytest.mark.parametrize`** for table-driven tests (multiple input combinations).
+- Use `pytest-asyncio` for async tests. Configure `asyncio_mode = "auto"` in `pyproject.toml` so all async tests run automatically.
+- Use `pytest-mock` or `unittest.mock` for mocking. Prefer **dependency injection** for testability over patching globals with `monkeypatch.setattr`.
+
+### Coverage & CI
+
+- Enforce minimum coverage with `pytest-cov`:
+  ```bash
+  pytest --cov=src --cov-fail-under=80 --cov-report=xml --cov-report=term
+  ```
+- **CI pipeline order** (fail-fast gates first):
+  ```bash
+  ruff check .                        # linting
+  ruff format --check .               # formatting
+  mypy . --strict                     # type checking
+  bandit -r src/                      # security scan
+  pytest --cov --cov-fail-under=80    # tests + coverage
+  ```
+- Use **`tox`** or **`nox`** to test against multiple Python versions (3.11, 3.12) in isolation for libraries and packages.
+- Use **`Testcontainers`** (`testcontainers-python`) for integration tests requiring real PostgreSQL, Redis, or Kafka:
+
+  ```python
+  from testcontainers.postgres import PostgresContainer
+
+  @pytest.fixture(scope="session")
+  def postgres():
+      with PostgresContainer("postgres:16-alpine") as pg:
+          yield pg.get_connection_url()
+  ```

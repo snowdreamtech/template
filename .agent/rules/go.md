@@ -1,45 +1,191 @@
 # Go Development Guidelines
 
-> Objective: Go-specific project conventions (formatting, structure, error handling, concurrency, and testing).
+> Objective: Go-specific project conventions covering formatting, project structure, error handling, concurrency patterns, testing, logging, and performance — ensuring production-ready, idiomatic Go code.
 
-## 1. Toolchain & Code Quality
+## 1. Toolchain, Code Quality & Modules
 
-- **Formatting**: Code MUST be formatted with `gofmt` or `goimports` before committing. Use `goimports` to manage import grouping automatically (stdlib → third-party → internal).
-- **Linting**: Use `golangci-lint` as the standard linter aggregator. Run `golangci-lint run ./...` and fail CI on any warning. Enable at minimum: `errcheck`, `govet`, `staticcheck`, `gosimple`, `unused`, `revive`, `bodyclose`.
-- **Modules**: Use Go modules (`go.mod`). Commit both `go.mod` and `go.sum`. Run `go mod tidy` before every commit to keep them clean. Set `GONOSUMCHECK` appropriately for private modules.
-- **Build**: Use `go build ./...` and `go vet ./...` as health checks at the start of CI. Use `go build -trimpath` for reproducible binaries.
+### Toolchain
+
+- **Formatting**: Format all code with `goimports` before committing (it manages both formatting AND import grouping). Configure as a save-on-format action in IDEs. Reject unformatted code in CI:
+  ```bash
+  goimports -l ./...   # list unformatted files
+  gofmt -l ./...       # for pure formatting (no import management)
+  ```
+- **Linting**: Use `golangci-lint` as the standard linter aggregator. Run `golangci-lint run ./...` and fail CI on any finding. Commit `.golangci.yml` to the repository:
+  ```yaml
+  linters:
+    enable:
+      - errcheck # check all errors are handled
+      - govet # vet checks
+      - staticcheck # advanced static analysis
+      - gosimple # simplification suggestions
+      - unused # detect unused code
+      - revive # maintainability
+      - bodyclose # ensure HTTP response bodies are closed
+      - noctx # ensure context is passed for HTTP requests
+      - exhaustive # ensure switch exhaustiveness on enums
+      - gochecknoglobals # discourage global variables
+      - contextcheck # context propagation checks
+  ```
+- **Build**: Use `go build -trimpath ./...` for reproducible binaries (strips local path prefixes from debug info). Use `go vet ./...` in CI as a lightweight static check.
+
+### Modules
+
+- Use Go modules (`go.mod`). Commit both `go.mod` and `go.sum` — the sum file is a security control, not just a cache. Run `go mod tidy` before every commit to keep them clean and remove unused dependencies.
+- Pin Go version in `go.mod` and in CI tooling. Use the latest stable release. Set `GONOSUMCHECK` for private modules.
+- Manage tooling dependencies (linters, code generators) via `tools.go`:
+
+  ```go
+  //go:build tools
+  package tools
+
+  import (
+    _ "github.com/golangci/golangci-lint/cmd/golangci-lint"
+    _ "golang.org/x/tools/cmd/goimports"
+  )
+  ```
 
 ## 2. Project Layout
 
-- Follow standard Go project layout conventions:
-  - `/cmd/<app>/` — entry point for each binary (`main.go`); keep it minimal
-  - `/internal/` — private application code, not importable by external modules
-  - `/pkg/` — public libraries intended for reuse across projects
-  - `/api/` — OpenAPI/Protobuf definitions and generated code
-  - `/scripts/` — build and utility scripts
-- Use `internal/` to enforce package boundaries. Never expose implementation details publicly unless deliberately designed for reuse.
-- Keep `main.go` minimal: parse flags/config, build the dependency graph, start the server. Contain all logic in packages.
-- Prefer **fewer, larger packages** over many small packages. Package names should be short, lowercase, and meaningful without stuttering (`user.User` is wrong — use `user.Profile`).
+- Follow [Standard Go Project Layout](https://github.com/golang-standards/project-layout) conventions:
+  ```text
+  cmd/
+  └── server/
+      └── main.go          # minimal — parse flags/env, wire dependencies, start
+  internal/
+  ├── handler/             # HTTP/gRPC handlers (thin)
+  ├── service/             # business logic layer
+  ├── repository/          # data access layer
+  ├── middleware/          # HTTP/gRPC middleware
+  └── model/               # domain models, DTOs
+  pkg/                     # public libraries for external reuse (use sparingly)
+  api/                     # OpenAPI/Protobuf definitions
+  scripts/                 # build, migration, dev scripts
+  ```
+- Use `internal/` to enforce package boundaries — packages in `internal/` cannot be imported by code outside the parent module. This is a compile-time constraint, not a convention.
+- Keep `main.go` minimal: parse CLI flags/config, construct dependencies (DB pool, HTTP client), wire them into services and handlers, start the server, handle graceful shutdown. Zero business logic in `main.go`.
+- **Package naming**: short, lowercase, no underscores, no stutter. `user.User` is wrong — use `user.Profile` or rename the package. Package name == directory name.
+- Prefer **fewer, larger packages** over many small single-file packages. Group code by domain/feature, not by type (avoid `utils/`, `helpers/`, `common/`).
 
 ## 3. Error Handling
 
-- Return errors explicitly: `return result, err`. Do not use `panic` for expected error conditions; reserve `panic` for programming errors and invariant violations.
-- **Wrap errors** with context: `fmt.Errorf("parsing config: %w", err)`. Use `errors.Is()` and `errors.As()` for error inspection — never compare error strings directly.
-- Define **sentinel errors** with `errors.New()` or typed errors for errors that callers need to distinguish: `var ErrNotFound = errors.New("not found")`.
-- Always handle every returned error. The linter rule `errcheck` enforces this. Use `_` assignment only for documented intentional ignores with a comment.
+- Return errors explicitly as the last return value: `return result, err`. **Never use `panic`** for expected error conditions. Reserve `panic` only for programming invariant violations (bugs that should never happen in correct code).
+- **Wrap errors with context** using `fmt.Errorf("context: %w", err)`. The `%w` verb enables `errors.Is()` and `errors.As()` unwrapping:
+
+  ```go
+  // ✅ Wrapped with context
+  user, err := repo.FindByID(ctx, id)
+  if err != nil {
+    return nil, fmt.Errorf("find user %d: %w", id, err)
+  }
+
+  // ✅ Checking specific errors
+  if errors.Is(err, ErrNotFound) {
+    return nil, echo.ErrNotFound
+  }
+  ```
+
+- Define **sentinel errors** with `errors.New()` for errors that callers need to distinguish:
+  ```go
+  var (
+    ErrNotFound   = errors.New("not found")
+    ErrForbidden  = errors.New("forbidden")
+    ErrConflict   = errors.New("conflict")
+  )
+  ```
+- Use **typed errors** for structured error data:
+  ```go
+  type ValidationError struct {
+    Field   string
+    Message string
+  }
+  func (e *ValidationError) Error() string {
+    return fmt.Sprintf("validation: %s — %s", e.Field, e.Message)
+  }
+  ```
+- Handle **every returned error**. The `errcheck` linter enforces this. Use `_ = expr` only for documented, intentional ignores with a clear comment (`// explicitly ignoring — always returns nil for this input`).
+- Avoid deeply nested error handling. Inject sentinel returns with `if err != nil { return ... }` and keep the happy path at the leftmost indentation level.
 
 ## 4. Concurrency
 
-- Never start a goroutine without knowing how and when it will stop. Goroutine leaks are undetected memory leaks that degrade production services over time.
-- Use `context.Context` for **cancellation and timeouts**; pass context as the first parameter of every blocking or I/O-bound function.
-- Prefer **channels** for communication between goroutines; use `sync.Mutex` for simple, local shared-state protection.
-- Use `sync.WaitGroup` or `errgroup.Group` (`golang.org/x/sync/errgroup`) to manage goroutine lifecycles and propagate errors.
-- Use `-race` flag in all tests: `go test -race ./...`. Enable the race detector in CI unconditionally.
+- **Never start a goroutine without knowing how and when it will stop.** Goroutine leaks are undetected memory leaks that accumulate and degrade production services.
+- Use **`context.Context`** for cancellation, deadlines, and request-scoped values. Pass context as the **first parameter** of every blocking, I/O-bound, or long-running function:
+  ```go
+  func (s *UserService) GetByEmail(ctx context.Context, email string) (*User, error) {
+    return s.repo.FindByEmail(ctx, email)
+  }
+  ```
+- Use **`errgroup.Group`** (`golang.org/x/sync/errgroup`) for launching goroutines that can fail — it collects the first non-nil error and cancels the shared context:
+  ```go
+  g, ctx := errgroup.WithContext(ctx)
+  g.Go(func() error { return fetchUsers(ctx) })
+  g.Go(func() error { return fetchMetrics(ctx) })
+  if err := g.Wait(); err != nil {
+    return fmt.Errorf("parallel fetch: %w", err)
+  }
+  ```
+- Prefer **channels** for communication between concurrent goroutines. Use `sync.Mutex` / `sync.RWMutex` for simple, local shared-state protection. Use `sync/atomic` for simple counters and booleans requiring atomic updates.
+- Use **`-race` flag** in all tests and in CI: `go test -race ./...`. The race detector catches real data races that are otherwise non-deterministic.
+- Use **`sync.Pool`** for frequently allocated, short-lived objects to reduce GC pressure in hot paths (e.g., byte buffers, encoder instances).
 
-## 5. Testing & Logging
+## 5. Testing, Logging & Performance
 
-- Use **table-driven tests** (`[]struct{...}` with `t.Run`) for testing multiple inputs and edge cases systematically.
-- Use **`testify`** (`github.com/stretchr/testify`) for assertions and mocking. Use `require.NoError(t, err)` over manual `if err != nil { t.Fatal() }`.
-- Use **Testcontainers** for integration tests requiring real databases or external services in CI.
-- Use **`log/slog`** (Go 1.21+) for structured, leveled logging. Avoid `fmt.Println` or the standard `log` package in production code. Initialize the default logger with JSON handler for production.
-- Benchmark critical code paths with `go test -bench=. ./...`. Track benchmark results over time to catch performance regressions.
+### Testing
+
+- Use **table-driven tests** with `t.Run()` for comprehensive input coverage:
+  ```go
+  func TestParseEmail(t *testing.T) {
+    tests := []struct {
+      name    string
+      input   string
+      want    string
+      wantErr bool
+    }{
+      {"valid email", "user@example.com", "user@example.com", false},
+      {"empty string", "", "", true},
+      {"missing @", "notanemail", "", true},
+    }
+    for _, tt := range tests {
+      t.Run(tt.name, func(t *testing.T) {
+        got, err := ParseEmail(tt.input)
+        if (err != nil) != tt.wantErr {
+          t.Fatalf("wantErr=%v, got err=%v", tt.wantErr, err)
+        }
+        require.Equal(t, tt.want, got)
+      })
+    }
+  }
+  ```
+- Use **Testify** (`github.com/stretchr/testify`) for assertions: `require.NoError(t, err)` (fails immediately), `assert.Equal(t, expected, actual)` (continues on failure).
+- Use **Testcontainers** for integration tests requiring real databases, Redis, Kafka, or other services. Spin up containers per-test-suite, not per-test.
+- Use **`net/http/httptest`** for HTTP handler tests without running a real server. Use `httptest.NewServer()` for full-server integration tests.
+- Generate mocks with **`mockery`** or **`gomock`** from interface definitions. Avoid hand-written mocks.
+
+### Logging
+
+- Use **`log/slog`** (Go 1.21+) with a JSON handler for structured, leveled production logging:
+
+  ```go
+  logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+    Level:     slog.LevelInfo,
+    AddSource: true,
+  }))
+  slog.SetDefault(logger)
+
+  // Structured log with context
+  slog.Info("user created",
+    "userId", user.ID,
+    "email", user.Email,
+    "requestId", r.Header.Get("X-Request-ID"),
+  )
+  ```
+
+- Never use `fmt.Println` or the standard `log` package in production code — they produce unstructured, unleveled output.
+- Propagate the logger via `context.Context` for per-request log enrichment (request ID, user ID, tenant ID).
+
+### Performance
+
+- Benchmark hot code paths with `go test -bench=. -benchmem ./...`. Use `benchstat` to compare benchmark results between branches.
+- Use `go tool pprof` with `-http=:6060` for interactive flamegraph profiling. Expose the `pprof` HTTP handler on a management port in production environments.
+- Use `sync.Pool` for frequently allocated temporary objects. Pre-allocate slices and maps with the expected capacity: `make([]T, 0, expectedLen)`.
+- Set `GOMAXPROCS` to match the number of available CPU cores in containerized environments (use the `uber-go/automaxprocs` package for automatic adjustment).
