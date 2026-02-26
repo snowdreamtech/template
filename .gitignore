@@ -4,6 +4,15 @@
 ### Ansible ###
 *.retry
 
+### Ansible Patch ###
+.ansible/
+.molecule/
+.tox/
+.vault_pass
+.vault_pass.txt
+ansible.log
+ansible-galaxy.log
+
 ### C ###
 # Prerequisites
 *.d
