@@ -112,8 +112,12 @@ jobs:
       # GitHub Actions Workflows linting
       - name: Run actionlint
         run: |
+          sc_version="v0.10.0"
+          sc_url="https://github.com/koalaman/shellcheck/releases/download/${sc_version}/shellcheck-${sc_version}.linux.x86_64.tar.xz"
+          curl -L "$sc_url" | tar -xJ
+          export PATH="$PWD/shellcheck-${sc_version}:$PATH"
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          ./actionlint -shellcheck="npx shellcheck"
+          ./actionlint
 
       # Dockerfile linting
       - name: Run hadolint
