@@ -36,9 +36,11 @@ jobs:
 
       - name: Set env variables
         run: |
-          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "http_proxy=${http_proxy}" >> $GITHUB_ENV
-          echo "no_proxy=${no_proxy}" >> $GITHUB_ENV
+          {
+            echo "BRANCH=${GITHUB_REF##*/}"
+            echo "http_proxy=${http_proxy}"
+            echo "no_proxy=${no_proxy}"
+          } >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v6.2.0
