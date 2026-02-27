@@ -86,10 +86,10 @@ jobs:
       - name: Run editorconfig-checker
         run: npx editorconfig-checker -exclude "(\.(github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|(\.aider\.conf\.yml)"
 
-      # Shell Scripts linting
+      # Shell Scripts linting (excluding .venv, node_modules, etc.)
       - name: Run ShellCheck
         run: |
-          find . -type f -name "*.sh" -exec bash -c 'shellcheck "$@"' _ {} +
+          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -exec bash -c 'shellcheck "$@"' _ {} +
 
       # PowerShell Scripts linting (using ubuntu runner's pre-installed pwsh)
       - name: Run PSScriptAnalyzer

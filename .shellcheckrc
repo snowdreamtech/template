@@ -1,0 +1,9 @@
+# .shellcheckrc
+# Disable tracking of sourced files that might not be available
+disable=SC1091
+
+# Paths to ignore during shellcheck runs (similar to .ansible-lint & .markdownlint-cli2.jsonc)
+# Note: Since shellcheck does not natively support directory exclusions in its config like others,
+# we rely on standard find exclusion in scripts, but we can set global directive overrides here.
+# Shellcheck source-path setup
+source-path=SCRIPTDIR
