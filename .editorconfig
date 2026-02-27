@@ -16,7 +16,7 @@ indent_style = space
 indent_size = 4
 
 # 2 space indentation for web dialects and configs
-[*.{js,ts,jsx,tsx,cjs,mjs,json,jsonc,yaml,yml,html,css,scss,vue,md}]
+[*.{js,ts,jsx,tsx,cjs,mjs,json,jsonc,yaml,yml,html,css,scss,vue}]
 indent_style = space
 indent_size = 2
 
@@ -28,6 +28,8 @@ indent_style = tab
 [*.md]
 trim_trailing_whitespace = false
 max_line_length = off
+indent_size = unset
+indent_style = unset
 
 # Shell and Windows Scripts
 [*.{sh,zsh,bash,ps1}]

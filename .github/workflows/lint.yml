@@ -55,7 +55,7 @@ jobs:
       - name: Install Linters
         run: |
           source .venv/bin/activate
-          pip install yamllint
+          pip install yamllint ansible-lint
 
       # Run yaml linting
       - name: Run yamllint
@@ -72,3 +72,35 @@ jobs:
       # Run Markdown linting (exclusions are handled by .markdownlintignore)
       - name: Run markdownlint
         run: npx markdownlint-cli2 "**/*.md"
+
+      # Core Ansible Linting phase
+      - name: Run ansible-lint
+        run: |
+          source .venv/bin/activate
+          ansible-lint -v
+
+      # JSON & General formatting linting
+      - name: Run Prettier
+        run: npx prettier --check "**/*.{json,yml,yaml}"
+
+      - name: Run editorconfig-checker
+        run: npx editorconfig-checker -exclude "(\.(github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|(\.aider\.conf\.yml)"
+
+      # Shell Scripts linting
+      - name: Run ShellCheck
+        run: |
+          find . -type f -name "*.sh" -exec bash -c 'shellcheck "$@"' _ {} +
+
+      # PowerShell Scripts linting (using ubuntu runner's pre-installed pwsh)
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module -Name PSScriptAnalyzer -Force -ErrorAction Stop
+          Invoke-ScriptAnalyzer -Path . -Recurse -EnableExit
+
+      # GitHub Actions Workflows linting
+      - name: Run actionlint
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint

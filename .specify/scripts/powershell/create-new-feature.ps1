@@ -54,8 +54,8 @@ function New-BranchName {
     $stopWords = '^(i|a|an|the|to|for|of|in|on|at|by|with|from|is|are|was|were|be|been|being|have|has|had|do|does|did|will|would|should|could|can|may|might|must|shall|this|that|these|those|my|your|our|their|want|need|add|get|set)$'
 
     $words = ($Description.ToLower() -replace '[^a-z0-9]', ' ') -split '\s+' |
-             Where-Object { $_ -and $_ -notmatch $stopWords -and $_.Length -ge 3 } |
-             Select-Object -First 4
+        Where-Object { $_ -and $_ -notmatch $stopWords -and $_.Length -ge 3 } |
+        Select-Object -First 4
 
     if ($words.Count -gt 0) {
         return ($words -join '-')
