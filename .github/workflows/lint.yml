@@ -69,9 +69,9 @@ jobs:
         with:
           node-version: "20"
 
-      # Run Markdown linting (exclusions are handled by .markdownlintignore and inline args)
+      # Run Markdown linting (exclusions are handled by .markdownlintignore)
       - name: Run markdownlint
-        run: npx markdownlint-cli2 "**/*.md" "#.venv" "#node_modules"
+        run: npx markdownlint-cli2
 
       # Core Ansible Linting phase
       - name: Run ansible-lint
