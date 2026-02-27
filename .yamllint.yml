@@ -9,6 +9,7 @@ ignore: |
   build/
   .git/
   **/*.md
+  .specify/scripts/
 
 rules:
   # Line-length is intentionally disabled. Modern wide screens and YAML's

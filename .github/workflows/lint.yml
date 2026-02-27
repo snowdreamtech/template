@@ -84,12 +84,12 @@ jobs:
         run: npx prettier --check "**/*.{json,yml,yaml}"
 
       - name: Run editorconfig-checker
-        run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__)/.*)|(\.aider\.conf\.yml)"
+        run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify/scripts)/.*)|(\.aider\.conf\.yml)"
 
       # Shell Scripts linting (excluding .venv, node_modules, etc.)
       - name: Run ShellCheck
         run: |
-          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -exec bash -c 'shellcheck "$@"' _ {} +
+          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -exec bash -c 'shellcheck "$@"' _ {} +
 
       # PowerShell Scripts linting (using ubuntu runner's pre-installed pwsh)
       - name: Run PSScriptAnalyzer
@@ -97,7 +97,7 @@ jobs:
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module -Name PSScriptAnalyzer -Force -ErrorAction Stop
-          $scripts = Get-ChildItem -Path . -Recurse -Filter "*.ps1" | Where-Object { $_.FullName -notmatch '[/\\](\.venv|node_modules|venv|env|dist|build|\.git)[/\\]' }
+          $scripts = Get-ChildItem -Path . -Recurse -Filter "*.ps1" | Where-Object { $_.FullName -notmatch '[/\\](\.venv|node_modules|venv|env|dist|build|\.git|\.specify[/\\]scripts)[/\\]' }
           if ($null -ne $scripts -and $scripts.Count -gt 0) {
             Invoke-ScriptAnalyzer -Path $scripts.FullName -EnableExit
           } else {
@@ -113,7 +113,7 @@ jobs:
       # Dockerfile linting
       - name: Run hadolint
         run: |
-          find . -type f -name "*Dockerfile*" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -print0 | while IFS= read -r -d '' file; do
+          find . -type f -name "*Dockerfile*" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -print0 | while IFS= read -r -d '' file; do
             echo "Linting $file"
             docker run --rm -i hadolint/hadolint hadolint - < "$file"
           done

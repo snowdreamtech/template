@@ -28,6 +28,7 @@ exclude_paths:
   - .git/
   - .idea/
   - .vscode/
+  - .specify/scripts/
 
 # List of rules to entirely skip during linting
 skip_list:

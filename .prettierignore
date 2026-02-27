@@ -12,3 +12,4 @@ target
 .nuxt
 .output
 __pycache__
+.specify/scripts
