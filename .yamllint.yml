@@ -1,0 +1,31 @@
+---
+extends: default
+
+ignore: |
+  node_modules/
+  dist/
+  build/
+  .git/
+  **/*.md
+
+rules:
+  line-length:
+    max: 80
+    level: error
+  document-start:
+    present: true
+    level: error
+  truthy:
+    allowed-values: ["true", "false"]
+    level: error
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    level: error
+  trailing-spaces:
+    level: error
+  empty-lines:
+    max: 2
+    level: error
+  new-line-at-end-of-file:
+    level: error
