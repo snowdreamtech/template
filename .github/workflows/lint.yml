@@ -65,11 +65,14 @@ jobs:
           source .venv/bin/activate
           yamllint .
 
-      # Setup Node.js for Markdown linting
+      # Setup Node.js for Markdown linting & JS-based tools
       - name: Set up Node.js
         uses: actions/setup-node@v6.2.0
         with:
           node-version: "20"
+
+      - name: Install Node.js Linters
+        run: npm install -g markdownlint-cli2 prettier editorconfig-checker shellcheck
 
       # Run Markdown linting (exclusions are handled by .markdownlintignore)
       - name: Run markdownlint
