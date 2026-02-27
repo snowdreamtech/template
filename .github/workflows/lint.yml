@@ -76,7 +76,7 @@ jobs:
 
       - name: Install ShellCheck Binary
         run: |
-          latest_version=$(curl -s https://api.github.com/repos/koalaman/shellcheck/releases/latest | awk -F'"' '/"tag_name":/ {print $4}')
+          latest_version=$(curl -s https://api.github.com/repos/koalaman/shellcheck/releases/latest | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | awk -F'"' '{print $4}')
           os_name=$(uname -s | tr '[:upper:]' '[:lower:]')
           arch_name=$(uname -m)
 
