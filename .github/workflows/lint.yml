@@ -69,6 +69,6 @@ jobs:
         with:
           node-version: "20"
 
-      # Run Markdown linting
+      # Run Markdown linting (exclusions are handled by .markdownlintignore)
       - name: Run markdownlint
-        run: npx markdownlint-cli2 "**/*.md" "#node_modules" "#.git" "#dist"
+        run: npx markdownlint-cli2 "**/*.md"
