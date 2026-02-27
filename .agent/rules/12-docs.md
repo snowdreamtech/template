@@ -261,7 +261,6 @@ All documentation MUST conform to the following Markdown rules (see `markdown.md
 - **Code blocks**: always specify the language identifier (` ```bash `, ` ```yaml `, ` ```python `, etc.).
 - **Lists**: use `-` as the bullet character consistently.
 - **Tables**: columns aligned with padding spaces; header row separated by `---`.
-- **Line length**: ≤ 120 characters per line for prose; code blocks are exempt.
 - **File ending**: exactly one trailing newline character.
 - **No trailing spaces**: strip whitespace at end of lines.
 

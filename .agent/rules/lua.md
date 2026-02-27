@@ -238,11 +238,11 @@
   -- .luacheckrc
   std = "lua54"
   globals = { "ngx", "jit" }          -- allow OpenResty/LuaJIT globals
-  max_line_length = 120
   ignore = { "212" }                   -- unused argument (when intentional)
   ```
 
   Integrate `luacheck` into CI as a hard gate: `luacheck . --no-cache`.
+
 - For **OpenResty/nginx** projects, use the `lua-resty-*` ecosystem for Redis, MySQL, HTTP clients. Test with:
   - `Test::Nginx` (Perl-based integration tests for nginx Lua code)
   - `resty` CLI for quick function testing

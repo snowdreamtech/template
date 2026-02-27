@@ -76,7 +76,7 @@
   ```json
   {
     "default": true,
-    "MD013": { "line_length": 120, "code_blocks": false, "tables": false },
+    "MD013": false,
     "MD033": { "allowed_elements": ["details", "summary", "kbd"] },
     "MD041": true,
     "MD025": true

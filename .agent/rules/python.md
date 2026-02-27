@@ -31,12 +31,11 @@
   dev = ["pytest", "pytest-cov", "ruff", "mypy"]
 
   [tool.ruff]
-  line-length = 120
   target-version = "py312"
 
   [tool.ruff.lint]
   select = ["E", "W", "F", "I", "UP", "B", "C4", "SIM"]
-  ignore = ["E501"]
+  ignore = ["E501"]  # E501 = line-too-long, intentionally disabled
 
   [tool.mypy]
   strict = true

@@ -30,13 +30,13 @@
 
 - Use **scope functions** appropriately. Each has a specific idiom:
 
-  | Function | Receiver | Return | Idiom |
-  |---|---|---|---|
-  | `let` | `it` | Lambda result | Null check + transformation |
-  | `run` | `this` | Lambda result | Configuration + compute |
-  | `apply` | `this` | Receiver | Builder pattern / initialization |
-  | `also` | `it` | Receiver | Side effects, logging |
-  | `with` | `this` | Lambda result | Operate on non-nullable receiver |
+  | Function | Receiver | Return        | Idiom                            |
+  | -------- | -------- | ------------- | -------------------------------- |
+  | `let`    | `it`     | Lambda result | Null check + transformation      |
+  | `run`    | `this`   | Lambda result | Configuration + compute          |
+  | `apply`  | `this`   | Receiver      | Builder pattern / initialization |
+  | `also`   | `it`     | Receiver      | Side effects, logging            |
+  | `with`   | `this`   | Lambda result | Operate on non-nullable receiver |
 
   ```kotlin
   val server = Server().apply {
@@ -230,7 +230,6 @@
   [*.{kt,kts}]
   indent_size = 4
   continuation_indent_size = 4
-  max_line_length = 120
   ```
 
 - Use **Kover** (JetBrains) for Kotlin code coverage reporting in Gradle projects. Set minimum coverage gates:

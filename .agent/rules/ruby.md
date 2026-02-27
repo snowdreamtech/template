@@ -29,7 +29,7 @@
   - `SCREAMING_SNAKE_CASE`: constants
   - `?` suffix: predicate methods (return boolean), e.g., `user.active?`
   - `!` suffix: dangerous methods (mutate receiver, raise exceptions), e.g., `user.save!`
-- Use **2-space indentation** (not tabs). Limit line length to 120 characters. Use **trailing commas** in multi-line method calls, hashes, and arrays for cleaner diffs.
+- Use **2-space indentation** (not tabs). Use **trailing commas** in multi-line method calls, hashes, and arrays for cleaner diffs.
 - Prefer **single quotes** for strings that do not require interpolation. Use double quotes only when interpolation or escape sequences (e.g., `\n`) are required.
 - Use **StandardRB** (zero-configuration opinionated RuboCop config) for projects that want consistent style without debate.
 
@@ -195,6 +195,7 @@
   ```
 
   Fix all `High` confidence findings before merging. Document consciously ignored warnings in `.brakeman.ignore`.
+
 - Sanitize all user output. In Rails, ERB auto-escapes — never use `raw`, `html_safe`, or `sanitize(:safe_list)` with untrusted user content.
 - Use **encrypted credentials** (Rails 7+: `config/credentials.yml.enc` with `RAILS_MASTER_KEY`) for production secrets management:
 
