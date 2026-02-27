@@ -1276,3 +1276,4 @@ skills/
 .agents/skills/
 .agent/skills/
 shellcheck-*/
+actionlint
