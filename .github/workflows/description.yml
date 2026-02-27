@@ -1,0 +1,37 @@
+name: GitHub Actions Description Updater
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - README.md
+      - .github/workflows/description.yml
+
+jobs:
+  dockerHubDescription:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          # [Required] Access token with `workflow` scope.
+          token: ${{ secrets.WORKFLOW_SECRET }}
+      - name: Docker Hub Description
+        uses: christian-korneck/update-container-description-action@v1
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_PASS: ${{ secrets.DOCKER_HUB_TOKEN }}
+        with:
+          destination_container_repo: snowdreamtech/template
+          provider: dockerhub
+          short_description: ${{ github.event.repository.description }}
+          readme_file: "README.md"
+      # - name: Quay.io Description
+      #   uses: christian-korneck/update-container-description-action@v1
+      #   env:
+      #     DOCKER_APIKEY: ${{ secrets.QUAY_API_TOKEN }}
+      #   with:
+      #     destination_container_repo: quay.io/snowdreamtech/template
+      #     provider: quay
+      #     readme_file: "README.md"
