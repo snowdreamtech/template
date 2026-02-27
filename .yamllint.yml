@@ -2,6 +2,8 @@
 extends: default
 
 ignore: |
+  .venv/
+  venv/
   node_modules/
   dist/
   build/
@@ -31,3 +33,14 @@ rules:
     level: error
   new-line-at-end-of-file:
     level: error
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: disable
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+  colons:
+    max-spaces-after: -1
