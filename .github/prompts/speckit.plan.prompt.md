@@ -3,4 +3,5 @@ description: Execute the implementation planning workflow using the plan templat
 mode: agent
 ---
 
+<!-- markdownlint-disable-next-line MD018 -->
 #file:../../.agent/workflows/speckit.plan.md

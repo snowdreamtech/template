@@ -3,4 +3,5 @@ description: Identify underspecified areas in the current feature spec by asking
 mode: agent
 ---
 
+<!-- markdownlint-disable-next-line MD018 -->
 #file:../../.agent/workflows/speckit.clarify.md

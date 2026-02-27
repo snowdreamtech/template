@@ -3,4 +3,5 @@ description: Convert existing tasks into actionable, dependency-ordered GitHub i
 mode: agent
 ---
 
+<!-- markdownlint-disable-next-line MD018 -->
 #file:../../.agent/workflows/speckit.taskstoissues.md

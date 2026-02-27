@@ -3,4 +3,5 @@ description: Perform a non-destructive cross-artifact consistency and quality an
 mode: agent
 ---
 
+<!-- markdownlint-disable-next-line MD018 -->
 #file:../../.agent/workflows/speckit.analyze.md
