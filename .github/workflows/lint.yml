@@ -65,7 +65,7 @@ jobs:
 
       # Setup Node.js for Markdown linting
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.2.0
         with:
           node-version: "20"
 
