@@ -1277,3 +1277,4 @@ skills/
 .agent/skills/
 shellcheck-*/
 actionlint
+sc.tar.gz

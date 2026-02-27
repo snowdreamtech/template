@@ -98,10 +98,11 @@ jobs:
             exit 1
           fi
 
-          sc_url="https://github.com/koalaman/shellcheck/releases/download/${latest_version}/shellcheck-${latest_version}.${sc_os}.${sc_arch}.tar.xz"
+          sc_url="https://github.com/koalaman/shellcheck/releases/download/${latest_version}/shellcheck-${latest_version}.${sc_os}.${sc_arch}.tar.gz"
           echo "Downloading ShellCheck ${latest_version} from $sc_url"
+          curl -fLo sc.tar.gz --retry 3 "$sc_url"
           mkdir -p shellcheck-latest
-          curl -L "$sc_url" | tar -xJ -C shellcheck-latest --strip-components=1
+          tar -xzf sc.tar.gz -C shellcheck-latest --strip-components=1
           echo "$PWD/shellcheck-latest" >> "$GITHUB_PATH"
 
       # Run Markdown linting (exclusions are handled by .markdownlintignore)
