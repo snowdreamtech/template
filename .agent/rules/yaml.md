@@ -216,7 +216,7 @@
 
   ```yaml
   path: "/usr/local/bin" # ✅ single: no escapes needed
-  message: "Hello\tWorld\n" # ✅ double: tab + newline escapes required
+  message: "Hello\tWorld\n" # ✅ double: \t and \n escapes required
   ```
 
 ## 4. Comments
@@ -453,9 +453,12 @@
 
 ## 9. Schema Validation & Editor Integration
 
-- Configure JSON Schema validation in your editor to catch structural errors
-  at edit time, before CI runs. For VS Code, add `yaml.schemas` to
-  `.vscode/settings.json`:
+- Install the **YAML extension for VS Code** (Red Hat —
+  `redhat.vscode-yaml`) which provides schema-driven autocompletion, hover
+  docs, and inline validation directly in the editor.
+
+- Configure JSON Schema validation for your project's YAML files in
+  `.vscode/settings.json` using `yaml.schemas`:
 
   ```json
   {
@@ -466,10 +469,6 @@
     }
   }
   ```
-
-- Install the **YAML extension for VS Code** (Red Hat —
-  `redhat.vscode-yaml`) which provides schema-driven autocompletion, hover
-  docs, and inline validation directly in the editor.
 
 ## 10. YAML 1.1 vs 1.2 — Version Awareness
 
@@ -493,13 +492,158 @@ differences prevents silent bugs:
 | Symptom                        | Likely Cause                    | Fix                          |
 | :----------------------------- | :------------------------------ | :--------------------------- |
 | `on:` workflow not triggering  | `on` parsed as boolean `true`   | Quote: `'on':`               |
-| File permission `0700` = `448` | Octal integer parsing           | Quote: `"0700"`              |
-| Empty string becomes `null`    | Bare key with no value          | Use `key: ""`                |
+| File permission `0700` = `448` | Octal integer parsing           | Quote: `'0700'`              |
+| Empty string becomes `null`    | Bare key with no value          | Use `key: ''`                |
 | Anchor merge breaks at runtime | Parser is YAML 1.2 strict       | Avoid `<<:` or switch parser |
 | CI passes, app crashes on load | YAML 1.1 vs app parser mismatch | Lock parser version          |
 | Secret leaks in CI logs        | Secret echoed in `run:` step    | Use `env:` injection         |
 | Long line causes lint failure  | Description >80 chars           | Use folded scalar `>`        |
 | Duplicate key silently ignored | YAML 1.1 last-wins behavior     | Enable strict parser mode    |
+| `true` string used as boolean  | Missing quotes around value     | Quote: `'true'`              |
+| Config differs across envs     | Env-specific values baked in    | Use env var references       |
+
+## 12. Pre-commit & Toolchain Integration
+
+- Set up **`pre-commit`** hooks to run `yamllint` automatically before every
+  commit, blocking malformed YAML from ever entering the repository:
+
+  ```yaml
+  # .pre-commit-config.yaml
+  ---
+  repos:
+    - repo: https://github.com/adrienverge/yamllint
+      rev: v1.35.1
+      hooks:
+        - id: yamllint
+          args: ["-c", ".yamllint.yml"]
+  ```
+
+  Install and activate the hooks:
+
+  ```bash
+  pip install pre-commit
+  pre-commit install
+  # Run against all files once to establish a clean baseline
+  pre-commit run --all-files
+  ```
+
+- Use **`actionlint`** to lint GitHub Actions workflow files at the
+  structural and semantic level — it catches type mismatches, undefined
+  context variables, and invalid action inputs that `yamllint` cannot:
+
+  ```bash
+  # Run actionlint on all workflows
+  actionlint .github/workflows/*.yml
+  ```
+
+- Use **`kube-linter`** or **`kubeval`** for Kubernetes manifests, and
+  **`ansible-lint`** for Ansible playbooks — these provide domain-specific
+  validation beyond what generic YAML linting covers:
+
+  ```bash
+  ansible-lint playbooks/
+  kube-linter lint k8s/
+  ```
+
+## 13. File Organisation & Maintainability
+
+- **Keep YAML files focused**: each file should contain configuration for
+  one purpose or one service. Avoid growing a single file into a "mega
+  config" that mixes unrelated concerns:
+
+  ```text
+  # ✅ Focused, single-purpose files
+  config/
+    database.yml
+    cache.yml
+    logging.yml
+
+  # ❌ Unfocused monolith
+  config/
+    app.yml   # contains database + cache + logging + auth
+  ```
+
+- **Split large GitHub Actions workflows** into focused files. Use
+  `workflow_call` (reusable workflows) to share job sequences instead of
+  copy-pasting steps across files:
+
+  ```text
+  .github/workflows/
+    ci.yml           # triggers: push/PR — calls reusable workflows
+    deploy.yml       # triggers: tags — calls deploy reusable workflow
+    _test.yml        # reusable: runs unit + integration tests
+    _build.yml       # reusable: builds and pushes Docker image
+  ```
+
+- **Version-pin all external tools** referenced in YAML configs. Document
+  the reason for pinning and set a scheduled review cadence:
+
+  ```yaml
+  # Pin versions for reproducibility — review monthly
+  # renovate: datasource=pypi depName=yamllint
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1 # pinned: 2025-01-15, next review 2025-02-15
+    hooks:
+      - id: yamllint
+  ```
+
+- Name YAML files with **lowercase, hyphen-separated** names. Avoid spaces,
+  uppercase, and underscores in filenames for maximum cross-platform
+  compatibility:
+
+  ```text
+  # ✅ Correct
+  docker-compose.yml
+  github-actions.yml
+  ansible-playbook.yml
+
+  # ❌ Avoid
+  DockerCompose.yml
+  github_actions.yml
+  ```
+
+## 14. Testing & Validation
+
+- **Validate YAML syntax** as the first check in CI, before any processing:
+
+  ```bash
+  # Fast syntax check — exits non-zero on any YAML error
+  python3 -c "
+  import sys, yaml
+  for f in sys.argv[1:]: yaml.safe_load(open(f))
+  print('All YAML files valid')
+  " $(find . -name '*.yml' -not -path '*/node_modules/*')
+  ```
+
+- **Test schema conformance** with `yamale` (Python) for non-standard YAML
+  configs that have a defined structure:
+
+  ```bash
+  pip install yamale
+  yamale --schema schema.yml config/
+  ```
+
+- **Diff YAML structurally** with `dyff` to review config changes in a
+  human-readable way that understands YAML semantics (unlike `git diff`):
+
+  ```bash
+  dyff between old-config.yml new-config.yml
+  ```
+
+- **Round-trip test** critical YAML files: parse them with the same library
+  your application uses, re-serialize, and assert equality. This catches
+  silent data-loss bugs caused by parser differences:
+
+  ```python
+  import yaml
+
+  def test_config_round_trip():
+      original = open('config/app.yml').read()
+      parsed = yaml.safe_load(original)
+      serialized = yaml.dump(parsed, default_flow_style=False)
+      reparsed = yaml.safe_load(serialized)
+      assert parsed == reparsed, 'Round-trip mismatch: data loss detected'
+  ```
 
 ## 12. Security & Sensitive Values
 
