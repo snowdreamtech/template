@@ -1,0 +1,65 @@
+---
+name: GitHub Actions Lint
+
+"on":
+  push:
+    branches:
+      - "main"
+      - "dev"
+      - "feat/**"
+      - "branch/**"
+      - "feature/**"
+      - "fix/**"
+      - "pr/**"
+  pull_request:
+    branches:
+      - "main"
+      - "dev"
+      - "feat/**"
+      - "branch/**"
+      - "feature/**"
+      - "fix/**"
+      - "pr/**"
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Run Linter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+        with:
+          # [Required] Access token with `workflow` scope.
+          token: ${{ secrets.WORKFLOW_SECRET }}
+
+      - name: Set env variables
+        run: |
+          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "http_proxy=${http_proxy}" >> $GITHUB_ENV
+          echo "no_proxy=${no_proxy}" >> $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.12"
+          cache: "pip" # caching pip dependencies
+
+      # Set up standard Python virtual environment
+      - name: Setup Virtual Environment
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+
+      # Installing linting packages into our venv
+      - name: Install Linters
+        run: |
+          source .venv/bin/activate
+          pip install yamllint
+
+      # Run yaml linting
+      - name: Run yamllint
+        run: |
+          source .venv/bin/activate
+          yamllint .
