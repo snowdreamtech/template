@@ -88,13 +88,10 @@ jobs:
       - name: Run editorconfig-checker
         run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify/scripts)/.*)|(\.aider\.conf\.yml)"
 
-      # Shell Scripts linting (excluding dependencies, running via Docker for runner-independence)
+      # Shell Scripts linting (excluding dependencies, running via npx for runner-independence)
       - name: Run ShellCheck
         run: |
-          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -print0 | while IFS= read -r -d '' file; do
-            echo "Linting $file"
-            docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable "$file"
-          done
+          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -exec bash -c 'npx shellcheck "$@"' _ {} +
 
       # PowerShell Scripts linting (using ubuntu runner's pre-installed pwsh)
       - name: Run PSScriptAnalyzer
