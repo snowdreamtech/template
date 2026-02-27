@@ -1,18 +1,21 @@
 {
-    "ignores": [
-        ".git",
-        "node_modules",
-        ".venv",
-        "venv",
-        "env",
-        "vendor",
-        "dist",
-        "build",
-        "out",
-        "target",
-        ".next",
-        ".nuxt",
-        ".output",
-        "__pycache__"
-    ]
+  "globs": [
+    "**/*.md"
+  ],
+  "ignores": [
+    ".git",
+    "node_modules",
+    ".venv",
+    "venv",
+    "env",
+    "vendor",
+    "dist",
+    "build",
+    "out",
+    "target",
+    ".next",
+    ".nuxt",
+    ".output",
+    "__pycache__"
+  ]
 }
