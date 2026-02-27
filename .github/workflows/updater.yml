@@ -1,7 +1,8 @@
+---
 name: GitHub Actions Version Updater
 
 # Controls when the action will run.
-on:
+"on":
   push:
     branches:
       - "main"

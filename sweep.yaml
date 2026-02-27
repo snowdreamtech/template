@@ -1,11 +1,19 @@
+---
 # Sweep AI Configuration
 # See: https://docs.sweep.dev/usage/config
 
 branch: "main"
-description: "This project uses a unified rule system. All changes must adhere to the rules in the `.agent/rules/` directory (01-general.md, 02-coding-style.md, 03-architecture.md)."
+description: >
+  This project uses a unified rule system. All changes must adhere
+  to the rules in the `.agent/rules/` directory
+  (01-general.md, 02-coding-style.md, 03-architecture.md).
 rules:
   - "Use Simplified Chinese (简体中文) for all communication and documentation."
   - "Code and code comments MUST be in English."
   - "Git commit messages MUST be in English using Conventional Commits format."
-  - "Maintain full compatibility with Linux, macOS, and Windows. Avoid hard-coding system-specific paths."
-  - "Always pin dependency versions in lock files and commit them to version control."
+  - >
+    Maintain full compatibility with Linux, macOS, and Windows.
+    Avoid hard-coding system-specific paths.
+  - >
+    Always pin dependency versions in lock files
+    and commit them to version control.

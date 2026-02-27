@@ -1,3 +1,4 @@
+---
 # CodeRabbit Configuration
 # See: https://docs.coderabbit.ai/guides/configure-coderabbit
 
@@ -6,7 +7,11 @@ reviews:
   poem: false
   instructions: |
     # 🚨 CRITICAL SYSTEM INSTRUCTION 🚨
-    Read and strictly adhere to ALL the rules defined in `.agent/rules/` directory:
-    - `.agent/rules/01-general.md` — Core principles (Simplified Chinese, English code/commits, cross-platform compatibility)
-    - `.agent/rules/02-coding-style.md` — Conventions (DRY, KISS, YAGNI, Conventional Commits)
-    - `.agent/rules/03-architecture.md` — Project structure and configuration hierarchy
+    Read and strictly adhere to ALL the rules defined
+    in `.agent/rules/` directory:
+    - `.agent/rules/01-general.md` — Core principles
+      (Simplified Chinese, English code/commits, cross-platform)
+    - `.agent/rules/02-coding-style.md` — Conventions
+      (DRY, KISS, YAGNI, Conventional Commits)
+    - `.agent/rules/03-architecture.md` — Project structure
+      and configuration hierarchy
