@@ -1,0 +1,54 @@
+---
+# .ansible-lint
+# Production profile ensures code adheres to strict best practices
+profile: production
+
+# List of rules to set as warnings instead of failing the linting process
+warn_list:
+  - experimental
+
+# Paths to exclude from linting
+exclude_paths:
+  - .venv/
+  - venv/
+  - __pycache__/
+  - .tox/
+  - node_modules/
+  - .next/
+  - .nuxt/
+  - .output/
+  - dist/
+  - vendor/
+  - target/
+  - build/
+  - .gradle/
+  - .bundle/
+  - vendor/bundle/
+  - collections/
+  - .git/
+  - .idea/
+  - .vscode/
+
+# List of rules to entirely skip during linting
+skip_list:
+  - no-handler
+  - name[missing]
+  - name[template]
+  - fqcn-builtins
+  - yaml[line-length]
+  - no-changed-when
+  - risky-file-permissions
+  - command-instead-of-shell
+  - var-naming
+  - meta-no-info
+
+rulesdir:
+  - .ansible-lint-rules
+
+enable_list:
+  - fqcn
+  - command-instead-of-module
+
+mock_modules:
+  - community.docker.docker_container
+  - containers.podman.podman_container
