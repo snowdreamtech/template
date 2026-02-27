@@ -15,6 +15,7 @@
   ```
 
   CI setup: `Rscript -e "renv::restore()"` before running any analysis.
+
 - Pin the R version alongside `{renv}`. Use `renv::lockfile_read()` to inspect and document the R version used.
 
 ### Pipeline Management
@@ -82,13 +83,15 @@ renv.lock             # ✅ Commit this
   ```
 
   Use `%>%` (magrittr) only in pre-R-4.1 projects or when using the `.` placeholder is necessary.
-- Limit line length to **80 characters**. Break long calls across lines. Lint with **`{lintr}`** in CI:
+
+- Run **`{lintr}`** in CI to catch syntax issues or stylistic deviations:
 
   ```r
   lintr::lint_dir("R/")  # lint all R files
   ```
 
   Commit `.lintr` to configure project-specific rules.
+
 - Prefer **explicit namespace calls** to prevent masking and improve code clarity in scripts and packages:
 
   ```r

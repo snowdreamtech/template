@@ -61,9 +61,7 @@
     **/*.md
 
   rules:
-    line-length:
-      max: 80
-      level: error
+    line-length: disable
     document-start:
       present: true
       level: error
@@ -93,7 +91,6 @@
 | Rule                      | Requirement                   | Common Mistake                    |
 | :------------------------ | :---------------------------- | :-------------------------------- |
 | `document-start`          | Always begin with `---`       | Missing `---` on line 1           |
-| `line-length`             | Max 80 characters             | Long `description:` strings       |
 | `truthy`                  | Only `true`/`false`           | Using `on`, `yes`, `off` unquoted |
 | `indentation`             | 2 spaces, no tabs             | Mixed tabs and spaces             |
 | `trailing-spaces`         | No trailing whitespace        | Editor trailing spaces            |
@@ -122,22 +119,20 @@
           runs-on: ubuntu-latest
   ```
 
-### Line Length
+### Line Length & String Wrapping
 
-- Keep all lines within **80 characters**. Use YAML block scalars to wrap
-  long strings cleanly without breaking semantics:
+- **Do not artificially break lines** if it compromises the readability or parsability
+  of strings (such as long URLs or Jinja2 template variables). `yamllint` line-length
+  checks are disabled by default to support modern wide screens.
 
-- **Folded scalar** (`>`): folds newlines into spaces — ideal for prose
-  descriptions and long single-line values:
+- **Folded scalar** (`>`): folds newlines into spaces — ideal for long prose
+  descriptions where you optionally want to wrap text for editor readability:
 
   ```yaml
-  # ✅ Good: folded scalar, each source line ≤ 80 chars
+  # ✅ Good: folded scalar for long prose
   description: >
     This project uses a unified rule system. All changes must
     adhere to the rules in the `.agent/rules/` directory.
-
-  # ❌ Bad: single line exceeds 80 characters
-  description: "This project uses a unified rule system, all changes must adhere to rules."
   ```
 
 - **Literal scalar** (`|`): preserves every newline — use for multiline
@@ -497,7 +492,6 @@ differences prevents silent bugs:
 | Anchor merge breaks at runtime | Parser is YAML 1.2 strict       | Avoid `<<:` or switch parser |
 | CI passes, app crashes on load | YAML 1.1 vs app parser mismatch | Lock parser version          |
 | Secret leaks in CI logs        | Secret echoed in `run:` step    | Use `env:` injection         |
-| Long line causes lint failure  | Description >80 chars           | Use folded scalar `>`        |
 | Duplicate key silently ignored | YAML 1.1 last-wins behavior     | Enable strict parser mode    |
 | `true` string used as boolean  | Missing quotes around value     | Quote: `'true'`              |
 | Config differs across envs     | Env-specific values baked in    | Use env var references       |
