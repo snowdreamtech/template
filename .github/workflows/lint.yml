@@ -72,7 +72,14 @@ jobs:
           node-version: "20"
 
       - name: Install Node.js Linters
-        run: npm install -g markdownlint-cli2 prettier editorconfig-checker shellcheck
+        run: npm install -g markdownlint-cli2 prettier editorconfig-checker
+
+      - name: Install ShellCheck Binary
+        run: |
+          sc_version="v0.10.0"
+          sc_url="https://github.com/koalaman/shellcheck/releases/download/${sc_version}/shellcheck-${sc_version}.linux.x86_64.tar.xz"
+          curl -L "$sc_url" | tar -xJ
+          echo "$PWD/shellcheck-${sc_version}" >> "$GITHUB_PATH"
 
       # Run Markdown linting (exclusions are handled by .markdownlintignore)
       - name: Run markdownlint
@@ -91,10 +98,10 @@ jobs:
       - name: Run editorconfig-checker
         run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify/scripts)/.*)|(\.aider\.conf\.yml)"
 
-      # Shell Scripts linting (excluding dependencies, running via npx for runner-independence)
+      # Shell Scripts linting (excluding dependencies, running native binary)
       - name: Run ShellCheck
         run: |
-          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -exec bash -c 'npx shellcheck "$@"' _ {} +
+          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -exec bash -c 'shellcheck "$@"' _ {} +
 
       # PowerShell Scripts linting (using ubuntu runner's pre-installed pwsh)
       - name: Run PSScriptAnalyzer
@@ -112,10 +119,6 @@ jobs:
       # GitHub Actions Workflows linting
       - name: Run actionlint
         run: |
-          sc_version="v0.10.0"
-          sc_url="https://github.com/koalaman/shellcheck/releases/download/${sc_version}/shellcheck-${sc_version}.linux.x86_64.tar.xz"
-          curl -L "$sc_url" | tar -xJ
-          export PATH="$PWD/shellcheck-${sc_version}:$PATH"
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
           ./actionlint
 
