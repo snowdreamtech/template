@@ -1275,3 +1275,4 @@ FodyWeavers.xsd
 skills/
 .agents/skills/
 .agent/skills/
+shellcheck-*/

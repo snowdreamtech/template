@@ -76,7 +76,7 @@ jobs:
 
       - name: Install ShellCheck Binary
         run: |
-          sc_version="v0.10.0"
+          latest_version=$(curl -s https://api.github.com/repos/koalaman/shellcheck/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
           os_name=$(uname -s | tr '[:upper:]' '[:lower:]')
           arch_name=$(uname -m)
 
@@ -98,10 +98,11 @@ jobs:
             exit 1
           fi
 
-          sc_url="https://github.com/koalaman/shellcheck/releases/download/${sc_version}/shellcheck-${sc_version}.${sc_os}.${sc_arch}.tar.xz"
-          echo "Downloading ShellCheck from $sc_url"
-          curl -L "$sc_url" | tar -xJ
-          echo "$PWD/shellcheck-${sc_version}" >> "$GITHUB_PATH"
+          sc_url="https://github.com/koalaman/shellcheck/releases/download/${latest_version}/shellcheck-${latest_version}.${sc_os}.${sc_arch}.tar.xz"
+          echo "Downloading ShellCheck ${latest_version} from $sc_url"
+          mkdir -p shellcheck-latest
+          curl -L "$sc_url" | tar -xJ -C shellcheck-latest --strip-components=1
+          echo "$PWD/shellcheck-latest" >> "$GITHUB_PATH"
 
       # Run Markdown linting (exclusions are handled by .markdownlintignore)
       - name: Run markdownlint
