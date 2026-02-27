@@ -113,7 +113,7 @@ jobs:
       - name: Run actionlint
         run: |
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          ./actionlint
+          ./actionlint -shellcheck="npx shellcheck"
 
       # Dockerfile linting
       - name: Run hadolint
