@@ -215,8 +215,8 @@
   only when escape sequences are required (`\n`, `\t`, `\"`, etc.):
 
   ```yaml
-  path: "/usr/local/bin" # single: no escapes needed
-  message: "Hello\tWorld\n" # double: tab + newline escapes
+  path: "/usr/local/bin" # ✅ single: no escapes needed
+  message: "Hello\tWorld\n" # ✅ double: tab + newline escapes required
   ```
 
 ## 4. Comments
@@ -421,7 +421,37 @@
       state: started
   ```
 
-## 8. Schema Validation & Editor Integration
+## 8. Key Naming Conventions
+
+- Use **snake_case** (`lower_snake_case`) for YAML keys in application
+  configuration files and Ansible variables. Use **kebab-case** for
+  Kubernetes manifests, Docker Compose services, and GitHub Actions
+  inputs/outputs (matching their own conventions):
+
+  | Context                 | Convention   | Example               |
+  | :---------------------- | :----------- | :-------------------- |
+  | Application config      | `snake_case` | `max_retry_count`     |
+  | Ansible vars/tasks      | `snake_case` | `app_user`, `db_host` |
+  | Kubernetes manifests    | `camelCase`  | `imagePullPolicy`     |
+  | Docker Compose services | `kebab-case` | `my-service`          |
+  | GitHub Actions inputs   | `kebab-case` | `node-version`        |
+
+- Keep keys **short and descriptive**. Avoid redundant prefixes that merely
+  repeat the parent key name:
+
+  ```yaml
+  # ❌ Redundant prefix — parent already provides context
+  database:
+    database_host: localhost
+    database_port: 5432
+
+  # ✅ Clean — context comes from the parent key
+  database:
+    host: localhost
+    port: 5432
+  ```
+
+## 9. Schema Validation & Editor Integration
 
 - Configure JSON Schema validation in your editor to catch structural errors
   at edit time, before CI runs. For VS Code, add `yaml.schemas` to
@@ -437,35 +467,72 @@
   }
   ```
 
-- Install the **[YAML extension for VS Code](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)**
-  (Red Hat) which provides schema-driven autocompletion, hover docs, and
-  inline error highlighting.
+- Install the **YAML extension for VS Code** (Red Hat —
+  `redhat.vscode-yaml`) which provides schema-driven autocompletion, hover
+  docs, and inline validation directly in the editor.
 
-## 9. Security & Sensitive Values
+## 10. YAML 1.1 vs 1.2 — Version Awareness
+
+Many real-world tools still use YAML 1.1 parsers. Understanding the key
+differences prevents silent bugs:
+
+| Behavior                 | YAML 1.1 (PyYAML, libyaml) | YAML 1.2 (strictyaml, Go yaml.v3) |
+| :----------------------- | :------------------------- | :-------------------------------- |
+| `on`, `yes`, `off`, `no` | Parsed as boolean          | Parsed as **string**              |
+| Leading-zero integers    | Parsed as **octal**        | Parsed as **string**              |
+| `~`                      | Parsed as null             | Parsed as null                    |
+| Merge key `<<:`          | Supported                  | **Not in spec**                   |
+| Duplicate keys           | Silently last-wins         | Error (strict)                    |
+
+> [!WARNING]
+> Assume YAML 1.1 behavior unless you control the parser version.
+> Use explicit quoting and avoid relying on auto-type coercion.
+
+## 11. Common Pitfalls Quick Reference
+
+| Symptom                        | Likely Cause                    | Fix                          |
+| :----------------------------- | :------------------------------ | :--------------------------- |
+| `on:` workflow not triggering  | `on` parsed as boolean `true`   | Quote: `'on':`               |
+| File permission `0700` = `448` | Octal integer parsing           | Quote: `"0700"`              |
+| Empty string becomes `null`    | Bare key with no value          | Use `key: ""`                |
+| Anchor merge breaks at runtime | Parser is YAML 1.2 strict       | Avoid `<<:` or switch parser |
+| CI passes, app crashes on load | YAML 1.1 vs app parser mismatch | Lock parser version          |
+| Secret leaks in CI logs        | Secret echoed in `run:` step    | Use `env:` injection         |
+| Long line causes lint failure  | Description >80 chars           | Use folded scalar `>`        |
+| Duplicate key silently ignored | YAML 1.1 last-wins behavior     | Enable strict parser mode    |
+
+## 12. Security & Sensitive Values
 
 - **Never hardcode** secrets, API keys, tokens, or passwords in YAML files
   committed to version control. Reference environment variables or a secrets
   manager instead:
 
   ```yaml
-  # ❌ Hardcoded secret — visible in git history forever
+  # ❌ Hardcoded — visible in git history forever, even if later removed
   database:
-    password: "my-super-secret-password"
+    password: 'my-super-secret-password'
 
   # ✅ Reference from environment at runtime
   database:
-    password: "${DB_PASSWORD}"
+    password: '${DB_PASSWORD}'
 
-  # ✅ Reference from GitHub Actions secrets
-  env:
-    DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  # ✅ Reference from GitHub Actions secrets via env injection
+  - name: Deploy
+    env:
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+    run: ./deploy.sh
   ```
 
-- Apply `yamllint` secret scanning in CI with tools like `gitleaks` or
-  `truffleHog` in addition to formatting checks. Run them as the first
-  pipeline step before any build:
+- Run secret scanning **before** `yamllint` in CI — a leaked secret is a
+  security incident, not a format issue:
 
   ```bash
+  # Step 1: Scan for secrets first
   gitleaks detect --source . --exit-code 1
+
+  # Step 2: Then validate formatting
   yamllint .
   ```
+
+- Do not use YAML anchors to share blocks that contain secrets — they
+  increase the blast radius if the anchor value is compromised.
