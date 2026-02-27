@@ -62,3 +62,13 @@ jobs:
         run: |
           source .venv/bin/activate
           yamllint .
+
+      # Setup Node.js for Markdown linting
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # Run Markdown linting
+      - name: Run markdownlint
+        run: npx markdownlint-cli2 "**/*.md" "#node_modules" "#.git" "#dist"
