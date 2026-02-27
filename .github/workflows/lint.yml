@@ -104,3 +104,11 @@ jobs:
         run: |
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
           ./actionlint
+
+      # Dockerfile linting
+      - name: Run hadolint
+        run: |
+          find . -type f -name "*Dockerfile*" -print0 | while IFS= read -r -d '' file; do
+            echo "Linting $file"
+            docker run --rm -i hadolint/hadolint hadolint - < "$file"
+          done
