@@ -486,7 +486,7 @@ jobs:
 
       # Trivy SCA / Container Security Scanning
       - name: Run Trivy Vulnerability Scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.34.1
         continue-on-error: true
         with:
           scan-type: "fs"
