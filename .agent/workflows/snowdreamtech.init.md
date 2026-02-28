@@ -37,25 +37,26 @@ You **MUST** consider the user input before proceeding (if not empty).
      ```bash
      # macOS — Homebrew (preferred)
      brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint lychee trivy checkmake
+     brew install --cask powershell
      brew tap dart-lang/dart && brew install dart
 
      # macOS — MacPorts (fallback if Homebrew is unavailable)
      port install shellcheck actionlint hadolint shfmt gitleaks ruff swiftformat swiftlint ktlint tflint lychee trivy checkmake
-     # actionlint / hadolint: binary download below if older version in MacPorts
+     # powershell: download pkg from GitHub / actionlint / hadolint: binary download below
 
      # Linux (Debian/Ubuntu)
-     apt-get install -y shellcheck shfmt trivy
+     apt-get install -y shellcheck shfmt trivy powershell
      # actionlint / hadolint: use binary download below
 
      # Linux (RHEL/Fedora)
-     dnf install -y ShellCheck shfmt trivy
+     dnf install -y ShellCheck shfmt trivy powershell
      # actionlint / hadolint: use binary download below
 
      # Windows (Scoop)
-     scoop install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff dart swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint lychee trivy checkmake
+     scoop install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff dart swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint lychee trivy checkmake pwsh
 
      # Windows (Winget)
-     winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt aquasecurity.trivy
+     winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt aquasecurity.trivy Microsoft.PowerShell
      ```
 
      **Binary downloads (actionlint / hadolint — macOS & Linux fallback):**
@@ -98,4 +99,14 @@ You **MUST** consider the user input before proceeding (if not empty).
      ```bash
      pip3 install pre-commit
      pre-commit install
+     ```
+
+   - Install PowerShell `PSScriptAnalyzer` module for local linting:
+
+     ```bash
+     pwsh -NoProfile -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted; Install-Module -Name PSScriptAnalyzer -Force -ErrorAction Stop"
+     ```
+
+     ```
+
      ```
