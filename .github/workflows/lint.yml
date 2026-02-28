@@ -119,7 +119,7 @@ jobs:
       - name: Run yamllint
         run: |
           source .venv/bin/activate
-          yamllint .
+          find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -name '*.yaml' -o -name '*.yml' \) -print0 | xargs -0 yamllint
 
       # Setup Node.js for Markdown linting & JS-based tools
       - name: Set up Node.js
@@ -189,7 +189,7 @@ jobs:
       - name: Run Ruff
         run: |
           source .venv/bin/activate
-          if [ -n "$(find . -name '*.py' -print -quit)" ]; then
+          if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.py' -print -quit)" ]; then
             ruff check .
             ruff format --check .
           else
@@ -200,7 +200,7 @@ jobs:
       - name: Run SQLFluff
         run: |
           source .venv/bin/activate
-          if [ -n "$(find . -name '*.sql' -print -quit)" ]; then
+          if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.sql' -print -quit)" ]; then
             sqlfluff lint . --dialect postgres
           else
             echo "No SQL files found, skipping sqlfluff."
@@ -241,7 +241,7 @@ jobs:
 
       - name: Run golangci-lint
         run: |
-          if [ -n "$(find . -name '*.go' -print -quit)" ]; then
+          if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.go' -print -quit)" ]; then
             golangci-lint run
           else
             echo "No Go files found, skipping golangci-lint."
@@ -262,7 +262,7 @@ jobs:
       - name: Run dotnet format
         run: |
           if command -v dotnet &> /dev/null; then
-            if [ -n "$(find . -name '*.cs' -o -name '*.vb' -print -quit)" ]; then
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.cs' -o -name '*.vb' -print -quit)" ]; then
               dotnet format --verify-no-changes
             else
               echo "No C#/VB files found, skipping dotnet format."
@@ -275,7 +275,7 @@ jobs:
       - name: Run Rubocop
         run: |
           if command -v ruby &> /dev/null; then
-            if [ -n "$(find . -name '*.rb' -print -quit)" ]; then
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.rb' -print -quit)" ]; then
               gem install rubocop
               rubocop --parallel
             else
@@ -289,7 +289,7 @@ jobs:
       - name: Run php-cs-fixer
         run: |
           if command -v php &> /dev/null; then
-            if [ -n "$(find . -name '*.php' -print -quit)" ]; then
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.php' -print -quit)" ]; then
               curl -sL https://cs.symfony.com/download/php-cs-fixer-v3.phar -o php-cs-fixer
               php php-cs-fixer fix --dry-run
             else
@@ -303,7 +303,7 @@ jobs:
       - name: Run Dart Format and Analyze
         run: |
           if command -v dart &> /dev/null; then
-            if [ -n "$(find . -name '*.dart' -print -quit)" ]; then
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.dart' -print -quit)" ]; then
               dart format --output=none --set-exit-if-changed .
               dart analyze --fatal-infos
             else
@@ -317,7 +317,7 @@ jobs:
       - name: Run Swiftformat and Swiftlint
         run: |
           if command -v swiftformat &> /dev/null && command -v swiftlint &> /dev/null; then
-            if [ -n "$(find . -name '*.swift' -print -quit)" ]; then
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.swift' -print -quit)" ]; then
               swiftformat --lint .
               swiftlint lint --strict
             else
@@ -330,8 +330,8 @@ jobs:
       - name: Run clang-format (Obj-C / C++)
         run: |
           if command -v clang-format &> /dev/null; then
-            if [ -n "$(find . -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -print -quit)" ]; then
-              find . \( -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' \) -exec clang-format --dry-run --Werror {} +
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -print -quit)" ]; then
+              find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' \) -exec clang-format --dry-run --Werror {} +
             else
               echo "No Obj-C/C++ files found, skipping clang-format."
             fi
@@ -348,7 +348,7 @@ jobs:
           fi
           if command -v kube-linter &> /dev/null; then
             # Assuming k8s yaml files might be in specific directories (e.g. k8s, manifests), running broadly but ignoring dotfiles ideally.
-            kube-linter lint . || echo "kube-linter found issues. Please review them."
+            (find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -name '*.yaml' -o -name '*.yml' \) -print0 | xargs -0 kube-linter lint) || echo "kube-linter found issues. Please review them."
           fi
 
           if ! command -v tflint &> /dev/null; then
@@ -356,7 +356,7 @@ jobs:
             brew install tflint || echo "Failed to install tflint."
           fi
           if command -v tflint &> /dev/null; then
-            if [ -n "$(find . -name '*.tf' -print -quit)" ]; then
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.tf' -print -quit)" ]; then
               tflint --init
               tflint
             else
@@ -368,7 +368,7 @@ jobs:
       - name: Run ktlint and google-java-format
         run: |
           if command -v ktlint &> /dev/null; then
-            if [ -n "$(find . -name '*.kt' -print -quit)" ]; then
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.kt' -print -quit)" ]; then
               ktlint
             else
               echo "No Kotlin files found, skipping ktlint."
@@ -378,8 +378,8 @@ jobs:
           fi
 
           if command -v google-java-format &> /dev/null; then
-            if [ -n "$(find . -name '*.java' -print -quit)" ]; then
-              find . -name '*.java' -exec google-java-format --set-exit-if-changed --dry-run {} +
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.java' -print -quit)" ]; then
+              find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.java' -exec google-java-format --set-exit-if-changed --dry-run {} +
             else
               echo "No Java files found, skipping google-java-format."
             fi
@@ -390,8 +390,8 @@ jobs:
       # API Contracts Linting (Spectral)
       - name: Run Spectral (OpenAPI / AsyncAPI)
         run: |
-          if [ -n "$(find . -type f \( -iname '*openapi*.yaml' -o -iname '*openapi*.yml' -o -iname '*openapi*.json' -o -iname '*swagger*.yaml' -o -iname '*swagger*.yml' -o -iname '*swagger*.json' -o -iname '*asyncapi*.yaml' -o -iname '*asyncapi*.yml' -o -iname '*asyncapi*.json' \) -print -quit)" ]; then
-            find . -type f \( -iname '*openapi*.yaml' -o -iname '*openapi*.yml' -o -iname '*openapi*.json' -o -iname '*swagger*.yaml' -o -iname '*swagger*.yml' -o -iname '*swagger*.json' -o -iname '*asyncapi*.yaml' -o -iname '*asyncapi*.yml' -o -iname '*asyncapi*.json' \) -exec npx @stoplight/spectral-cli lint {} +
+          if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -iname '*openapi*.yaml' -o -iname '*openapi*.yml' -o -iname '*openapi*.json' -o -iname '*swagger*.yaml' -o -iname '*swagger*.yml' -o -iname '*swagger*.json' -o -iname '*asyncapi*.yaml' -o -iname '*asyncapi*.yml' -o -iname '*asyncapi*.json' \) -print -quit)" ]; then
+            find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -iname '*openapi*.yaml' -o -iname '*openapi*.yml' -o -iname '*openapi*.json' -o -iname '*swagger*.yaml' -o -iname '*swagger*.yml' -o -iname '*swagger*.json' -o -iname '*asyncapi*.yaml' -o -iname '*asyncapi*.yml' -o -iname '*asyncapi*.json' \) -exec npx @stoplight/spectral-cli lint {} +
           else
             echo "No OpenAPI/Swagger/AsyncAPI files found, skipping Spectral."
           fi
