@@ -34,12 +34,14 @@ jobs:
           # [Required] Access token with `workflow` scope.
           token: ${{ secrets.WORKFLOW_SECRET }}
 
-      - name: Gitleaks Action
-        uses: gitleaks/gitleaks-action@v2.3.9
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false
-          GITLEAKS_ENABLE_SUMMARY: true
+      - name: Install Gitleaks
+        run: |
+          sudo curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 \
+            -o /usr/local/bin/gitleaks
+          sudo chmod +x /usr/local/bin/gitleaks
+
+      - name: Run Gitleaks
+        run: gitleaks detect --source . --verbose
 
       - name: Set env variables
         run: |
