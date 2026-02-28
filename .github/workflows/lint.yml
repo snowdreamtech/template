@@ -36,6 +36,8 @@ jobs:
 
       - name: Install Gitleaks
         shell: bash
+        env:
+          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
         run: |
           OS=$(uname -s | tr '[:upper:]' '[:lower:]')
           ARCH=$(uname -m)
@@ -63,19 +65,19 @@ jobs:
           fi
 
           echo "Detected OS: $GL_OS, Architecture: $GL_ARCH"
-          GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          GITLEAKS_VERSION=$(curl -s "${GITHUB_PROXY}https://api.github.com/repos/gitleaks/gitleaks/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
           GITLEAKS_VERSION_NUM=${GITLEAKS_VERSION#v}
           echo "Latest Gitleaks version: $GITLEAKS_VERSION"
 
           if [ "$GL_OS" = "windows" ]; then
             GL_ARCHIVE="gitleaks_${GITLEAKS_VERSION_NUM}_${GL_OS}_${GL_ARCH}.zip"
-            GL_URL="https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VERSION}/${GL_ARCHIVE}"
+            GL_URL="${GITHUB_PROXY}https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VERSION}/${GL_ARCHIVE}"
             echo "Downloading $GL_URL"
             curl -sSL -o gitleaks.zip "$GL_URL"
             unzip gitleaks.zip -d gitleaks-bin
           else
             GL_ARCHIVE="gitleaks_${GITLEAKS_VERSION_NUM}_${GL_OS}_${GL_ARCH}.tar.gz"
-            GL_URL="https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VERSION}/${GL_ARCHIVE}"
+            GL_URL="${GITHUB_PROXY}https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VERSION}/${GL_ARCHIVE}"
             echo "Downloading $GL_URL"
             mkdir -p gitleaks-bin
             curl -sSL "$GL_URL" | tar -xz -C gitleaks-bin gitleaks
@@ -129,8 +131,10 @@ jobs:
         run: npm install -g markdownlint-cli2 prettier editorconfig-checker
 
       - name: Install ShellCheck Binary
+        env:
+          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
         run: |
-          latest_version=$(curl -s https://api.github.com/repos/koalaman/shellcheck/releases/latest | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | awk -F'"' '{print $4}')
+          latest_version=$(curl -s "${GITHUB_PROXY}https://api.github.com/repos/koalaman/shellcheck/releases/latest" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | awk -F'"' '{print $4}')
           os_name=$(uname -s | tr '[:upper:]' '[:lower:]')
           arch_name=$(uname -m)
 
@@ -152,7 +156,7 @@ jobs:
             exit 1
           fi
 
-          sc_url="https://github.com/koalaman/shellcheck/releases/download/${latest_version}/shellcheck-${latest_version}.${sc_os}.${sc_arch}.tar.gz"
+          sc_url="${GITHUB_PROXY}https://github.com/koalaman/shellcheck/releases/download/${latest_version}/shellcheck-${latest_version}.${sc_os}.${sc_arch}.tar.gz"
           echo "Downloading ShellCheck ${latest_version} from $sc_url"
           curl -fLo sc.tar.gz --retry 3 "$sc_url"
           mkdir -p shellcheck-latest
@@ -218,8 +222,10 @@ jobs:
 
       # GitHub Actions Workflows linting
       - name: Run actionlint
+        env:
+          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
         run: |
-          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          bash <(curl -s "${GITHUB_PROXY}https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash")
           ./actionlint
 
       # Dockerfile linting
