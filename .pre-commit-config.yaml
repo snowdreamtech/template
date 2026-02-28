@@ -243,6 +243,12 @@ repos:
         args: [-w, -s, -l]
         types: [shell]
 
+      - id: checkmake
+        name: checkmake
+        language: system
+        entry: checkmake
+        files: ^Makefile$
+
       # ── GitHub Actions Workflows ───────────────────────────────────────────
       - id: actionlint
         name: actionlint

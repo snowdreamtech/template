@@ -78,6 +78,13 @@ You **MUST** consider the user input before proceeding (if not empty).
      curl -fL --retry 3 \
        "${GITHUB_PROXY}https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VER}/hadolint-$(uname -s)-${HA}" \
        -o ~/.local/bin/hadolint && chmod +x ~/.local/bin/hadolint
+
+     # checkmake
+     CHECKMAKE_VER="0.2.2"
+     OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ]; then CA="amd64"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then CA="arm64"; else CA=$ARCH; fi
+     curl -fL --retry 3 \
+       "${GITHUB_PROXY}https://github.com/mrtazz/checkmake/releases/download/${CHECKMAKE_VER}/checkmake-${CHECKMAKE_VER}-${OS}-${CA}" \
+       -o ~/.local/bin/checkmake && chmod +x ~/.local/bin/checkmake
      ```
 
      Ensure `~/.local/bin` is in your `PATH`:

@@ -501,3 +501,20 @@ jobs:
             echo "Linting $file"
             docker run --rm -i hadolint/hadolint hadolint - < "$file"
           done
+
+      # Makefile linting
+      - name: Run checkmake
+        env:
+          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
+        run: |
+          CHECKMAKE_VER="0.2.2"
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "x86_64" ]; then CA="amd64"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then CA="arm64"; else CA=$ARCH; fi
+          curl -fL --retry 3 "${GITHUB_PROXY}https://github.com/mrtazz/checkmake/releases/download/${CHECKMAKE_VER}/checkmake-${CHECKMAKE_VER}-${OS}-${CA}" -o checkmake
+          chmod +x checkmake
+          if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name 'Makefile' -print -quit)" ]; then
+             find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name 'Makefile' -exec ./checkmake {} +
+          else
+            echo "No Makefile found, skipping checkmake."
+          fi
