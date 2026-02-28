@@ -132,15 +132,15 @@
 
 ## 6. Triple Guarantee Quality Mechanism
 
-- The project enforces a rigorous "**Triple Guarantee**" mechanism to ensure code quality across all stages of development. All contributors, including AI agents, MUST adhere to this multi-layered defense strategy:
-  1. **First Line of Defense: Agent/Developer Auto-fix**
-     - Developers and AI Agents MUST proactively run formatters and linters (`prettier --write`, `markdownlint-cli2 --fix`, `shellcheck`, etc.) immediately after modifying or generating code.
-     - Never leave formatting or linting errors for the next stage.
-  2. **Second Line of Defense: Git Commit Auto-fix**
+- The project enforces a rigorous "**Triple Guarantee**" mechanism to ensure code quality across all stages of development. This is built on two core architectural philosophies: **Shift-Left (防线左移)** for developer experience and **Strict Gatekeeping (严格门禁)** for repository purity. All contributors, including AI agents, MUST adhere to this multi-layered defense strategy:
+  1. **First Line of Defense: Agent/Developer Auto-fix (Shift-Left)**
+     - Developers and AI Agents MUST proactively run formatters and linters (`eslint --fix`, `shfmt -w`, `prettier --write`, `markdownlint-cli2 --fix`) immediately after modifying or generating code.
+     - **Goal:** Maximum auto-correction and minimum mental burden. Never leave formatting or linting errors for the next stage.
+  2. **Second Line of Defense: Git Commit Intercept (Shift-Left)**
      - Driven by `pre-commit` hooks configured in `.pre-commit-config.yaml`.
-     - Automatically intercepts `git commit` operations. Supported tools (e.g., Prettier, Markdownlint) are configured in **auto-fix mode** (`--write` or `--fix`) to automatically rectify formatting issues and include them in the commit.
-     - Unfixable issues (e.g., complex shellcheck or hadolint warnings) will block the commit, forcing the developer/agent to address them locally.
-  3. **Third Line of Defense: CI/CD Strict Checks**
+     - Automatically intercepts `git commit` operations. Supported tools are explicitly configured in **auto-fix mode** (e.g., `eslint --fix`, `shfmt -w -s -l`) to automatically rectify formatting issues and transparently merge them into the user's commit.
+     - Unfixable issues (e.g., cspell unknown words, complex shellcheck warnings) will block the commit, forcing the developer/agent to address them locally before the code ever leaves their machine.
+  3. **Third Line of Defense: CI/CD Strict Checks (Strict Gatekeeping)**
      - Driven by GitHub Actions (e.g., `.github/workflows/lint.yml`).
-     - Runs all linters and formatters in **Strict/Check-only mode** (e.g., `prettier --check`).
-     - Under no circumstances does the CI pipeline attempt to silently auto-fix and commit code. Any violation at this stage results in a failed build, blocking pull requests and merges until the code is compliant.
+     - Runs all linters and formatters strictly in **Check-only / Diff mode** (e.g., `eslint`, `shfmt -d`, `prettier --check`).
+     - **Goal:** Absolute repository purity. Under no circumstances does the CI pipeline attempt to silently auto-fix and commit code, as CI runners lack (and should lack) the context/permissions to push structural changes back to the user's branch. Any violation at this stage results in a **hard failure (red build)**, blocking pull requests and forcing the contributor to fix the issues locally.
