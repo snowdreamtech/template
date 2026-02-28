@@ -25,6 +25,13 @@ repos:
         entry: gitleaks protect --verbose --redact --staged
         pass_filenames: false
 
+      # ── Security & DAOD ────────────────────────────────────────────────────
+      - id: semgrep
+        name: semgrep
+        language: system
+        entry: semgrep scan --config=auto --error --quiet
+        types: [python, javascript, typescript, go, ruby, java, csharp, php]
+
       # ── YAML ──────────────────────────────────────────────────────────────
       - id: yamllint
         name: yamllint
