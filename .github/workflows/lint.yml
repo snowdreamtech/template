@@ -113,7 +113,7 @@ jobs:
       - name: Install Linters
         run: |
           source .venv/bin/activate
-          pip install yamllint ansible-lint
+          pip install yamllint ansible-lint ruff
 
       # Run yaml linting
       - name: Run yamllint
@@ -183,6 +183,17 @@ jobs:
             find playbooks -name "*.yml" -print0 | xargs -0 -I{} ansible-playbook --syntax-check {}
           else
             echo "No playbooks/ directory found, skipping syntax-check."
+          fi
+
+      # Python Linting (Ruff)
+      - name: Run Ruff
+        run: |
+          source .venv/bin/activate
+          if [ -n "$(find . -name '*.py' -print -quit)" ]; then
+            ruff check .
+            ruff format --check .
+          else
+            echo "No Python files found, skipping ruff."
           fi
 
       # JSON, YAML, Vue, JS, TS, & React formatting linting

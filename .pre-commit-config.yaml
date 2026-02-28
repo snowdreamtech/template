@@ -90,6 +90,19 @@ repos:
         types: [rust]
         pass_filenames: false
 
+      # ── Python ───────────────────────────────────────────────────────────────
+      - id: ruff
+        name: ruff check
+        language: system
+        entry: ruff check --fix
+        types_or: [python, pyi]
+
+      - id: ruff-format
+        name: ruff format
+        language: system
+        entry: ruff format
+        types_or: [python, pyi]
+
       # ── JavaScript / TypeScript / Vue / React ───────────────────────────────────
       - id: eslint
         name: eslint
