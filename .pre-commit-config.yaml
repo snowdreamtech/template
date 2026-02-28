@@ -290,6 +290,12 @@ repos:
         pass_filenames: false
         files: \.(yml|yaml)$
 
+      - id: ansible-syntax-check
+        name: ansible-playbook syntax-check
+        language: system
+        entry: bash -c 'for file in "$@"; do ansible-playbook --syntax-check "$file"; done' _
+        files: ^playbooks/.*\.ya?ml$
+
       # ── Dockerfile ─────────────────────────────────────────────────────────
       - id: hadolint
         name: hadolint
