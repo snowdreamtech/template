@@ -32,15 +32,15 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      # macOS — MacPorts (fallback if Homebrew is unavailable)
      port install shellcheck
-     # actionlint / hadolint: download binaries from GitHub Releases (see below)
+     # actionlint / hadolint: use binary download below
 
      # Linux (Debian/Ubuntu)
      apt-get install -y shellcheck
-     # actionlint / hadolint: download binaries from GitHub Releases (see below)
+     # actionlint / hadolint: use binary download below
 
      # Linux (RHEL/Fedora)
      dnf install -y ShellCheck
-     # actionlint / hadolint: download binaries from GitHub Releases (see below)
+     # actionlint / hadolint: use binary download below
 
      # Windows (Scoop)
      scoop install shellcheck actionlint hadolint
@@ -49,18 +49,32 @@ You **MUST** consider the user input before proceeding (if not empty).
      winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint
      ```
 
-     **Binary downloads (actionlint / hadolint fallback for Linux & macOS):**
+     **Binary downloads (actionlint / hadolint — macOS & Linux fallback):**
+
+     > `GITHUB_PROXY` is set to `https://gh-proxy.sn0wdr1am.com/` by default to ensure reliable downloads in restricted network environments (e.g. in China).
 
      ```bash
-     # actionlint (official install script)
-     bash <(curl -s https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-     mv actionlint /usr/local/bin/
+     GITHUB_PROXY="${GITHUB_PROXY:-https://gh-proxy.sn0wdr1am.com/}"
+
+     # actionlint
+     ACTIONLINT_VER="v1.7.11"
+     OS=$(uname -s); ARCH=$(uname -m)
+     curl -fL --retry 3 \
+       "${GITHUB_PROXY}https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VER}/actionlint_${ACTIONLINT_VER#v}_${OS,,}_${ARCH}.tar.gz" \
+       | tar -xz -C ~/.local/bin actionlint
 
      # hadolint
-     HADOLINT_VER=$(curl -s https://api.github.com/repos/hadolint/hadolint/releases/latest | python3 -c "import sys,json;print(json.load(sys.stdin)['tag_name'])")
-     OS=$(uname -s); ARCH=$(uname -m)
-     curl -fL --retry 3 "https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VER}/hadolint-${OS}-${ARCH}" -o /usr/local/bin/hadolint
-     chmod +x /usr/local/bin/hadolint
+     HADOLINT_VER="v2.12.0"
+     ARCH=$(uname -m); if [ "$ARCH" = "arm64" ]; then HA="arm64"; else HA="x86_64"; fi
+     curl -fL --retry 3 \
+       "${GITHUB_PROXY}https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VER}/hadolint-$(uname -s)-${HA}" \
+       -o ~/.local/bin/hadolint && chmod +x ~/.local/bin/hadolint
+     ```
+
+     Ensure `~/.local/bin` is in your `PATH`:
+
+     ```bash
+     echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc  # or ~/.bashrc
      ```
 
    - Install and activate `pre-commit` hooks to enforce code quality checks before every commit:
