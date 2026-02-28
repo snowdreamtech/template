@@ -129,3 +129,18 @@
 - Boolean variables and functions MUST use a predicate form: `isEnabled`, `hasPermission`, `canRetry`, `shouldSkip`, `isLoading`, `wasDeleted`.
 - Function names should be verbs describing their action: `fetchUser`, `validateEmail`, `sendNotification`, `parseConfig` — not `userFetcher`, `emailValidator`.
 - Avoid negative boolean names (`isNotValid`, `isDisabled`) — they create confusing double-negatives in conditionals. Prefer positive forms: `isValid`, `isEnabled`.
+
+## 6. Triple Guarantee Quality Mechanism
+
+- The project enforces a rigorous "**Triple Guarantee**" mechanism to ensure code quality across all stages of development. All contributors, including AI agents, MUST adhere to this multi-layered defense strategy:
+  1. **First Line of Defense: Agent/Developer Auto-fix**
+     - Developers and AI Agents MUST proactively run formatters and linters (`prettier --write`, `markdownlint-cli2 --fix`, `shellcheck`, etc.) immediately after modifying or generating code.
+     - Never leave formatting or linting errors for the next stage.
+  2. **Second Line of Defense: Git Commit Auto-fix**
+     - Driven by `pre-commit` hooks configured in `.pre-commit-config.yaml`.
+     - Automatically intercepts `git commit` operations. Supported tools (e.g., Prettier, Markdownlint) are configured in **auto-fix mode** (`--write` or `--fix`) to automatically rectify formatting issues and include them in the commit.
+     - Unfixable issues (e.g., complex shellcheck or hadolint warnings) will block the commit, forcing the developer/agent to address them locally.
+  3. **Third Line of Defense: CI/CD Strict Checks**
+     - Driven by GitHub Actions (e.g., `.github/workflows/lint.yml`).
+     - Runs all linters and formatters in **Strict/Check-only mode** (e.g., `prettier --check`).
+     - Under no circumstances does the CI pipeline attempt to silently auto-fix and commit code. Any violation at this stage results in a failed build, blocking pull requests and merges until the code is compliant.

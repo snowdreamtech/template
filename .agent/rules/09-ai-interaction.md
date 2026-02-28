@@ -32,7 +32,14 @@
 
 ## 2. Code Generation & Modification
 
-### Quality Standards
+### Quality Standards & Auto-fix
+
+- **Mandatory Auto-fix Routine**: The AI MUST actively act as the first line of defense for code quality. After creating or modifying any file, the AI MUST proactively run the appropriate linting and formatting tools to auto-fix the codebase before handing it back to the user.
+  - **Markdown files**: Run `npx markdownlint-cli2-fix <file>` and `npx prettier --write <file>`
+  - **YAML/JSON files**: Run `npx prettier --write <file>`
+  - **Shell scripts**: Run `shellcheck <file>` and manually fix any reported warnings.
+  - **Ansible/Playbooks**: Run `ansible-lint <file>` and manually fix any reported warnings.
+  - _Never leave formatting or linting errors for the user or the CI pipeline to catch._
 
 - **Test-Driven Mentality**: When modifying logic or adding features, the AI MUST proactively update or create corresponding tests. Do not output untested code as final without a clear warning:
 
