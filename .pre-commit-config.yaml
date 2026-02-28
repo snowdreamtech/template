@@ -137,6 +137,21 @@ repos:
         entry: clang-format -i
         types_or: [objective-c, c, c++]
 
+      # ── Android Ecosystem (Kotlin / Java) ──────────────────────────────────
+      - id: ktlint
+        name: ktlint
+        language: system
+        entry: ktlint --format
+        types: [kotlin]
+        pass_filenames: true
+
+      - id: google-java-format
+        name: google-java-format
+        language: system
+        entry: google-java-format --replace
+        types: [java]
+        pass_filenames: true
+
       # ── JavaScript / TypeScript / Vue / React ───────────────────────────────────
       - id: eslint
         name: eslint

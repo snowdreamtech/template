@@ -279,13 +279,36 @@ jobs:
       - name: Run clang-format (Obj-C / C++)
         run: |
           if command -v clang-format &> /dev/null; then
-            if [ -n "$(find . \( -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' \) -print -quit)" ]; then
+            if [ -n "$(find . -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -print -quit)" ]; then
               find . \( -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' \) -exec clang-format --dry-run --Werror {} +
             else
               echo "No Obj-C/C++ files found, skipping clang-format."
             fi
           else
             echo "clang-format not installed. Skipping C-family linting."
+          fi
+
+      # Android Ecosystem Linting (Kotlin / Java)
+      - name: Run ktlint and google-java-format
+        run: |
+          if command -v ktlint &> /dev/null; then
+            if [ -n "$(find . -name '*.kt' -print -quit)" ]; then
+              ktlint
+            else
+              echo "No Kotlin files found, skipping ktlint."
+            fi
+          else
+            echo "ktlint not installed. Skipping Kotlin linting."
+          fi
+
+          if command -v google-java-format &> /dev/null; then
+            if [ -n "$(find . -name '*.java' -print -quit)" ]; then
+              find . -name '*.java' -exec google-java-format --set-exit-if-changed --dry-run {} +
+            else
+              echo "No Java files found, skipping google-java-format."
+            fi
+          else
+            echo "google-java-format not installed. Skipping Java linting."
           fi
 
       # Shell Scripts linting (excluding dependencies, running native binary)
