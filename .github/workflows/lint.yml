@@ -487,9 +487,9 @@ jobs:
         run: |
           source .venv/bin/activate
           if command -v semgrep &> /dev/null; then
-             semgrep scan --config=auto --error
+            semgrep scan --config=auto --error
           else
-             echo "Semgrep not installed. Skipping SAST."
+            echo "Semgrep not installed. Skipping SAST."
           fi
 
       # Trivy SCA / Container Security Scanning
@@ -522,7 +522,7 @@ jobs:
           curl -fL --retry 3 "${GITHUB_PROXY}https://github.com/mrtazz/checkmake/releases/download/${CHECKMAKE_VER}/checkmake-${CHECKMAKE_VER}-${OS}-${CA}" -o checkmake
           chmod +x checkmake
           if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name 'Makefile' -print -quit)" ]; then
-             find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name 'Makefile' -exec ./checkmake {} +
+            find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name 'Makefile' -exec ./checkmake {} +
           else
             echo "No Makefile found, skipping checkmake."
           fi
