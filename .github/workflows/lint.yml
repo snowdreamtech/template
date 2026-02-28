@@ -34,7 +34,7 @@ jobs:
           # [Required] Access token with `workflow` scope.
           token: ${{ secrets.WORKFLOW_SECRET }}
 
-      - name: gitleaks-action
+      - name: Gitleaks Action
         uses: gitleaks/gitleaks-action@v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
