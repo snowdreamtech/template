@@ -67,10 +67,10 @@
 
   Implement exponential backoff (1s → 2s → 4s → 8s) with a maximum of 5 attempts for application-level retries.
 
-- **Proxy**: When downloading GitHub resources, the `{{ github_proxy }}` prefix (or equivalent variable) **MUST** be added before the URL to ensure stable access in restricted environments:
+- **Proxy**: When downloading GitHub resources, the `GITHUB_PROXY` **MUST** be set and prefixed to all GitHub URLs to ensure stable access in restricted environments (e.g. China). The default proxy for this project is `https://gh-proxy.sn0wdr1am.com/`:
 
   ```bash
-  GITHUB_PROXY="${GITHUB_PROXY:-}"   # empty = no proxy
+  GITHUB_PROXY="${GITHUB_PROXY:-https://gh-proxy.sn0wdr1am.com/}"
   curl "${GITHUB_PROXY}https://github.com/org/repo/archive/main.tar.gz" -o repo.tar.gz
   ```
 
