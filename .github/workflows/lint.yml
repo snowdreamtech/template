@@ -229,6 +229,14 @@ jobs:
         continue-on-error: true
         run: npx cspell "**" --no-progress --no-summary --dot
 
+      # Check for broken URLs and relative links in Markdown
+      - name: Run Lychee (Link Checker)
+        uses: lycheeverse/lychee-action@v2.0.2
+        continue-on-error: true
+        with:
+          args: --base . --verbose --no-progress '**/*.md'
+          fail: true
+
       # JavaScript / TypeScript linting
       # Only runs if an ESLint configuration file is detected
       - name: Run ESLint
