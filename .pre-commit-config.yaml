@@ -117,6 +117,26 @@ repos:
         types: [dart]
         pass_filenames: false
 
+      # ── Apple Ecosystem (Swift / Obj-C) ──────────────────────────────────────
+      - id: swiftformat
+        name: swiftformat
+        language: system
+        entry: swiftformat
+        types: [swift]
+
+      - id: swiftlint
+        name: swiftlint
+        language: system
+        entry: swiftlint --fix
+        types: [swift]
+        pass_filenames: false
+
+      - id: clang-format
+        name: clang-format
+        language: system
+        entry: clang-format -i
+        types_or: [objective-c, c, c++]
+
       # ── JavaScript / TypeScript / Vue / React ───────────────────────────────────
       - id: eslint
         name: eslint

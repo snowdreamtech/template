@@ -41,6 +41,8 @@
   - **Rust**: Run `cargo fmt` and `cargo clippy --fix --allow-dirty --allow-staged`
   - **Python**: Run `ruff check --fix <file>` and `ruff format <file>`
   - **Dart/Flutter**: Run `dart format <file>` and `dart fix --apply <file>`
+  - **Swift**: Run `swiftformat <file>` and `swiftlint --fix <file>`
+  - **Obj-C/C++**: Run `clang-format -i <file>`
   - **Markdown files**: Run `npx markdownlint-cli2 --fix <file>` and `npx prettier --write <file>`
   - **YAML/JSON files**: Run `npx prettier --write <file>`
   - **Shell scripts**: Run `shfmt -w -s -l <file>` for formatting, then `shellcheck <file>` and manually fix any reported logic warnings.
