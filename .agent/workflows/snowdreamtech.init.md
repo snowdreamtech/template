@@ -51,7 +51,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      **Binary downloads (actionlint / hadolint — macOS & Linux fallback):**
 
-     > `GITHUB_PROXY` is set to `https://gh-proxy.sn0wdr1am.com/` by default to ensure reliable downloads in restricted network environments (e.g. in China).
+     > `GITHUB_PROXY` is set to `https://gh-proxy.sn0wdr1am.com/` by default to ensure reliable downloads in restricted network environments.
 
      ```bash
      GITHUB_PROXY="${GITHUB_PROXY:-https://gh-proxy.sn0wdr1am.com/}"
