@@ -76,6 +76,10 @@ jobs:
 
           echo "Detected OS: $GL_OS, Architecture: $GL_ARCH"
           GITLEAKS_VERSION=$(curl -s "https://api.github.com/repos/gitleaks/gitleaks/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          if [ -z "$GITLEAKS_VERSION" ]; then
+            echo "Warning: Failed to fetch latest Gitleaks version. Falling back to v8.21.2"
+            GITLEAKS_VERSION="v8.21.2"
+          fi
           GITLEAKS_VERSION_NUM=${GITLEAKS_VERSION#v}
           echo "Latest Gitleaks version: $GITLEAKS_VERSION"
 
@@ -145,6 +149,10 @@ jobs:
           GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
         run: |
           latest_version=$(curl -s "https://api.github.com/repos/koalaman/shellcheck/releases/latest" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | awk -F'"' '{print $4}')
+          if [ -z "$latest_version" ]; then
+            echo "Warning: Failed to fetch latest ShellCheck version API. Falling back to v0.10.0"
+            latest_version="v0.10.0"
+          fi
           os_name=$(uname -s | tr '[:upper:]' '[:lower:]')
           arch_name=$(uname -m)
 
