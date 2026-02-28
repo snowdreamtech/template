@@ -20,7 +20,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      **Cross-platform (pip3 + npm — works on macOS / Linux / Windows):**
 
      ```bash
-     pip3 install yamllint ansible-lint sqlfluff semgrep
+     pip3 install yamllint ansible-core ansible-lint sqlfluff semgrep
      npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional stylelint stylelint-config-standard @taplo/cli
      ```
 
@@ -29,7 +29,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      ```bash
      gem install rubocop
-     composer global require friendsofphp/php-cs-fixer lychee
+     composer global require friendsofphp/php-cs-fixer
      ```
 
      **Platform-specific binary tools (`shellcheck`, `actionlint`, `hadolint`):**
@@ -84,8 +84,16 @@ You **MUST** consider the user input before proceeding (if not empty).
      CHECKMAKE_VER="0.2.2"
      OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ]; then CA="amd64"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then CA="arm64"; else CA=$ARCH; fi
      curl -fL --retry 3 \
-       "${GITHUB_PROXY}https://github.com/mrtazz/checkmake/releases/download/${CHECKMAKE_VER}/checkmake-${CHECKMAKE_VER}-${OS}-${CA}" \
+       "${GITHUB_PROXY}https://github.com/checkmake/checkmake/releases/download/${CHECKMAKE_VER}/checkmake-${CHECKMAKE_VER}-${OS}-${CA}" \
        -o ~/.local/bin/checkmake && chmod +x ~/.local/bin/checkmake
+
+     # lychee
+     LYCHEE_VER="v0.18.0"
+     OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ]; then LA="x86_64"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then LA="aarch64"; else LA=$ARCH; fi
+     if [ "$OS" = "darwin" ]; then LL="apple-darwin"; else LL="unknown-linux-gnu"; fi
+     curl -fL --retry 3 \
+       "${GITHUB_PROXY}https://github.com/lycheeverse/lychee/releases/download/${LYCHEE_VER}/lychee-${LYCHEE_VER}-${LA}-${LL}.tar.gz" \
+       | tar -xz -C ~/.local/bin lychee
      ```
 
      Ensure `~/.local/bin` is in your `PATH`:
