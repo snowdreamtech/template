@@ -262,7 +262,7 @@ jobs:
       - name: Run dotnet format
         run: |
           if command -v dotnet &> /dev/null; then
-            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.cs' -o -name '*.vb' -print -quit)" ]; then
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -name '*.cs' -o -name '*.vb' \) -print -quit)" ]; then
               dotnet format --verify-no-changes
             else
               echo "No C#/VB files found, skipping dotnet format."
@@ -330,7 +330,7 @@ jobs:
       - name: Run clang-format (Obj-C / C++)
         run: |
           if command -v clang-format &> /dev/null; then
-            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -print -quit)" ]; then
+            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' \) -print -quit)" ]; then
               find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' \) -exec clang-format --dry-run --Werror {} +
             else
               echo "No Obj-C/C++ files found, skipping clang-format."
