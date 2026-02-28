@@ -268,6 +268,12 @@ repos:
         entry: checkmake
         files: ^Makefile$
 
+      - id: pwsh-analyze
+        name: powershell script analyzer
+        language: system
+        entry: pwsh -NoProfile -NonInteractive -Command "Invoke-ScriptAnalyzer -Path"
+        files: \.ps1$
+
       # ── GitHub Actions Workflows ───────────────────────────────────────────
       - id: actionlint
         name: actionlint
