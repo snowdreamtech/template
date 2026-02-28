@@ -123,7 +123,7 @@ jobs:
       - name: Install Linters
         run: |
           source .venv/bin/activate
-          pip install yamllint ansible-lint ruff sqlfluff
+          pip install yamllint ansible-lint ruff sqlfluff semgrep
 
       # Run yaml linting
       - name: Run yamllint
@@ -473,6 +473,16 @@ jobs:
         run: |
           bash <(curl -s "${GITHUB_PROXY}https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash")
           ./actionlint
+
+      # Semgrep Light SAST (Security Scanning)
+      - name: Run Semgrep
+        run: |
+          source .venv/bin/activate
+          if command -v semgrep &> /dev/null; then
+             semgrep scan --config=auto --error
+          else
+             echo "Semgrep not installed. Skipping SAST."
+          fi
 
       # Dockerfile linting
       - name: Run hadolint

@@ -50,6 +50,7 @@
   - **Cloud/IaC (Kubernetes)**: Run `kube-linter lint <file>` and manually resolve configuration vulnerabilities.
   - **Documentation**: Provide clear comments for complex logic, and use tools like `markdownlint-cli2` to ensure Markdown consistency.
   - **Spell & Link Check**: Fix all typos identified by `cspell` and immediately correct broken links identified by `lychee`.
+  - **SAST (Security)**: Run `semgrep scan --config=auto` locally after major business logic refactors, and patch any flagged vulnerability (such as eval, insecure hashes, or command injection).
   - **Git Flow**: The system enforces Conventional Commits via `commitlint`. ALWAYS ensure your commit messages follow the `<type>(<scope>): <subject>` format exactly.
   - **Dart/Flutter**: Run `dart format <file>` and `dart fix --apply <file>`
   - **Swift**: Run `swiftformat <file>` and `swiftlint --fix <file>`
