@@ -21,7 +21,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      ```bash
      pip3 install yamllint ansible-lint sqlfluff
-     npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli
+     npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional
      ```
 
      **Platform-specific binary tools (`shellcheck`, `actionlint`, `hadolint`):**

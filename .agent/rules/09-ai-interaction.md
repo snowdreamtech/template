@@ -43,6 +43,7 @@
   - **SQL**: Run `sqlfluff fix --dialect postgres --force <file>`
   - **Cloud/IaC (Terraform)**: Run `terraform fmt <file>` and `tflint`
   - **Cloud/IaC (Kubernetes)**: Run `kube-linter lint <file>` and manually resolve configuration vulnerabilities.
+  - **Git Flow**: The system enforces Conventional Commits via `commitlint`. ALWAYS ensure your commit messages follow the `<type>(<scope>): <subject>` format exactly.
   - **Dart/Flutter**: Run `dart format <file>` and `dart fix --apply <file>`
   - **Swift**: Run `swiftformat <file>` and `swiftlint --fix <file>`
   - **Obj-C/C++**: Run `clang-format -i <file>`

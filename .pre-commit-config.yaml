@@ -233,3 +233,10 @@ repos:
         language: system
         entry: hadolint
         files: Dockerfile
+
+      # ── Git Commit Message Flow ──────────────────────────────────────────────
+      - id: commitlint
+        name: commitlint
+        language: system
+        entry: commitlint --edit
+        stages: [commit-msg]
