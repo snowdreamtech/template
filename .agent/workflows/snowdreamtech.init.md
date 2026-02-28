@@ -40,8 +40,8 @@ You **MUST** consider the user input before proceeding (if not empty).
      brew tap dart-lang/dart && brew install dart
 
      # macOS — MacPorts (fallback if Homebrew is unavailable)
-     port install shellcheck shfmt trivy
-     # actionlint / hadolint: use binary download below
+     port install shellcheck actionlint hadolint shfmt gitleaks ruff swiftformat swiftlint ktlint tflint lychee trivy checkmake
+     # actionlint / hadolint: binary download below if older version in MacPorts
 
      # Linux (Debian/Ubuntu)
      apt-get install -y shellcheck shfmt trivy
