@@ -26,6 +26,12 @@ repos:
         pass_filenames: false
 
       # ── Security & DAOD ────────────────────────────────────────────────────
+      - id: trivy
+        name: trivy vulnerability scanner
+        language: system
+        entry: trivy fs --scanners vuln,secret,config --severity HIGH,CRITICAL .
+        pass_filenames: false
+
       - id: semgrep
         name: semgrep
         language: system
