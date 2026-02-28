@@ -28,7 +28,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      ```bash
      # macOS — Homebrew (preferred)
-     brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff swiftformat swiftlint clang-format ktlint google-java-format
+     brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint
      brew tap dart-lang/dart && brew install dart
 
      # macOS — MacPorts (fallback if Homebrew is unavailable)
@@ -44,7 +44,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      # actionlint / hadolint: use binary download below
 
      # Windows (Scoop)
-     scoop install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff dart swiftformat swiftlint clang-format ktlint google-java-format
+     scoop install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff dart swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint
 
      # Windows (Winget)
      winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt

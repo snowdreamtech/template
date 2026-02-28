@@ -289,13 +289,38 @@ jobs:
       - name: Run clang-format (Obj-C / C++)
         run: |
           if command -v clang-format &> /dev/null; then
-            if [ -n "$(find . \( -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' \) -print -quit)" ]; then
+            if [ -n "$(find . -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -print -quit)" ]; then
               find . \( -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' \) -exec clang-format --dry-run --Werror {} +
             else
               echo "No Obj-C/C++ files found, skipping clang-format."
             fi
           else
             echo "clang-format not installed. Skipping C-family linting."
+          fi
+
+      # Cloud Native & Infrastructure as Code (IaC)
+      - name: Run Kube-Linter and TFLint
+        run: |
+          if ! command -v kube-linter &> /dev/null; then
+            echo "kube-linter not installed. Attempting to install via brew..."
+            brew install kube-linter || echo "Failed to install kube-linter."
+          fi
+          if command -v kube-linter &> /dev/null; then
+            # Assuming k8s yaml files might be in specific directories (e.g. k8s, manifests), running broadly but ignoring dotfiles ideally.
+            kube-linter lint . || echo "kube-linter found issues. Please review them."
+          fi
+
+          if ! command -v tflint &> /dev/null; then
+            echo "tflint not installed. Attempting to install via brew..."
+            brew install tflint || echo "Failed to install tflint."
+          fi
+          if command -v tflint &> /dev/null; then
+            if [ -n "$(find . -name '*.tf' -print -quit)" ]; then
+              tflint --init
+              tflint
+            else
+              echo "No Terraform (.tf) files found, skipping tflint."
+            fi
           fi
 
       # Android Ecosystem Linting (Kotlin / Java)

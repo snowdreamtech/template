@@ -150,6 +150,21 @@ repos:
         entry: clang-format -i
         types_or: [objective-c, c, c++]
 
+      # ── Cloud Native & IaC ───────────────────────────────────────────────────
+      - id: kube-linter
+        name: kube-linter
+        language: system
+        entry: kube-linter lint
+        files: '(?i).*\.(yaml|yml)$'
+        pass_filenames: true
+
+      - id: tflint
+        name: tflint
+        language: system
+        entry: tflint
+        files: '\.tf$'
+        pass_filenames: false
+
       # ── Android Ecosystem (Kotlin / Java) ──────────────────────────────────
       - id: ktlint
         name: ktlint
