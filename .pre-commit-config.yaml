@@ -30,6 +30,7 @@ repos:
         name: markdownlint-cli2
         language: system
         entry: markdownlint-cli2
+        args: [--fix]
         types: [markdown]
 
       # ── JSON / YAML formatting ─────────────────────────────────────────────
@@ -37,7 +38,7 @@ repos:
         name: prettier
         language: system
         entry: prettier
-        args: [--check]
+        args: [--write]
         types_or: [json, yaml]
 
       # ── EditorConfig ───────────────────────────────────────────────────────
