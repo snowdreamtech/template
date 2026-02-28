@@ -21,32 +21,32 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      ```bash
      pip3 install yamllint ansible-lint
-     npm install -g markdownlint-cli2 prettier editorconfig-checker
+     npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint
      ```
 
      **Platform-specific binary tools (`shellcheck`, `actionlint`, `hadolint`):**
 
      ```bash
      # macOS — Homebrew (preferred)
-     brew install shellcheck actionlint hadolint
+     brew install shellcheck actionlint hadolint shfmt
 
      # macOS — MacPorts (fallback if Homebrew is unavailable)
-     port install shellcheck
+     port install shellcheck shfmt
      # actionlint / hadolint: use binary download below
 
      # Linux (Debian/Ubuntu)
-     apt-get install -y shellcheck
+     apt-get install -y shellcheck shfmt
      # actionlint / hadolint: use binary download below
 
      # Linux (RHEL/Fedora)
-     dnf install -y ShellCheck
+     dnf install -y ShellCheck shfmt
      # actionlint / hadolint: use binary download below
 
      # Windows (Scoop)
-     scoop install shellcheck actionlint hadolint
+     scoop install shellcheck actionlint hadolint shfmt
 
      # Windows (Winget)
-     winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint
+     winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt
      ```
 
      **Binary downloads (actionlint / hadolint — macOS & Linux fallback):**

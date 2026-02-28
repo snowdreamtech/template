@@ -3,9 +3,9 @@
 # Uses system-installed tools directly — no network downloads required.
 #
 # Required tools (install once):
-#   brew install yamllint shellcheck actionlint hadolint
+#   brew install yamllint shellcheck actionlint hadolint shfmt
 #   pip3 install ansible-lint
-#   npm install -g markdownlint-cli2 prettier editorconfig-checker
+#   npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint
 #
 # Setup (one-time per machine):
 #   pip3 install pre-commit
@@ -51,11 +51,34 @@ repos:
           - "(\\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\\.specify/scripts)/.*)|(\\.aider\\.conf\\.yml)"
         pass_filenames: false
 
+      # ── Spell Checker ──────────────────────────────────────────────────────
+      - id: cspell
+        name: cspell
+        language: system
+        entry: cspell
+        args: [--no-progress, --no-summary, --dot]
+        types: [text]
+
+      # ── JavaScript / TypeScript ────────────────────────────────────────────
+      - id: eslint
+        name: eslint
+        language: system
+        entry: eslint
+        args: [--fix]
+        types_or: [javascript, jsx, ts, tsx]
+
       # ── Shell Scripts ──────────────────────────────────────────────────────
       - id: shellcheck
         name: shellcheck
         language: system
         entry: shellcheck
+        types: [shell]
+
+      - id: shfmt
+        name: shfmt
+        language: system
+        entry: shfmt
+        args: [-w, -s, -l]
         types: [shell]
 
       # ── GitHub Actions Workflows ───────────────────────────────────────────
