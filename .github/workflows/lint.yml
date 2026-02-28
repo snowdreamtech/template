@@ -113,7 +113,7 @@ jobs:
       - name: Install Linters
         run: |
           source .venv/bin/activate
-          pip install yamllint ansible-lint ruff
+          pip install yamllint ansible-lint ruff sqlfluff
 
       # Run yaml linting
       - name: Run yamllint
@@ -194,6 +194,16 @@ jobs:
             ruff format --check .
           else
             echo "No Python files found, skipping ruff."
+          fi
+
+      # SQL Linting (SQLFluff)
+      - name: Run SQLFluff
+        run: |
+          source .venv/bin/activate
+          if [ -n "$(find . -name '*.sql' -print -quit)" ]; then
+            sqlfluff lint . --dialect postgres
+          else
+            echo "No SQL files found, skipping sqlfluff."
           fi
 
       # JSON, YAML, Vue, JS, TS, & React formatting linting

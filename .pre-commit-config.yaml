@@ -90,6 +90,19 @@ repos:
         types: [rust]
         pass_filenames: false
 
+      # ── Database & Data Engineering ──────────────────────────────────────────
+      - id: sqlfluff-lint
+        name: sqlfluff lint
+        language: system
+        entry: sqlfluff lint --dialect postgres
+        types: [sql]
+
+      - id: sqlfluff-fix
+        name: sqlfluff fix
+        language: system
+        entry: sqlfluff fix --dialect postgres --force
+        types: [sql]
+
       # ── Python ───────────────────────────────────────────────────────────────
       - id: ruff
         name: ruff check

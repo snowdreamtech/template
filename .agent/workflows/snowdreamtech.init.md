@@ -20,7 +20,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      **Cross-platform (pip3 + npm — works on macOS / Linux / Windows):**
 
      ```bash
-     pip3 install yamllint ansible-lint
+     pip3 install yamllint ansible-lint sqlfluff
      npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli
      ```
 
