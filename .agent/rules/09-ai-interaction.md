@@ -52,7 +52,7 @@
   - **Spell & Link Check**: Fix all typos identified by `cspell` and immediately correct broken links identified by `lychee`.
   - **SAST (Security)**: Run `semgrep scan --config=auto` locally after major business logic refactors, and patch any flagged vulnerability (such as eval, insecure hashes, or command injection).
   - **SCA (Dependencies)**: Run `trivy fs .` to scan local dependencies/Dockerfiles for high and critical CVEs.
-  - **Git Flow**: The system enforces Conventional Commits via `commitlint`. ALWAYS ensure your commit messages follow the `<type>(<scope>): <subject>` format exactly.
+  - **Git Flow**: The system enforces Conventional Commits via `commitlint` locally and Semantic Pull Request titles remotely. ALWAYS ensure your commit messages and PR titles follow the `<type>(<scope>): <subject>` format exactly.
   - **Dart/Flutter**: Run `dart format <file>` and `dart fix --apply <file>`
   - **Swift**: Run `swiftformat <file>` and `swiftlint --fix <file>`
   - **Obj-C/C++**: Run `clang-format -i <file>`
@@ -62,6 +62,7 @@
   - **Markdown files**: Run `npx markdownlint-cli2 --fix <file>` and `npx prettier --write <file>`
   - **YAML/JSON files**: Run `npx prettier --write <file>`
   - **Shell scripts**: Run `shfmt -w -s -l <file>` for formatting, then `shellcheck <file>` and manually fix any reported logic warnings.
+  - **Makefile**: Run `checkmake <file>` and manually fix any reported violations.
   - **Ansible/Playbooks**: Run `ansible-lint <file>` and manually fix any reported warnings.
   - _Never leave formatting or linting errors for the user, the Git Commit hook, or the CI pipeline to catch. Nip all errors in the bud._
 
