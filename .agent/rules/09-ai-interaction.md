@@ -38,6 +38,7 @@
   - **Source of Truth:** ALWAYS reference `.pre-commit-config.yaml` and `.github/workflows/lint.yml` for the current tool stack and their exact command arguments.
   - **JS/TS/Vue/React**: Run `npx eslint --fix <file>` and `npx prettier --write <file>`
   - **CSS/SCSS/LESS**: Run `npx stylelint --fix <file>` and `npx prettier --write <file>`
+  - **TOML**: Run `npx @taplo/cli format <file>`
   - **Go**: Run `golangci-lint run --fix`
   - **Rust**: Run `cargo fmt` and `cargo clippy --fix --allow-dirty --allow-staged`
   - **C# / .NET**: Run `dotnet format <directory/solution>`

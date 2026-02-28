@@ -257,6 +257,15 @@ jobs:
             echo "No CSS/SCSS/LESS files found, skipping Stylelint."
           fi
 
+      # TOML formatting linting
+      - name: Run Taplo
+        run: |
+          if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.toml' -print -quit)" ]; then
+            npx @taplo/cli format --check
+          else
+            echo "No TOML files found, skipping Taplo."
+          fi
+
       # Go Linting
       - name: Install GolangCI-Lint
         env:

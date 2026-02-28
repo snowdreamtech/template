@@ -223,6 +223,12 @@ repos:
         entry: npx stylelint --fix
         types_or: [css, scss, less]
 
+      - id: taplo
+        name: taplo
+        language: system
+        entry: npx @taplo/cli format
+        types: [toml]
+
       # ── Shell Scripts ──────────────────────────────────────────────────────
       - id: shellcheck
         name: shellcheck
