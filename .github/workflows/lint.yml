@@ -133,16 +133,21 @@ jobs:
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module -Name PSScriptAnalyzer -Force -ErrorAction Stop
-          $scripts = Get-ChildItem -Path . -Recurse -Filter "*.ps1" | Where-Object { $_.FullName -notmatch '[/\\](\.venv|node_modules|venv|env|dist|build|\.git|\.specify[/\\]scripts)[/\\]' }
-          if ($null -ne $scripts) {
-            [string[]]$scriptPaths = $scripts | ForEach-Object { $_.FullName }
-            if ($scriptPaths.Count -gt 0) {
-              Invoke-ScriptAnalyzer -Path $scriptPaths -EnableExit
-            } else {
-              Write-Host "No PowerShell scripts found to analyze."
-            }
-          } else {
+          $scripts = Get-ChildItem -Path . -Recurse -Filter "*.ps1" | Where-Object { $_.FullName -notmatch '[/\\](\\.venv|node_modules|venv|env|dist|build|\\.git|\\.specify[/\\]scripts)[/\\]' }
+          if ($null -eq $scripts -or @($scripts).Count -eq 0) {
             Write-Host "No PowerShell scripts found to analyze."
+          } else {
+            $hasError = $false
+            foreach ($script in $scripts) {
+              $results = Invoke-ScriptAnalyzer -Path $script.FullName
+              if ($results) {
+                $results | Format-Table -AutoSize
+                $hasError = $true
+              }
+            }
+            if ($hasError) {
+              exit 1
+            }
           }
 
       # GitHub Actions Workflows linting
