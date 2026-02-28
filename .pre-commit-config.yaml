@@ -213,9 +213,15 @@ repos:
       - id: eslint
         name: eslint
         language: system
-        entry: eslint
+        entry: npx eslint
         args: [--fix]
-        types_or: [javascript, jsx, ts, tsx, vue]
+        types_or: [javascript, typescript, tsx, jsx, vue]
+
+      - id: stylelint
+        name: stylelint
+        language: system
+        entry: npx stylelint --fix
+        types_or: [css, scss, less]
 
       # ── Shell Scripts ──────────────────────────────────────────────────────
       - id: shellcheck

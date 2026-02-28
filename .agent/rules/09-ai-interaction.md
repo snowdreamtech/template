@@ -37,6 +37,7 @@
 - **Mandatory Auto-fix Routine**: The AI MUST actively act as the first line of defense for the "Triple Guarantee" code quality mechanism. After creating or modifying any file, the AI MUST proactively run the appropriate linting and formatting tools to auto-fix the codebase before handing it back to the user or generating a commit.
   - **Source of Truth:** ALWAYS reference `.pre-commit-config.yaml` and `.github/workflows/lint.yml` for the current tool stack and their exact command arguments.
   - **JS/TS/Vue/React**: Run `npx eslint --fix <file>` and `npx prettier --write <file>`
+  - **CSS/SCSS/LESS**: Run `npx stylelint --fix <file>` and `npx prettier --write <file>`
   - **Go**: Run `golangci-lint run --fix`
   - **Rust**: Run `cargo fmt` and `cargo clippy --fix --allow-dirty --allow-staged`
   - **C# / .NET**: Run `dotnet format <directory/solution>`

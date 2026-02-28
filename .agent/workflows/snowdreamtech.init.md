@@ -21,7 +21,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      ```bash
      pip3 install yamllint ansible-lint sqlfluff
-     npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional
+     npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional stylelint stylelint-config-standard
 
      **Other Backend Ecosystems (.NET / Ruby / PHP):**
      _Note: `.NET` formatters are built-in (`dotnet format`)._
