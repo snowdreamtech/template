@@ -35,12 +35,57 @@ jobs:
           token: ${{ secrets.WORKFLOW_SECRET }}
 
       - name: Install Gitleaks
+        shell: bash
         run: |
-          sudo curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 \
-            -o /usr/local/bin/gitleaks
-          sudo chmod +x /usr/local/bin/gitleaks
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          ARCH=$(uname -m)
+
+          if [ "$OS" = "darwin" ]; then
+            GL_OS="darwin"
+          elif [ "$OS" = "linux" ]; then
+            GL_OS="linux"
+          elif [[ "$OS" == *"mingw"* || "$OS" == *"msys"* || "$OS" == *"cygwin"* ]]; then
+            GL_OS="windows"
+          else
+            echo "Unsupported OS: $OS"
+            exit 1
+          fi
+
+          if [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "amd64" ]; then
+            GL_ARCH="x64"
+          elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+            GL_ARCH="arm64"
+          elif [ "$ARCH" = "i386" ] || [ "$ARCH" = "i686" ]; then
+            GL_ARCH="x32"
+          else
+            echo "Unsupported Architecture: $ARCH"
+            exit 1
+          fi
+
+          echo "Detected OS: $GL_OS, Architecture: $GL_ARCH"
+          GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          GITLEAKS_VERSION_NUM=${GITLEAKS_VERSION#v}
+          echo "Latest Gitleaks version: $GITLEAKS_VERSION"
+
+          if [ "$GL_OS" = "windows" ]; then
+            GL_ARCHIVE="gitleaks_${GITLEAKS_VERSION_NUM}_${GL_OS}_${GL_ARCH}.zip"
+            GL_URL="https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VERSION}/${GL_ARCHIVE}"
+            echo "Downloading $GL_URL"
+            curl -sSL -o gitleaks.zip "$GL_URL"
+            unzip gitleaks.zip -d gitleaks-bin
+          else
+            GL_ARCHIVE="gitleaks_${GITLEAKS_VERSION_NUM}_${GL_OS}_${GL_ARCH}.tar.gz"
+            GL_URL="https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VERSION}/${GL_ARCHIVE}"
+            echo "Downloading $GL_URL"
+            mkdir -p gitleaks-bin
+            curl -sSL "$GL_URL" | tar -xz -C gitleaks-bin gitleaks
+          fi
+
+          chmod +x gitleaks-bin/gitleaks*
+          echo "$PWD/gitleaks-bin" >> "$GITHUB_PATH"
 
       - name: Run Gitleaks
+        shell: bash
         run: gitleaks detect --source . --verbose
 
       - name: Set env variables
