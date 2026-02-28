@@ -121,8 +121,8 @@ jobs:
         continue-on-error: true
         run: |
           source .venv/bin/activate
-          if [ -d playbooks/ ]; then
-            find playbooks/ -name "*.yml" -print0 | xargs -0 -I{} ansible-playbook --syntax-check {}
+          if [ -d playbooks ]; then
+            find playbooks -name "*.yml" -print0 | xargs -0 -I{} ansible-playbook --syntax-check {}
           else
             echo "No playbooks/ directory found, skipping syntax-check."
           fi
