@@ -33,13 +33,13 @@ repos:
         args: [--fix]
         types: [markdown]
 
-      # ── JSON / YAML formatting ─────────────────────────────────────────────
+      # ── JSON / YAML / Vue formatting ─────────────────────────────────────────────
       - id: prettier
         name: prettier
         language: system
         entry: prettier
         args: [--write]
-        types_or: [json, yaml]
+        types_or: [json, yaml, vue]
 
       # ── EditorConfig ───────────────────────────────────────────────────────
       - id: editorconfig-checker
@@ -59,13 +59,13 @@ repos:
         args: [--no-progress, --no-summary, --dot]
         types: [text]
 
-      # ── JavaScript / TypeScript ────────────────────────────────────────────
+      # ── JavaScript / TypeScript / Vue ────────────────────────────────────────────
       - id: eslint
         name: eslint
         language: system
         entry: eslint
         args: [--fix]
-        types_or: [javascript, jsx, ts, tsx]
+        types_or: [javascript, jsx, ts, tsx, vue]
 
       # ── Shell Scripts ──────────────────────────────────────────────────────
       - id: shellcheck

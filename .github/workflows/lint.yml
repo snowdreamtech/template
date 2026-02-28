@@ -185,9 +185,9 @@ jobs:
             echo "No playbooks/ directory found, skipping syntax-check."
           fi
 
-      # JSON & General formatting linting
+      # JSON, YAML, & Vue formatting linting
       - name: Run Prettier
-        run: npx prettier --check "**/*.{json,yml,yaml}"
+        run: npx prettier --check "**/*.{json,yml,yaml,vue}"
 
       - name: Run editorconfig-checker
         run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify/scripts)/.*)|(\.aider\.conf\.yml)"
