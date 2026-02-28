@@ -128,7 +128,7 @@ jobs:
           node-version: "20"
 
       - name: Install Node.js Linters
-        run: npm install -g markdownlint-cli2 prettier editorconfig-checker
+        run: npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint
 
       - name: Install ShellCheck Binary
         env:
@@ -192,10 +192,33 @@ jobs:
       - name: Run editorconfig-checker
         run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify/scripts)/.*)|(\.aider\.conf\.yml)"
 
+      # Run Spell Checker (CSpell)
+      # NOTE: continue-on-error can be removed once a custom dictionary is fully configured
+      - name: Run CSpell (Spell Checker)
+        continue-on-error: true
+        run: npx cspell "**" --no-progress --no-summary --dot
+
+      # JavaScript / TypeScript linting
+      # Only runs if an ESLint configuration file is detected
+      - name: Run ESLint
+        run: |
+          if [ -f "eslint.config.js" ] || [ -f "eslint.config.mjs" ] || [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ]; then
+            echo "ESLint config found, running ESLint..."
+            npx eslint "."
+          else
+            echo "No ESLint configuration found, skipping ESLint."
+          fi
+
       # Shell Scripts linting (excluding dependencies, running native binary)
       - name: Run ShellCheck
         run: |
           find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -exec bash -c 'shellcheck "$@"' _ {} +
+
+      # Shell Scripts formatting (shfmt)
+      - name: Run shfmt
+        run: |
+          sudo apt-get update && sudo apt-get install -y shfmt
+          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -exec shfmt -d {} +
 
       # PowerShell Scripts linting (using ubuntu runner's pre-installed pwsh)
       - name: Run PSScriptAnalyzer
