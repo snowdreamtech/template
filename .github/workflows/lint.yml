@@ -248,6 +248,20 @@ jobs:
             echo "No Cargo.toml found or cargo not installed, skipping Rust linting."
           fi
 
+      # Dart & Flutter Linting
+      - name: Run Dart Format and Analyze
+        run: |
+          if command -v dart &> /dev/null; then
+            if [ -n "$(find . -name '*.dart' -print -quit)" ]; then
+              dart format --output=none --set-exit-if-changed .
+              dart analyze --fatal-infos
+            else
+              echo "No Dart files found, skipping Dart linting."
+            fi
+          else
+            echo "dart SDK not installed, skipping Dart linting."
+          fi
+
       # Shell Scripts linting (excluding dependencies, running native binary)
       - name: Run ShellCheck
         run: |

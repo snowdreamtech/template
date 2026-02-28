@@ -103,6 +103,20 @@ repos:
         entry: ruff format
         types_or: [python, pyi]
 
+      # ── Dart / Flutter ───────────────────────────────────────────────────────
+      - id: dart-format
+        name: dart format
+        language: system
+        entry: dart format
+        types: [dart]
+
+      - id: dart-analyze
+        name: dart analyze
+        language: system
+        entry: dart analyze --fatal-infos
+        types: [dart]
+        pass_filenames: false
+
       # ── JavaScript / TypeScript / Vue / React ───────────────────────────────────
       - id: eslint
         name: eslint

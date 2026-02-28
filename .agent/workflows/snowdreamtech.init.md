@@ -29,6 +29,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      ```bash
      # macOS — Homebrew (preferred)
      brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff
+     brew tap dart-lang/dart && brew install dart
 
      # macOS — MacPorts (fallback if Homebrew is unavailable)
      port install shellcheck shfmt
@@ -43,7 +44,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      # actionlint / hadolint: use binary download below
 
      # Windows (Scoop)
-     scoop install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff
+     scoop install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff dart
 
      # Windows (Winget)
      winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt
