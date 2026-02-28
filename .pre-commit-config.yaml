@@ -1,67 +1,81 @@
 ---
-# Pre-commit hook configuration.
-# Mirrors the checks in .github/workflows/lint.yml to catch issues before CI.
+# Pre-commit hook configuration (local mode).
+# Uses system-installed tools directly — no network downloads required.
+#
+# Required tools (install once):
+#   brew install yamllint shellcheck actionlint hadolint
+#   pip3 install ansible-lint
+#   npm install -g markdownlint-cli2 prettier editorconfig-checker
 #
 # Setup (one-time per machine):
-#   pip install pre-commit
+#   pip3 install pre-commit
 #   pre-commit install
 #
 # Run manually against all files:
 #   pre-commit run --all-files
 
 repos:
-  # ── YAML ────────────────────────────────────────────────────────────────────
-  - repo: https://github.com/adrienverge/yamllint
-    rev: v1.35.1
+  - repo: local
     hooks:
+      # ── YAML ──────────────────────────────────────────────────────────────
       - id: yamllint
+        name: yamllint
+        language: system
+        entry: yamllint
         args: [--config-file, .yamllint.yml]
+        types: [yaml]
 
-  # ── Markdown ─────────────────────────────────────────────────────────────────
-  - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.17.2
-    hooks:
+      # ── Markdown ───────────────────────────────────────────────────────────
       - id: markdownlint-cli2
+        name: markdownlint-cli2
+        language: system
+        entry: markdownlint-cli2
+        types: [markdown]
 
-  # ── JSON / YAML / General formatting ────────────────────────────────────────
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
+      # ── JSON / YAML formatting ─────────────────────────────────────────────
       - id: prettier
+        name: prettier
+        language: system
+        entry: prettier
+        args: [--check]
         types_or: [json, yaml]
 
-  # ── EditorConfig ─────────────────────────────────────────────────────────────
-  - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: "3.2.1"
-    hooks:
+      # ── EditorConfig ───────────────────────────────────────────────────────
       - id: editorconfig-checker
-        alias: ec
+        name: editorconfig-checker
+        language: system
+        entry: editorconfig-checker
         args:
           - -exclude
           - "(\\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\\.specify/scripts)/.*)|(\\.aider\\.conf\\.yml)"
+        pass_filenames: false
 
-  # ── Shell Scripts ─────────────────────────────────────────────────────────────
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
-    hooks:
+      # ── Shell Scripts ──────────────────────────────────────────────────────
       - id: shellcheck
+        name: shellcheck
+        language: system
+        entry: shellcheck
+        types: [shell]
 
-  # ── GitHub Actions Workflows ──────────────────────────────────────────────────
-  - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.7
-    hooks:
+      # ── GitHub Actions Workflows ───────────────────────────────────────────
       - id: actionlint
+        name: actionlint
+        language: system
+        entry: actionlint
+        files: ^\.github/workflows/.*\.yml$
+        pass_filenames: false
 
-  # ── Ansible ───────────────────────────────────────────────────────────────────
-  - repo: https://github.com/ansible/ansible-lint
-    rev: v25.2.1
-    hooks:
+      # ── Ansible ────────────────────────────────────────────────────────────
       - id: ansible-lint
-        additional_dependencies:
-          - ansible-core
+        name: ansible-lint
+        language: system
+        entry: ansible-lint
+        pass_filenames: false
+        files: \.(yml|yaml)$
 
-  # ── Dockerfile ────────────────────────────────────────────────────────────────
-  - repo: https://github.com/hadolint/hadolint
-    rev: v2.13.1-beta
-    hooks:
+      # ── Dockerfile ─────────────────────────────────────────────────────────
       - id: hadolint
+        name: hadolint
+        language: system
+        entry: hadolint
+        files: Dockerfile
