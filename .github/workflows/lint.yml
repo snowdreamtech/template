@@ -484,6 +484,16 @@ jobs:
              echo "Semgrep not installed. Skipping SAST."
           fi
 
+      # Trivy SCA / Container Security Scanning
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        continue-on-error: true
+        with:
+          scan-type: "fs"
+          ignore-unfixed: true
+          format: "table"
+          severity: "CRITICAL,HIGH"
+
       # Dockerfile linting
       - name: Run hadolint
         run: |

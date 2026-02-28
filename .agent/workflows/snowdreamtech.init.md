@@ -40,22 +40,22 @@ You **MUST** consider the user input before proceeding (if not empty).
      brew tap dart-lang/dart && brew install dart
 
      # macOS — MacPorts (fallback if Homebrew is unavailable)
-     port install shellcheck shfmt
+     port install shellcheck shfmt trivy
      # actionlint / hadolint: use binary download below
 
      # Linux (Debian/Ubuntu)
-     apt-get install -y shellcheck shfmt
+     apt-get install -y shellcheck shfmt trivy
      # actionlint / hadolint: use binary download below
 
      # Linux (RHEL/Fedora)
-     dnf install -y ShellCheck shfmt
+     dnf install -y ShellCheck shfmt trivy
      # actionlint / hadolint: use binary download below
 
      # Windows (Scoop)
      scoop install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff dart swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint
 
      # Windows (Winget)
-     winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt
+     winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt aquasecurity.trivy
      ```
 
      **Binary downloads (actionlint / hadolint — macOS & Linux fallback):**
