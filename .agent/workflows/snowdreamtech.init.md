@@ -28,7 +28,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      ```bash
      # macOS — Homebrew (preferred)
-     brew install shellcheck actionlint hadolint shfmt
+     brew install shellcheck actionlint hadolint shfmt gitleaks
 
      # macOS — MacPorts (fallback if Homebrew is unavailable)
      port install shellcheck shfmt
@@ -43,7 +43,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      # actionlint / hadolint: use binary download below
 
      # Windows (Scoop)
-     scoop install shellcheck actionlint hadolint shfmt
+     scoop install shellcheck actionlint hadolint shfmt gitleaks
 
      # Windows (Winget)
      winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt

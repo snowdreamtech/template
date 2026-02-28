@@ -3,7 +3,7 @@
 # Uses system-installed tools directly — no network downloads required.
 #
 # Required tools (install once):
-#   brew install yamllint shellcheck actionlint hadolint shfmt
+#   brew install yamllint shellcheck actionlint hadolint shfmt gitleaks
 #   pip3 install ansible-lint
 #   npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint
 #
@@ -17,6 +17,13 @@
 repos:
   - repo: local
     hooks:
+      # ── Secret Scanning ────────────────────────────────────────────────────
+      - id: gitleaks
+        name: gitleaks
+        language: system
+        entry: gitleaks protect --verbose --redact --staged
+        pass_filenames: false
+
       # ── YAML ──────────────────────────────────────────────────────────────
       - id: yamllint
         name: yamllint
