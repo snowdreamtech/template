@@ -152,6 +152,15 @@ repos:
         types: [java]
         pass_filenames: true
 
+      # ── API Contracts & Specifications ───────────────────────────────────────
+      - id: spectral
+        name: spectral
+        language: system
+        entry: spectral lint
+        types_or: [json, yaml]
+        files: '(?i)(openapi|swagger|asyncapi).*\.(json|yaml|yml)$'
+        pass_filenames: true
+
       # ── JavaScript / TypeScript / Vue / React ───────────────────────────────────
       - id: eslint
         name: eslint

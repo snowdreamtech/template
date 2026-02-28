@@ -311,6 +311,15 @@ jobs:
             echo "google-java-format not installed. Skipping Java linting."
           fi
 
+      # API Contracts Linting (Spectral)
+      - name: Run Spectral (OpenAPI / AsyncAPI)
+        run: |
+          if [ -n "$(find . -type f \( -iname '*openapi*.yaml' -o -iname '*openapi*.yml' -o -iname '*openapi*.json' -o -iname '*swagger*.yaml' -o -iname '*swagger*.yml' -o -iname '*swagger*.json' -o -iname '*asyncapi*.yaml' -o -iname '*asyncapi*.yml' -o -iname '*asyncapi*.json' \) -print -quit)" ]; then
+            find . -type f \( -iname '*openapi*.yaml' -o -iname '*openapi*.yml' -o -iname '*openapi*.json' -o -iname '*swagger*.yaml' -o -iname '*swagger*.yml' -o -iname '*swagger*.json' -o -iname '*asyncapi*.yaml' -o -iname '*asyncapi*.yml' -o -iname '*asyncapi*.json' \) -exec npx @stoplight/spectral-cli lint {} +
+          else
+            echo "No OpenAPI/Swagger/AsyncAPI files found, skipping Spectral."
+          fi
+
       # Shell Scripts linting (excluding dependencies, running native binary)
       - name: Run ShellCheck
         run: |

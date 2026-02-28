@@ -45,6 +45,7 @@
   - **Obj-C/C++**: Run `clang-format -i <file>`
   - **Kotlin**: Run `ktlint --format <file>`
   - **Java**: Run `google-java-format --replace <file>`
+  - **API Contracts**: Run `npx @stoplight/spectral-cli lint <file>` on OpenAPI, Swagger, or AsyncAPI specs and manually resolve issues.
   - **Markdown files**: Run `npx markdownlint-cli2 --fix <file>` and `npx prettier --write <file>`
   - **YAML/JSON files**: Run `npx prettier --write <file>`
   - **Shell scripts**: Run `shfmt -w -s -l <file>` for formatting, then `shellcheck <file>` and manually fix any reported logic warnings.
