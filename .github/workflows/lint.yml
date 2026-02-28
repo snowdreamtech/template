@@ -115,6 +115,12 @@ jobs:
           source .venv/bin/activate
           ansible-lint -v
 
+      # Ansible Playbook syntax validation
+      - name: Run ansible-playbook syntax-check
+        run: |
+          source .venv/bin/activate
+          find playbooks/ -name "*.yml" -print0 | xargs -0 -I{} ansible-playbook --syntax-check {}
+
       # JSON & General formatting linting
       - name: Run Prettier
         run: npx prettier --check "**/*.{json,yml,yaml}"
