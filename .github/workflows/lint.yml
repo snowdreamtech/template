@@ -231,7 +231,7 @@ jobs:
 
       # Check for broken URLs and relative links in Markdown
       - name: Run Lychee (Link Checker)
-        uses: lycheeverse/lychee-action@v2.0.2
+        uses: lycheeverse/lychee-action@v2.8.0
         continue-on-error: true
         with:
           args: --base . --verbose --no-progress '**/*.md'
