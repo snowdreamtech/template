@@ -37,6 +37,7 @@
 - **Mandatory Auto-fix Routine**: The AI MUST actively act as the first line of defense for the "Triple Guarantee" code quality mechanism. After creating or modifying any file, the AI MUST proactively run the appropriate linting and formatting tools to auto-fix the codebase before handing it back to the user or generating a commit.
   - **Source of Truth:** ALWAYS reference `.pre-commit-config.yaml` and `.github/workflows/lint.yml` for the current tool stack and their exact command arguments.
   - **JS/TS/Vue/React**: Run `npx eslint --fix <file>` and `npx prettier --write <file>`
+  - **Go**: Run `golangci-lint run --fix`
   - **Markdown files**: Run `npx markdownlint-cli2 --fix <file>` and `npx prettier --write <file>`
   - **YAML/JSON files**: Run `npx prettier --write <file>`
   - **Shell scripts**: Run `shfmt -w -s -l <file>` for formatting, then `shellcheck <file>` and manually fix any reported logic warnings.

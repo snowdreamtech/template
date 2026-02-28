@@ -209,6 +209,23 @@ jobs:
             echo "No ESLint configuration found, skipping ESLint."
           fi
 
+      # Go Linting
+      - name: Install GolangCI-Lint
+        env:
+          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
+        run: |
+          mkdir -p ~/.local/bin
+          curl -sSfL "${GITHUB_PROXY}https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh" | sh -s -- -b ~/.local/bin v1.56.2
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Run golangci-lint
+        run: |
+          if [ -n "$(find . -name '*.go' -print -quit)" ]; then
+            golangci-lint run
+          else
+            echo "No Go files found, skipping golangci-lint."
+          fi
+
       # Shell Scripts linting (excluding dependencies, running native binary)
       - name: Run ShellCheck
         run: |
