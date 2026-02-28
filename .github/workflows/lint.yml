@@ -226,6 +226,17 @@ jobs:
             echo "No Go files found, skipping golangci-lint."
           fi
 
+      # Rust Linting
+      - name: Run Rustfmt and Clippy
+        run: |
+          if command -v cargo &> /dev/null && [ -f "Cargo.toml" ]; then
+            echo "Cargo.toml found, running Rustfmt and Clippy..."
+            cargo fmt -- --check
+            cargo clippy -- -D warnings
+          else
+            echo "No Cargo.toml found or cargo not installed, skipping Rust linting."
+          fi
+
       # Shell Scripts linting (excluding dependencies, running native binary)
       - name: Run ShellCheck
         run: |

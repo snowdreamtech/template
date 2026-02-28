@@ -38,6 +38,7 @@
   - **Source of Truth:** ALWAYS reference `.pre-commit-config.yaml` and `.github/workflows/lint.yml` for the current tool stack and their exact command arguments.
   - **JS/TS/Vue/React**: Run `npx eslint --fix <file>` and `npx prettier --write <file>`
   - **Go**: Run `golangci-lint run --fix`
+  - **Rust**: Run `cargo fmt` and `cargo clippy --fix --allow-dirty --allow-staged`
   - **Markdown files**: Run `npx markdownlint-cli2 --fix <file>` and `npx prettier --write <file>`
   - **YAML/JSON files**: Run `npx prettier --write <file>`
   - **Shell scripts**: Run `shfmt -w -s -l <file>` for formatting, then `shellcheck <file>` and manually fix any reported logic warnings.

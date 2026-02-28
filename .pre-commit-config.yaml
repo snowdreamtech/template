@@ -75,6 +75,21 @@ repos:
         types: [go]
         pass_filenames: false
 
+      # ── Rust ─────────────────────────────────────────────────────────────────
+      - id: cargo-fmt
+        name: cargo fmt
+        language: system
+        entry: cargo fmt
+        types: [rust]
+        pass_filenames: false
+
+      - id: cargo-clippy
+        name: cargo clippy
+        language: system
+        entry: cargo clippy --fix --allow-dirty --allow-staged
+        types: [rust]
+        pass_filenames: false
+
       # ── JavaScript / TypeScript / Vue / React ───────────────────────────────────
       - id: eslint
         name: eslint
