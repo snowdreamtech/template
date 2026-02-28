@@ -59,7 +59,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt aquasecurity.trivy Microsoft.PowerShell
      ```
 
-     **Binary downloads (actionlint / hadolint — macOS & Linux fallback):**
+     **Binary downloads (actionlint / hadolint / checkmake / lychee / gitleaks / golangci-lint — macOS & Linux fallback):**
 
      > `GITHUB_PROXY` is set to `https://gh-proxy.sn0wdr1am.com/` by default to ensure reliable downloads in restricted network environments.
 
@@ -94,6 +94,21 @@ You **MUST** consider the user input before proceeding (if not empty).
      curl -fL --retry 3 \
        "${GITHUB_PROXY}https://github.com/lycheeverse/lychee/releases/download/${LYCHEE_VER}/lychee-${LYCHEE_VER}-${LA}-${LL}.tar.gz" \
        | tar -xz -C ~/.local/bin lychee
+
+     # gitleaks
+     GITLEAKS_VER="v8.21.2"
+     OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "amd64" ]; then GA="x64"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then GA="arm64"; elif [ "$ARCH" = "i386" ] || [ "$ARCH" = "i686" ]; then GA="x32"; else GA=$ARCH; fi
+     if [ "$OS" = "darwin" ]; then GL="darwin"; else GL="linux"; fi
+     curl -fL --retry 3 \
+       "${GITHUB_PROXY}https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VER}/gitleaks_${GITLEAKS_VER#v}_${GL}_${GA}.tar.gz" \
+       | tar -xz -C ~/.local/bin gitleaks
+
+     # golangci-lint
+     GOLANGCI_VER="v1.61.0"
+     OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "amd64" ]; then GOA="amd64"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then GOA="arm64"; else GOA=$ARCH; fi
+     curl -fL --retry 3 \
+       "${GITHUB_PROXY}https://github.com/golangci/golangci-lint/releases/download/${GOLANGCI_VER}/golangci-lint-${GOLANGCI_VER#v}-${OS}-${GOA}.tar.gz" \
+       | tar -xz -C ~/.local/bin --strip-components=1 "golangci-lint-${GOLANGCI_VER#v}-${OS}-${GOA}/golangci-lint"
      ```
 
      Ensure `~/.local/bin` is in your `PATH`:

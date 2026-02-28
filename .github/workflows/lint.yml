@@ -127,7 +127,7 @@ jobs:
       - name: Install Linters
         run: |
           source .venv/bin/activate
-          pip install yamllint ansible-lint ruff sqlfluff semgrep
+          pip install yamllint ansible-core ansible-lint ruff sqlfluff semgrep
 
       # Run yaml linting
       - name: Run yamllint

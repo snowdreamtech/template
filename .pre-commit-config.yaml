@@ -3,9 +3,9 @@
 # Uses system-installed tools directly — no network downloads required.
 #
 # Required tools (install once):
-#   brew install yamllint shellcheck actionlint hadolint shfmt gitleaks
-#   pip3 install ansible-lint
-#   npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint
+#   brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint lychee trivy checkmake powershell
+#   pip3 install yamllint ansible-core ansible-lint sqlfluff semgrep
+#   npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional stylelint @taplo/cli
 #
 # Setup (one-time per machine):
 #   pip3 install pre-commit
@@ -36,7 +36,7 @@ repos:
         name: semgrep
         language: system
         entry: semgrep scan --config=auto --error --quiet
-        types: [python, javascript, typescript, go, ruby, java, csharp, php]
+        types: [python, javascript, ts, go, ruby, java, c#, php]
 
       # ── YAML ──────────────────────────────────────────────────────────────
       - id: yamllint
@@ -234,7 +234,7 @@ repos:
         language: system
         entry: npx eslint
         args: [--fix]
-        types_or: [javascript, typescript, tsx, jsx, vue]
+        types_or: [javascript, ts, tsx, jsx, vue]
 
       - id: stylelint
         name: stylelint
