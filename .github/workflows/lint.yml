@@ -279,7 +279,7 @@ jobs:
       - name: Run clang-format (Obj-C / C++)
         run: |
           if command -v clang-format &> /dev/null; then
-            if [ -n "$(find . -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -print -quit)" ]; then
+            if [ -n "$(find . \( -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' \) -print -quit)" ]; then
               find . \( -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' \) -exec clang-format --dry-run --Werror {} +
             else
               echo "No Obj-C/C++ files found, skipping clang-format."
