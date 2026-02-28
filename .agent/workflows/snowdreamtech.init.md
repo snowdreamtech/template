@@ -58,9 +58,9 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      # actionlint
      ACTIONLINT_VER="v1.7.11"
-     OS=$(uname -s); ARCH=$(uname -m)
+     OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m)
      curl -fL --retry 3 \
-       "${GITHUB_PROXY}https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VER}/actionlint_${ACTIONLINT_VER#v}_${OS,,}_${ARCH}.tar.gz" \
+       "${GITHUB_PROXY}https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VER}/actionlint_${ACTIONLINT_VER#v}_${OS}_${ARCH}.tar.gz" \
        | tar -xz -C ~/.local/bin actionlint
 
      # hadolint
