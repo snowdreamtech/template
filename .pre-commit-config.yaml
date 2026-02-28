@@ -66,13 +66,19 @@ repos:
           - "(\\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\\.specify/scripts)/.*)|(\\.aider\\.conf\\.yml)"
         pass_filenames: false
 
-      # ── Spell Checker ──────────────────────────────────────────────────────
+      # ── Spell & Link Checker ───────────────────────────────────────────────
       - id: cspell
         name: cspell
         language: system
         entry: cspell
         args: [--no-progress, --no-summary, --dot]
         types: [text]
+
+      - id: lychee
+        name: lychee link checker
+        language: system
+        entry: lychee --base . --verbose --no-progress
+        types: [markdown]
 
       # ── Go ─────────────────────────────────────────────────────────────────
       - id: golangci-lint

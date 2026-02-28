@@ -49,7 +49,7 @@
   - **Cloud/IaC (Terraform)**: Run `terraform fmt <file>` and `tflint`
   - **Cloud/IaC (Kubernetes)**: Run `kube-linter lint <file>` and manually resolve configuration vulnerabilities.
   - **Documentation**: Provide clear comments for complex logic, and use tools like `markdownlint-cli2` to ensure Markdown consistency.
-  - **Spell & Link Check**: Fix all typos identified by `cspell` and immediately correct broken links identified by `lychee`.
+  - **Spell & Link Check**: Fix all typos identified by `cspell` and immediately correct broken links identified by `lychee <file>`.
   - **SAST (Security)**: Run `semgrep scan --config=auto` locally after major business logic refactors, and patch any flagged vulnerability (such as eval, insecure hashes, or command injection).
   - **SCA (Dependencies)**: Run `trivy fs .` to scan local dependencies/Dockerfiles for high and critical CVEs.
   - **Git Flow**: The system enforces Conventional Commits via `commitlint` locally and Semantic Pull Request titles remotely. ALWAYS ensure your commit messages and PR titles follow the `<type>(<scope>): <subject>` format exactly.
