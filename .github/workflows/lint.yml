@@ -134,8 +134,13 @@ jobs:
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module -Name PSScriptAnalyzer -Force -ErrorAction Stop
           $scripts = Get-ChildItem -Path . -Recurse -Filter "*.ps1" | Where-Object { $_.FullName -notmatch '[/\\](\.venv|node_modules|venv|env|dist|build|\.git|\.specify[/\\]scripts)[/\\]' }
-          if ($null -ne $scripts -and $scripts.Count -gt 0) {
-            Invoke-ScriptAnalyzer -Path $scripts.FullName -EnableExit
+          if ($null -ne $scripts) {
+            [string[]]$scriptPaths = $scripts | ForEach-Object { $_.FullName }
+            if ($scriptPaths.Count -gt 0) {
+              Invoke-ScriptAnalyzer -Path $scriptPaths -EnableExit
+            } else {
+              Write-Host "No PowerShell scripts found to analyze."
+            }
           } else {
             Write-Host "No PowerShell scripts found to analyze."
           }
