@@ -19,10 +19,17 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      **Cross-platform (pip3 + npm — works on macOS / Linux / Windows):**
 
-     ```bash
+     ````bash
      pip3 install yamllint ansible-lint sqlfluff
      npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional
-     ```
+
+     **Other Backend Ecosystems (.NET / Ruby / PHP):**
+     _Note: `.NET` formatters are built-in (`dotnet format`)._
+
+     ```bash
+     gem install rubocop
+     composer global require friendsofphp/php-cs-fixer
+     ````
 
      **Platform-specific binary tools (`shellcheck`, `actionlint`, `hadolint`):**
 

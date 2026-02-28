@@ -258,6 +258,47 @@ jobs:
             echo "No Cargo.toml found or cargo not installed, skipping Rust linting."
           fi
 
+      # .NET / C# Linting
+      - name: Run dotnet format
+        run: |
+          if command -v dotnet &> /dev/null; then
+            if [ -n "$(find . -name '*.cs' -o -name '*.vb' -print -quit)" ]; then
+              dotnet format --verify-no-changes
+            else
+              echo "No C#/VB files found, skipping dotnet format."
+            fi
+          else
+            echo "dotnet SDK not installed, skipping .NET linting."
+          fi
+
+      # Ruby Linting
+      - name: Run Rubocop
+        run: |
+          if command -v ruby &> /dev/null; then
+            if [ -n "$(find . -name '*.rb' -print -quit)" ]; then
+              gem install rubocop
+              rubocop --parallel
+            else
+              echo "No Ruby files found, skipping Rubocop."
+            fi
+          else
+            echo "Ruby not installed, skipping Rubocop."
+          fi
+
+      # PHP Linting
+      - name: Run php-cs-fixer
+        run: |
+          if command -v php &> /dev/null; then
+            if [ -n "$(find . -name '*.php' -print -quit)" ]; then
+              curl -sL https://cs.symfony.com/download/php-cs-fixer-v3.phar -o php-cs-fixer
+              php php-cs-fixer fix --dry-run
+            else
+              echo "No PHP files found, skipping php-cs-fixer."
+            fi
+          else
+            echo "PHP not installed, skipping php-cs-fixer."
+          fi
+
       # Dart & Flutter Linting
       - name: Run Dart Format and Analyze
         run: |

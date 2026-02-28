@@ -103,6 +103,25 @@ repos:
         entry: sqlfluff fix --dialect postgres --force
         types: [sql]
 
+      # ── Extra Backends (.NET / Ruby / PHP) ──────────────────────────────────
+      - id: dotnet-format
+        name: dotnet format
+        language: system
+        entry: dotnet format
+        types_or: [c#, vb]
+
+      - id: rubocop
+        name: rubocop
+        language: system
+        entry: rubocop -A --force-exclusion
+        types: [ruby]
+
+      - id: php-cs-fixer
+        name: php-cs-fixer
+        language: system
+        entry: php-cs-fixer fix
+        types: [php]
+
       # ── Python ───────────────────────────────────────────────────────────────
       - id: ruff
         name: ruff check

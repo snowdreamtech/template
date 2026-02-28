@@ -39,6 +39,9 @@
   - **JS/TS/Vue/React**: Run `npx eslint --fix <file>` and `npx prettier --write <file>`
   - **Go**: Run `golangci-lint run --fix`
   - **Rust**: Run `cargo fmt` and `cargo clippy --fix --allow-dirty --allow-staged`
+  - **C# / .NET**: Run `dotnet format <directory/solution>`
+  - **Ruby**: Run `rubocop -A <file>`
+  - **PHP**: Run `php-cs-fixer fix <file>`
   - **Python**: Run `ruff check --fix <file>` and `ruff format <file>`
   - **SQL**: Run `sqlfluff fix --dialect postgres --force <file>`
   - **Cloud/IaC (Terraform)**: Run `terraform fmt <file>` and `tflint`
