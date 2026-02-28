@@ -1,0 +1,67 @@
+---
+# Pre-commit hook configuration.
+# Mirrors the checks in .github/workflows/lint.yml to catch issues before CI.
+#
+# Setup (one-time per machine):
+#   pip install pre-commit
+#   pre-commit install
+#
+# Run manually against all files:
+#   pre-commit run --all-files
+
+repos:
+  # ── YAML ────────────────────────────────────────────────────────────────────
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [--config-file, .yamllint.yml]
+
+  # ── Markdown ─────────────────────────────────────────────────────────────────
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.17.2
+    hooks:
+      - id: markdownlint-cli2
+
+  # ── JSON / YAML / General formatting ────────────────────────────────────────
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types_or: [json, yaml]
+
+  # ── EditorConfig ─────────────────────────────────────────────────────────────
+  - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
+    rev: "3.2.1"
+    hooks:
+      - id: editorconfig-checker
+        alias: ec
+        args:
+          - -exclude
+          - "(\\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\\.specify/scripts)/.*)|(\\.aider\\.conf\\.yml)"
+
+  # ── Shell Scripts ─────────────────────────────────────────────────────────────
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+
+  # ── GitHub Actions Workflows ──────────────────────────────────────────────────
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - id: actionlint
+
+  # ── Ansible ───────────────────────────────────────────────────────────────────
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v25.2.1
+    hooks:
+      - id: ansible-lint
+        additional_dependencies:
+          - ansible-core
+
+  # ── Dockerfile ────────────────────────────────────────────────────────────────
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.13.1-beta
+    hooks:
+      - id: hadolint
