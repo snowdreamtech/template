@@ -29,10 +29,10 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v4.2.2
         with:
-          # [Required] Access token with `workflow` scope.
-          token: ${{ secrets.WORKFLOW_SECRET }}
+          # Use default GITHUB_TOKEN for reliability unless cross-workflow triggers are needed.
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0 # Required for commitlint to see git history
 
       - name: Run Commitlint Check
@@ -501,6 +501,7 @@ jobs:
           ignore-unfixed: true
           format: "table"
           severity: "CRITICAL,HIGH"
+          db-repository: "public.ecr.aws/aquasecurity/trivy-db"
 
       # Dockerfile linting
       - name: Run hadolint
