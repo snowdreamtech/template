@@ -495,24 +495,18 @@ jobs:
           fi
 
       # Trivy SCA / Container Security Scanning
-      # Note: trivy-action@0.34.1 has a known bug -- on cache miss it clones
-      # aquasecurity/trivy source and tries to build it, failing on 'refs/heads/main'.
-      # We install the pre-built binary directly instead.
-      - name: Install Trivy Binary
-        env:
-          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
+      # Install via apt repository (official workaround when GitHub Releases is unavailable).
+      # See: https://aquasecurity.github.io/trivy/latest/getting-started/installation/
+      - name: Install Trivy (apt)
         run: |
-          TRIVY_VERSION=$(curl -s "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"(v[^"]+)".*/\1/')
-          if [ -z "$TRIVY_VERSION" ]; then
-            echo "Warning: Could not fetch latest Trivy version, falling back to v0.69.1"
-            TRIVY_VERSION="v0.69.1"
-          fi
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "x86_64" ]; then TA="64bit"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then TA="ARM64"; else TA=$ARCH; fi
-          echo "Downloading Trivy ${TRIVY_VERSION} Linux-${TA}"
-          curl -fsSL --retry 3 \
-            "${GITHUB_PROXY}https://github.com/aquasecurity/trivy/releases/download/${TRIVY_VERSION}/trivy_${TRIVY_VERSION#v}_Linux-${TA}.tar.gz" \
-            | tar -xz -C /usr/local/bin trivy
+          sudo apt-get install -y wget apt-transport-https gnupg
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key \
+            | gpg --dearmor \
+            | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" \
+            | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
           trivy --version
 
       - name: Run Trivy Vulnerability Scanner
@@ -525,6 +519,7 @@ jobs:
             --format table \
             --severity CRITICAL,HIGH \
             --skip-dirs 'node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify'
+
       # Dockerfile linting
       - name: Run hadolint
         run: |
