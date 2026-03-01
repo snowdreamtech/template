@@ -199,9 +199,7 @@ jobs:
           ansible-lint -v
 
       # Ansible Playbook syntax validation
-      # NOTE: continue-on-error until all roles (home, orchestrator) are implemented
       - name: Run ansible-playbook syntax-check
-        continue-on-error: true
         run: |
           source .venv/bin/activate
           if [ -d playbooks ]; then
@@ -239,17 +237,14 @@ jobs:
         run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify/scripts)/.*)|(\.aider\.conf\.yml)"
 
       # Run Spell Checker (CSpell)
-      # NOTE: continue-on-error can be removed once a custom dictionary is fully configured
       - name: Run CSpell (Spell Checker)
-        continue-on-error: true
         run: npx cspell "**" --no-progress --no-summary --dot
 
       # Check for broken URLs and relative links in Markdown
       - name: Run Lychee (Link Checker)
         uses: lycheeverse/lychee-action@v2.8.0
-        continue-on-error: true
         with:
-          args: --base . --verbose --no-progress '**/*.md'
+          args: --root-dir "${{ github.workspace }}" --verbose --no-progress --exclude "node_modules" --exclude ".venv" '**/*.md'
           fail: true
 
       # JavaScript / TypeScript linting
@@ -502,7 +497,6 @@ jobs:
       # Trivy SCA / Container Security Scanning
       - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@0.34.1
-        continue-on-error: true
         env:
           TRIVY_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-db"
           TRIVY_CHECKS_BUNDLE_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-checks"
