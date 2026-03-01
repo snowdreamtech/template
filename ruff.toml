@@ -1,4 +1,5 @@
 # ruff.toml
+line-length = 120
 # Standard exclusion list for Ruff
 
 extend-exclude = [
