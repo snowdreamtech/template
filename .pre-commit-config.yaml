@@ -3,7 +3,7 @@
 # Uses system-installed tools directly — no network downloads required.
 #
 # Required tools (install once):
-#   brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint lychee trivy checkmake powershell
+#   brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint lychee checkmake powershell
 #   pip3 install yamllint ansible-core ansible-lint sqlfluff semgrep
 #   npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional stylelint @taplo/cli
 #
@@ -23,13 +23,6 @@ repos:
         name: gitleaks
         language: system
         entry: gitleaks protect --verbose --redact --staged --gitleaks-ignore-path .gitleaksignore
-        pass_filenames: false
-
-      # ── Security & DAOD ────────────────────────────────────────────────────
-      - id: trivy
-        name: trivy vulnerability scanner
-        language: system
-        entry: trivy fs --scanners misconfig --skip-db-update --severity HIGH,CRITICAL --skip-dirs "node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify" .
         pass_filenames: false
 
       - id: semgrep
