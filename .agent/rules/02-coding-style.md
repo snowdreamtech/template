@@ -21,7 +21,7 @@
   | `perf`     | Performance improvement                     |
   | `build`    | Build system or external dependency changes |
 
-- Commit messages MUST be in **English**. Descriptions must be written in the imperative mood: "add" not "added", "fix" not "fixed". Keep the subject line ≤ 100 characters and **DO NOT** end with a period (full stop).
+- Commit messages MUST be in **English**. The **header** (the entire first line) must be written in the imperative mood ("add" not "added") and kept **≤ 100 characters**. It **MUST NOT** end with a period (full stop). Use the body for detailed explanations.
 - Body (optional): explain **why** the change was made, not what it does — the diff shows what. Separate body from subject with a blank line:
 
   ```

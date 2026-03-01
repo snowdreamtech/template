@@ -20,7 +20,8 @@
   | `perf`     | Performance optimization           | `perf(cache): use Redis pipelining`         |
   | `build`    | Build system changes               | `build: switch to esbuild`                  |
 
-- Commit messages **MUST** be in **English**. The description must be concise (≤ 100 characters), written in the imperative mood ("add", not "added"), and **MUST NOT** end with a period (full stop). Note: while the traditional limit is 72, `@commitlint/config-conventional` enforces 100 characters for the header.
+- Commit messages **MUST** be in **English**. The **header** (the entire first line: `<type>(<scope>): <description>`) must be concise (**max 100 characters**), written in the imperative mood ("add", not "added"), and **MUST NOT** end with a period (full stop).
+- While the traditional Git limit is 72, we strictly follow the `@commitlint/config-conventional` limit of **100 characters** for the header. If you need more space, use the **body** section after a blank line.
 
   ```
   feat(auth): add OAuth2 login with Google provider
