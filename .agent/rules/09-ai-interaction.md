@@ -52,7 +52,6 @@
   - **Dockerfile**: Run `hadolint <file>`.
   - **API Contracts**: Run `npx @stoplight/spectral-cli lint <file>` on OpenAPI/Swagger specs.
   - _Never leave formatting or linting errors for the user, the Git Commit hook, or the CI pipeline to catch. Nip all errors in the bud._
-    flagship
 
 - **Test-Driven Mentality**: When modifying logic or adding features, the AI MUST proactively update or create corresponding tests. Do not output untested code as final without a clear warning:
 
