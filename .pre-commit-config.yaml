@@ -126,7 +126,7 @@ repos:
         name: shfmt
         language: system
         entry: shfmt
-        args: [-w, -s, -l]
+        args: [-w, -s, -i, "2"]
         types: [shell]
 
       # ── Dockerfile ─────────────────────────────────────────────────────────
