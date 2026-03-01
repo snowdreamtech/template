@@ -244,7 +244,7 @@ jobs:
       - name: Run Lychee (Link Checker)
         uses: lycheeverse/lychee-action@v2.8.0
         with:
-          args: --root-dir "${{ github.workspace }}" --verbose --no-progress --exclude "node_modules" --exclude ".venv" --exclude "venv" --exclude "env" --exclude "vendor" --exclude "dist" --exclude "build" --exclude "out" --exclude "target" --exclude ".next" --exclude ".nuxt" --exclude ".output" --exclude "__pycache__" --exclude ".specify" '**/*.md'
+          args: --root-dir "${{ github.workspace }}" --verbose --no-progress --exclude-path "node_modules" --exclude-path ".venv" --exclude-path "venv" --exclude-path "env" --exclude-path "vendor" --exclude-path "dist" --exclude-path "build" --exclude-path "out" --exclude-path "target" --exclude-path ".next" --exclude-path ".nuxt" --exclude-path ".output" --exclude-path "__pycache__" --exclude-path ".specify" '**/*.md'
           fail: true
 
       # JavaScript / TypeScript linting

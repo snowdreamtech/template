@@ -83,7 +83,7 @@ repos:
       - id: lychee
         name: lychee link checker
         language: system
-        entry: lychee --root-dir . --verbose --no-progress --exclude "node_modules" --exclude ".venv" --exclude "venv" --exclude "env" --exclude "vendor" --exclude "dist" --exclude "build" --exclude "out" --exclude "target" --exclude ".next" --exclude ".nuxt" --exclude ".output" --exclude "__pycache__" --exclude ".specify"
+        entry: lychee --root-dir . --verbose --no-progress --exclude-path "node_modules" --exclude-path ".venv" --exclude-path "venv" --exclude-path "env" --exclude-path "vendor" --exclude-path "dist" --exclude-path "build" --exclude-path "out" --exclude-path "target" --exclude-path ".next" --exclude-path ".nuxt" --exclude-path ".output" --exclude-path "__pycache__" --exclude-path ".specify"
         types: [markdown]
 
       # ── Go ─────────────────────────────────────────────────────────────────
