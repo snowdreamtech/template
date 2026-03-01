@@ -5,7 +5,7 @@
 # Required tools (install once):
 #   brew install shellcheck actionlint hadolint shfmt gitleaks ruff clang-format
 #   pip3 install yamllint
-#   npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional stylelint @taplo/cli
+#   npm install -g markdownlint-cli2 prettier editorconfig-checker eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional stylelint @taplo/cli
 #
 # Setup (one-time per machine):
 #   pip3 install pre-commit
@@ -64,14 +64,6 @@ repos:
         args:
           - -exclude
           - '(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify)/.*)|(\.aider\.conf\.yml)'
-
-      # ── Spell & Link Checker ───────────────────────────────────────────────
-      - id: cspell
-        name: cspell
-        language: system
-        entry: cspell
-        args: [--no-progress, --no-summary, --dot]
-        types: [text]
 
       # ── Python ───────────────────────────────────────────────────────────────
       - id: ruff

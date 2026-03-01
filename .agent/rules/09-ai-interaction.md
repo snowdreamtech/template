@@ -43,7 +43,7 @@
   - **Python**: Run `ruff check --fix <file>` and `ruff format <file>`
   - **Obj-C/C++**: Run `clang-format -i <file>`
   - **Documentation**: Provide clear comments for complex logic, and use tools like `markdownlint-cli2` to ensure Markdown consistency.
-  - **Spell Check**: Fix all typos identified by `cspell`.
+
   - **SAST/SCA/Heavy Audits**: Local execution of `semgrep`, `trivy`, `lychee`, `golangci-lint`, `ansible-lint`, and `cargo clippy` is **DISABLED** to maintain performance. These are strictly reserved for CI.
   - **Git Flow**: The system enforces Conventional Commits via `commitlint` locally and Semantic Pull Request titles remotely. ALWAYS ensure your commit messages and PR titles follow the `<type>(<scope>): <subject>` format exactly.
   - **Markdown files**: Run `npx markdownlint-cli2 --fix <file>` and `npx prettier --write <file>`

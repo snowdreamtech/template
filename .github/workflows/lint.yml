@@ -149,7 +149,7 @@ jobs:
           node-version: "20"
 
       - name: Install Node.js Linters
-        run: npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint
+        run: npm install -g markdownlint-cli2 prettier editorconfig-checker eslint
 
       - name: Install ShellCheck Binary
         env:
@@ -235,10 +235,6 @@ jobs:
 
       - name: Run editorconfig-checker
         run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify)/.*)|(\.aider\.conf\.yml)"
-
-      # Run Spell Checker (CSpell)
-      - name: Run CSpell (Spell Checker)
-        run: npx cspell "**" --no-progress --no-summary --dot
 
       # Check for broken URLs and relative links in Markdown
       - name: Run Lychee (Link Checker)

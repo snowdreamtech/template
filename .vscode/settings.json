@@ -183,9 +183,6 @@
   },
   // [Ansible] Enable linting
   "ansible.validation.lint.enabled": true,
-  // [Spell Checker] Enable and configure
-  "cSpell.enabled": true,
-  "cSpell.language": "en,en-US",
   // [Todo Highlight] Enable
   "todohighlight.isEnable": true,
   // [Better Comments] Configuration placeholder (uses default tags)
