@@ -147,3 +147,8 @@
      - Runs all linters and formatters strictly in **Check-only / Diff mode** (e.g., `eslint`, `shfmt -d`, `prettier --check`).
      - **Scope:** Performs a **Full-Repository** scan. This ensures that massive refactors or dependency updates haven't subtly broken formatting or conventions in untouched files, and provides an absolute baseline of quality.
      - **Goal:** Absolute repository purity. Under no circumstances does the CI pipeline attempt to silently auto-fix and commit code, as CI runners lack (and should lack) the context/permissions to push structural changes back to the user's branch. Any violation at this stage results in a **hard failure (red build)**, blocking pull requests and forcing the contributor to fix the issues locally.
+- **Goal: Absolute Synchronization (极致同步)**
+  - Every linting tool, whether local or remote, MUST strictly and consistently ignore the following standard dependency and build folders to avoid resource waste and false positives:
+    `node_modules`, `.venv`, `venv`, `env`, `vendor`, `dist`, `build`, `out`, `target`, `.next`, `.nuxt`, `.output`, `__pycache__`, `.specify`.
+  - When adding a new lint tool, its configuration (e.g., `.ignore`, `config.json`) or CI command flags (e.g., `--exclude`, `--skip-dirs`) MUST be updated to include this full list.
+  - Large-scale scanning tools (Trivy, Semgrep, Gitleaks) SHOULD be optimized for local performance by focusing on configuration or incremental scans, shifting exhaustive analyses to the CI gate.
