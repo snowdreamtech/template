@@ -147,9 +147,11 @@
      - Runs all linters and formatters strictly in **Check-only / Diff mode** (e.g., `eslint`, `shfmt -d`, `prettier --check`).
      - **Scope:** Performs a **Full-Repository** scan. This ensures that massive refactors or dependency updates haven't subtly broken formatting or conventions in untouched files, and provides an absolute baseline of quality.
      - **Goal:** Absolute repository purity. Under no circumstances does the CI pipeline attempt to silently auto-fix and commit code, as CI runners lack (and should lack) the context/permissions to push structural changes back to the user's branch. Any violation at this stage results in a **hard failure (red build)**, blocking pull requests and forcing the contributor to fix the issues locally.
-- **Goal: Absolute Synchronization (极致同步)**
-  - Every linting tool, whether local or remote, MUST strictly and consistently ignore the following standard dependency and build folders to avoid resource waste and false positives:
-    `node_modules`, `.venv`, `venv`, `env`, `vendor`, `dist`, `build`, `out`, `target`, `.next`, `.nuxt`, `.output`, `__pycache__`, `.specify`.
-  - When adding a new lint tool, its configuration (e.g., `.ignore`, `config.json`) or CI command flags (e.g., `--exclude`, `--skip-dirs`) MUST be updated to include this full list.
-  - Large-scale and high-latency scanning tools (e.g., Trivy, Semgrep, Lychee) MUST be excluded from local AI chat sessions and `pre-commit` hooks to maintain developer velocity.
-  - These tools are reserved for **GitHub Actions only**, where deep security and vulnerability audits are performed as the final authoritative gate. Local checks MUST remain fast and lightweight.
+- **Goal: Absolute Synchronization & Strategic Placement (极致同步与战略分层)**
+  - Every linting tool MUST strictly and consistently ignore standard dependency/build folders: `node_modules`, `.venv`, `venv`, `env`, `vendor`, `dist`, `build`, `out`, `target`, `.next`, `.nuxt`, `.output`, `__pycache__`, `.specify`.
+  - **Shift-Left (Local/Pre-commit)**: Reserved for **lightweight, essential, and high-frequency** checks.
+    - _Examples_: Language linters (ESLint, Ruff), formatters (Prettier, shfmt), and critical local security (Gitleaks - secret scanning).
+    - _Constraint_: MUST remain fast (seconds) to maintain developer velocity.
+  - **Shift-Right (GitHub Actions Only)**: Reserved for **heavy, high-latency, and deep-audit** tools.
+    - _Examples_: Vulnerability scanners (Trivy), full-repo security analysis (Semgrep), and link checkers (Lychee).
+    - _Constraint_: These are the final authoritative gates for repository purity and deep security, but MUST NOT block local commit flows.
