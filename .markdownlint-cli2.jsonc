@@ -1,7 +1,5 @@
 {
-  "globs": [
-    "**/*.md"
-  ],
+  "globs": ["**/*.md"],
   "ignores": [
     ".git",
     "node_modules",
@@ -17,6 +15,6 @@
     ".nuxt",
     ".output",
     "__pycache__",
-    ".specify"
-  ]
+    ".specify",
+  ],
 }
