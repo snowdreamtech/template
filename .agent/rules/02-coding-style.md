@@ -151,5 +151,5 @@
   - Every linting tool, whether local or remote, MUST strictly and consistently ignore the following standard dependency and build folders to avoid resource waste and false positives:
     `node_modules`, `.venv`, `venv`, `env`, `vendor`, `dist`, `build`, `out`, `target`, `.next`, `.nuxt`, `.output`, `__pycache__`, `.specify`.
   - When adding a new lint tool, its configuration (e.g., `.ignore`, `config.json`) or CI command flags (e.g., `--exclude`, `--skip-dirs`) MUST be updated to include this full list.
-  - Large-scale and high-latency scanning tools (e.g., Trivy, Semgrep) MUST be excluded from local AI chat sessions and `pre-commit` hooks to maintain developer velocity.
+  - Large-scale and high-latency scanning tools (e.g., Trivy, Semgrep, Lychee) MUST be excluded from local AI chat sessions and `pre-commit` hooks to maintain developer velocity.
   - These tools are reserved for **GitHub Actions only**, where deep security and vulnerability audits are performed as the final authoritative gate. Local checks MUST remain fast and lightweight.

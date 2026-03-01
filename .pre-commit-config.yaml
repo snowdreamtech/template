@@ -3,7 +3,7 @@
 # Uses system-installed tools directly — no network downloads required.
 #
 # Required tools (install once):
-#   brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint lychee checkmake powershell
+#   brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint checkmake powershell
 #   pip3 install yamllint ansible-core ansible-lint sqlfluff semgrep
 #   npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional stylelint @taplo/cli
 #
@@ -72,12 +72,6 @@ repos:
         entry: cspell
         args: [--no-progress, --no-summary, --dot]
         types: [text]
-
-      - id: lychee
-        name: lychee link checker
-        language: system
-        entry: lychee --root-dir . --verbose --no-progress --exclude-path "node_modules" --exclude-path ".venv" --exclude-path "venv" --exclude-path "env" --exclude-path "vendor" --exclude-path "dist" --exclude-path "build" --exclude-path "out" --exclude-path "target" --exclude-path ".next" --exclude-path ".nuxt" --exclude-path ".output" --exclude-path "__pycache__" --exclude-path ".specify"
-        types: [markdown]
 
       # ── Go ─────────────────────────────────────────────────────────────────
       - id: golangci-lint
