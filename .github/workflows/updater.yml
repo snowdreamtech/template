@@ -26,6 +26,10 @@ name: GitHub Actions Version Updater
     - cron: "0 0 * * 0"
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,6 +40,8 @@ jobs:
         with:
           # [Required] Access token with `workflow` scope.
           token: ${{ secrets.WORKFLOW_SECRET }}
+          persist-credentials: true
+          ref: ${{ github.ref }}
       - name: Run GitHub Actions Version Updater
         uses: saadmk11/github-actions-version-updater@v0.9.0
         with:

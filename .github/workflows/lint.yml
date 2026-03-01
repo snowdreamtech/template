@@ -22,6 +22,11 @@ name: GitHub Actions Lint
       - "pr/**"
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: read
+  statuses: write
+
 jobs:
   lint:
     name: Run Linter
@@ -33,6 +38,8 @@ jobs:
         with:
           # Use default GITHUB_TOKEN for reliability unless cross-workflow triggers are needed.
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0 # Required for commitlint to see git history
 
       - name: Run Commitlint Check
