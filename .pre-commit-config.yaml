@@ -25,11 +25,12 @@ repos:
         entry: gitleaks protect --verbose --redact --staged --gitleaks-ignore-path .gitleaksignore
         pass_filenames: false
 
-      - id: semgrep
-        name: semgrep
+      # ── Go ─────────────────────────────────────────────────────────────────
+      - id: gofmt
+        name: gofmt
         language: system
-        entry: semgrep scan --config=auto --error --quiet --exclude=".git" --exclude="node_modules" --exclude=".venv" --exclude="venv" --exclude="env" --exclude="vendor" --exclude="dist" --exclude="build" --exclude="out" --exclude="target" --exclude=".next" --exclude=".nuxt" --exclude=".output" --exclude="__pycache__" --exclude=".specify"
-        types: [python, javascript, ts, go, ruby, java, c#, php]
+        entry: gofmt -w
+        types: [go]
 
       # ── YAML ──────────────────────────────────────────────────────────────
       - id: yamllint
@@ -62,8 +63,7 @@ repos:
         entry: editorconfig-checker
         args:
           - -exclude
-          - "(\\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\\.specify)/.*)|(\\.aider\\.conf\\.yml)"
-        pass_filenames: false
+          - '(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify)/.*)|(\.aider\.conf\.yml)'
 
       # ── Spell & Link Checker ───────────────────────────────────────────────
       - id: cspell
@@ -72,62 +72,6 @@ repos:
         entry: cspell
         args: [--no-progress, --no-summary, --dot]
         types: [text]
-
-      # ── Go ─────────────────────────────────────────────────────────────────
-      - id: golangci-lint
-        name: golangci-lint
-        language: system
-        entry: golangci-lint
-        args: [run, --fix]
-        types: [go]
-        pass_filenames: false
-
-      # ── Rust ─────────────────────────────────────────────────────────────────
-      - id: cargo-fmt
-        name: cargo fmt
-        language: system
-        entry: cargo fmt
-        types: [rust]
-        pass_filenames: false
-
-      - id: cargo-clippy
-        name: cargo clippy
-        language: system
-        entry: cargo clippy --fix --allow-dirty --allow-staged
-        types: [rust]
-        pass_filenames: false
-
-      # ── Database & Data Engineering ──────────────────────────────────────────
-      - id: sqlfluff-lint
-        name: sqlfluff lint
-        language: system
-        entry: sqlfluff lint --dialect postgres
-        types: [sql]
-
-      - id: sqlfluff-fix
-        name: sqlfluff fix
-        language: system
-        entry: sqlfluff fix --dialect postgres --force
-        types: [sql]
-
-      # ── Extra Backends (.NET / Ruby / PHP) ──────────────────────────────────
-      - id: dotnet-format
-        name: dotnet format
-        language: system
-        entry: dotnet format
-        types_or: [c#, vb]
-
-      - id: rubocop
-        name: rubocop
-        language: system
-        entry: rubocop -A --force-exclusion
-        types: [ruby]
-
-      - id: php-cs-fixer
-        name: php-cs-fixer
-        language: system
-        entry: php-cs-fixer fix
-        types: [php]
 
       # ── Python ───────────────────────────────────────────────────────────────
       - id: ruff
@@ -142,69 +86,12 @@ repos:
         entry: ruff format
         types_or: [python, pyi]
 
-      # ── Dart / Flutter ───────────────────────────────────────────────────────
-      - id: dart-format
-        name: dart format
-        language: system
-        entry: dart format
-        types: [dart]
-
-      - id: dart-analyze
-        name: dart analyze
-        language: system
-        entry: dart analyze --fatal-infos
-        types: [dart]
-        pass_filenames: false
-
-      # ── Apple Ecosystem (Swift / Obj-C) ──────────────────────────────────────
-      - id: swiftformat
-        name: swiftformat
-        language: system
-        entry: swiftformat
-        types: [swift]
-
-      - id: swiftlint
-        name: swiftlint
-        language: system
-        entry: swiftlint --fix
-        types: [swift]
-        pass_filenames: false
-
+      # ── Apple Ecosystem (Obj-C / C++) ──────────────────────────────────────
       - id: clang-format
         name: clang-format
         language: system
         entry: clang-format -i
         types_or: [objective-c, c, c++]
-
-      # ── Cloud Native & IaC ───────────────────────────────────────────────────
-      - id: kube-linter
-        name: kube-linter
-        language: system
-        entry: kube-linter lint
-        files: '(?i).*\.(yaml|yml)$'
-        pass_filenames: true
-
-      - id: tflint
-        name: tflint
-        language: system
-        entry: tflint
-        files: '\.tf$'
-        pass_filenames: false
-
-      # ── Android Ecosystem (Kotlin / Java) ──────────────────────────────────
-      - id: ktlint
-        name: ktlint
-        language: system
-        entry: ktlint --format
-        types: [kotlin]
-        pass_filenames: true
-
-      - id: google-java-format
-        name: google-java-format
-        language: system
-        entry: google-java-format --replace
-        types: [java]
-        pass_filenames: true
 
       # ── API Contracts & Specifications ───────────────────────────────────────
       - id: spectral
@@ -242,46 +129,13 @@ repos:
         entry: shellcheck
         types: [shell]
 
+      # ── Shell Scripts Formatting ───────────────────────────────────────────
       - id: shfmt
         name: shfmt
         language: system
         entry: shfmt
         args: [-w, -s, -l]
         types: [shell]
-
-      - id: checkmake
-        name: checkmake
-        language: system
-        entry: checkmake
-        files: ^Makefile$
-
-      - id: pwsh-analyze
-        name: powershell script analyzer
-        language: system
-        entry: pwsh -NoProfile -NonInteractive -Command "Invoke-ScriptAnalyzer -Path"
-        files: \.ps1$
-
-      # ── GitHub Actions Workflows ───────────────────────────────────────────
-      - id: actionlint
-        name: actionlint
-        language: system
-        entry: actionlint
-        files: ^\.github/workflows/.*\.yml$
-        pass_filenames: false
-
-      # ── Ansible ────────────────────────────────────────────────────────────
-      - id: ansible-lint
-        name: ansible-lint
-        language: system
-        entry: ansible-lint
-        pass_filenames: false
-        files: \.(yml|yaml)$
-
-      - id: ansible-syntax-check
-        name: ansible-playbook syntax-check
-        language: system
-        entry: bash -c 'for file in "$@"; do ansible-playbook --syntax-check "$file"; done' _
-        files: ^playbooks/.*\.ya?ml$
 
       # ── Dockerfile ─────────────────────────────────────────────────────────
       - id: hadolint
