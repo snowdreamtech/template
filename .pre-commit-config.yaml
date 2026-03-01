@@ -3,8 +3,8 @@
 # Uses system-installed tools directly — no network downloads required.
 #
 # Required tools (install once):
-#   brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint checkmake powershell
-#   pip3 install yamllint ansible-core ansible-lint sqlfluff semgrep
+#   brew install shellcheck actionlint hadolint shfmt gitleaks ruff clang-format
+#   pip3 install yamllint
 #   npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional stylelint @taplo/cli
 #
 # Setup (one-time per machine):

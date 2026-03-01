@@ -20,7 +20,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      **Cross-platform (pip3 + npm — works on macOS / Linux / Windows):**
 
      ```bash
-     pip3 install yamllint ansible-core ansible-lint sqlfluff semgrep
+     pip3 install yamllint
      npm install -g markdownlint-cli2 prettier editorconfig-checker cspell eslint @stoplight/spectral-cli @commitlint/cli @commitlint/config-conventional stylelint stylelint-config-standard @taplo/cli
      ```
 
@@ -36,30 +36,16 @@ You **MUST** consider the user input before proceeding (if not empty).
 
      ```bash
      # macOS — Homebrew (preferred)
-     brew install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint lychee trivy checkmake
-     brew install --cask powershell
-     brew tap dart-lang/dart && brew install dart
-
-     # macOS — MacPorts (fallback if Homebrew is unavailable)
-     port install shellcheck actionlint hadolint shfmt gitleaks ruff swiftformat swiftlint ktlint tflint lychee trivy checkmake
-     # powershell: download pkg from GitHub / actionlint / hadolint: binary download below
-
-     # Linux (Debian/Ubuntu)
-     apt-get install -y shellcheck shfmt trivy powershell
-     # actionlint / hadolint: use binary download below
-
-     # Linux (RHEL/Fedora)
-     dnf install -y ShellCheck shfmt trivy powershell
-     # actionlint / hadolint: use binary download below
+     brew install shellcheck actionlint hadolint shfmt gitleaks ruff clang-format
 
      # Windows (Scoop)
-     scoop install shellcheck actionlint hadolint shfmt gitleaks golangci-lint ruff dart swiftformat swiftlint clang-format ktlint google-java-format kube-linter tflint lychee trivy checkmake pwsh
+     scoop install shellcheck actionlint hadolint shfmt gitleaks ruff clang-format
 
      # Windows (Winget)
-     winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt aquasecurity.trivy Microsoft.PowerShell
+     winget install koalaman.shellcheck rhysd.actionlint hadolint.hadolint shfmt
      ```
 
-     **Binary downloads (actionlint / hadolint / checkmake / lychee / gitleaks / golangci-lint — macOS & Linux fallback):**
+     **Binary downloads (actionlint / hadolint / gitleaks — macOS & Linux fallback):**
 
      > `GITHUB_PROXY` is set to `https://gh-proxy.sn0wdr1am.com/` by default to ensure reliable downloads in restricted network environments.
 
@@ -80,21 +66,6 @@ You **MUST** consider the user input before proceeding (if not empty).
        "${GITHUB_PROXY}https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VER}/hadolint-$(uname -s)-${HA}" \
        -o ~/.local/bin/hadolint && chmod +x ~/.local/bin/hadolint
 
-     # checkmake
-     CHECKMAKE_VER="v0.3.2"
-     OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ]; then CA="amd64"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then CA="arm64"; else CA=$ARCH; fi
-     curl -fL --retry 3 \
-       "${GITHUB_PROXY}https://github.com/checkmake/checkmake/releases/download/${CHECKMAKE_VER}/checkmake-${CHECKMAKE_VER}.${OS}.${CA}" \
-       -o ~/.local/bin/checkmake && chmod +x ~/.local/bin/checkmake
-
-     # lychee
-     LYCHEE_VER="v0.18.0"
-     OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ]; then LA="x86_64"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then LA="aarch64"; else LA=$ARCH; fi
-     if [ "$OS" = "darwin" ]; then LL="apple-darwin"; else LL="unknown-linux-gnu"; fi
-     curl -fL --retry 3 \
-       "${GITHUB_PROXY}https://github.com/lycheeverse/lychee/releases/download/${LYCHEE_VER}/lychee-${LYCHEE_VER}-${LA}-${LL}.tar.gz" \
-       | tar -xz -C ~/.local/bin lychee
-
      # gitleaks
      GITLEAKS_VER="v8.21.2"
      OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "amd64" ]; then GA="x64"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then GA="arm64"; elif [ "$ARCH" = "i386" ] || [ "$ARCH" = "i686" ]; then GA="x32"; else GA=$ARCH; fi
@@ -102,13 +73,6 @@ You **MUST** consider the user input before proceeding (if not empty).
      curl -fL --retry 3 \
        "${GITHUB_PROXY}https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VER}/gitleaks_${GITLEAKS_VER#v}_${GL}_${GA}.tar.gz" \
        | tar -xz -C ~/.local/bin gitleaks
-
-     # golangci-lint
-     GOLANGCI_VER="v1.61.0"
-     OS=$(uname -s | tr '[:upper:]' '[:lower:]'); ARCH=$(uname -m); if [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "amd64" ]; then GOA="amd64"; elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then GOA="arm64"; else GOA=$ARCH; fi
-     curl -fL --retry 3 \
-       "${GITHUB_PROXY}https://github.com/golangci/golangci-lint/releases/download/${GOLANGCI_VER}/golangci-lint-${GOLANGCI_VER#v}-${OS}-${GOA}.tar.gz" \
-       | tar -xz -C ~/.local/bin --strip-components=1 "golangci-lint-${GOLANGCI_VER#v}-${OS}-${GOA}/golangci-lint"
      ```
 
      Ensure `~/.local/bin` is in your `PATH`:
@@ -122,14 +86,4 @@ You **MUST** consider the user input before proceeding (if not empty).
      ```bash
      pip3 install pre-commit
      pre-commit install
-     ```
-
-   - Install PowerShell `PSScriptAnalyzer` module for local linting:
-
-     ```bash
-     pwsh -NoProfile -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted; Install-Module -Name PSScriptAnalyzer -Force -ErrorAction Stop"
-     ```
-
-     ```
-
      ```

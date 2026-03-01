@@ -39,33 +39,20 @@
   - **JS/TS/Vue/React**: Run `npx eslint --fix <file>` and `npx prettier --write <file>`
   - **CSS/SCSS/LESS**: Run `npx stylelint --fix <file>` and `npx prettier --write <file>`
   - **TOML**: Run `npx @taplo/cli format <file>`
-  - **Go**: Run `golangci-lint run --fix`
-  - **Rust**: Run `cargo fmt` and `cargo clippy --fix --allow-dirty --allow-staged`
-  - **C# / .NET**: Run `dotnet format <directory/solution>`
-  - **Ruby**: Run `rubocop -A <file>`
-  - **PHP**: Run `php-cs-fixer fix <file>`
+  - **Go**: Run `gofmt -w <file>`
   - **Python**: Run `ruff check --fix <file>` and `ruff format <file>`
-  - **SQL**: Run `sqlfluff fix --dialect postgres --force <file>`
-  - **Cloud/IaC (Terraform)**: Run `terraform fmt <file>` and `tflint`
-  - **Cloud/IaC (Kubernetes)**: Run `kube-linter lint <file>` and manually resolve configuration vulnerabilities.
-  - **Documentation**: Provide clear comments for complex logic, and use tools like `markdownlint-cli2` to ensure Markdown consistency.
-  - **Spell & Link Check**: Fix all typos identified by `cspell` and immediately correct broken links identified by `lychee <file>`.
-  - **SAST (Security)**: Run `semgrep scan --config=auto` locally after major business logic refactors, and patch any flagged vulnerability (such as eval, insecure hashes, or command injection).
-  - **SCA (Dependencies)**: Run `trivy fs .` to scan local dependencies/Dockerfiles for high and critical CVEs.
-  - **Git Flow**: The system enforces Conventional Commits via `commitlint` locally and Semantic Pull Request titles remotely. ALWAYS ensure your commit messages and PR titles follow the `<type>(<scope>): <subject>` format exactly.
-  - **Dart/Flutter**: Run `dart format <file>` and `dart fix --apply <file>`
-  - **Swift**: Run `swiftformat <file>` and `swiftlint --fix <file>`
   - **Obj-C/C++**: Run `clang-format -i <file>`
-  - **Kotlin**: Run `ktlint --format <file>`
-  - **Java**: Run `google-java-format --replace <file>`
-  - **API Contracts**: Run `npx @stoplight/spectral-cli lint <file>` on OpenAPI, Swagger, or AsyncAPI specs and manually resolve issues.
+  - **Documentation**: Provide clear comments for complex logic, and use tools like `markdownlint-cli2` to ensure Markdown consistency.
+  - **Spell Check**: Fix all typos identified by `cspell`.
+  - **SAST/SCA/Heavy Audits**: Local execution of `semgrep`, `trivy`, `lychee`, `golangci-lint`, `ansible-lint`, and `cargo clippy` is **DISABLED** to maintain performance. These are strictly reserved for CI.
+  - **Git Flow**: The system enforces Conventional Commits via `commitlint` locally and Semantic Pull Request titles remotely. ALWAYS ensure your commit messages and PR titles follow the `<type>(<scope>): <subject>` format exactly.
   - **Markdown files**: Run `npx markdownlint-cli2 --fix <file>` and `npx prettier --write <file>`
-  - **YAML/JSON files**: Run `npx prettier --write <file>`
-  - **Shell scripts**: Run `shfmt -w -s -l <file>` for formatting, then `shellcheck <file>` and manually fix any reported logic warnings.
-  - **Makefile**: Run `checkmake <file>` and manually fix any reported violations.
-  - **PowerShell**: Run `Invoke-ScriptAnalyzer -Path <file>` via `pwsh` and manually fix any reported warnings.
-  - **Ansible/Playbooks**: Run `ansible-lint <file>` and `ansible-playbook --syntax-check <file>`, then manually fix any reported warnings or syntax errors.
+  - **YAML/JSON files**: Run `npx prettier --write <file>` and `yamllint <file>`
+  - **Shell scripts**: Run `shfmt -w -s -l <file>` (formatting) and `shellcheck <file>` (logic).
+  - **Dockerfile**: Run `hadolint <file>`.
+  - **API Contracts**: Run `npx @stoplight/spectral-cli lint <file>` on OpenAPI/Swagger specs.
   - _Never leave formatting or linting errors for the user, the Git Commit hook, or the CI pipeline to catch. Nip all errors in the bud._
+    flagship
 
 - **Test-Driven Mentality**: When modifying logic or adding features, the AI MUST proactively update or create corresponding tests. Do not output untested code as final without a clear warning:
 
