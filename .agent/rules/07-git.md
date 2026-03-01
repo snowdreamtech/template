@@ -4,7 +4,7 @@
 
 ## 1. Commit Messages
 
-- Use **Conventional Commits** format: `<type>(<scope>): <description>` (e.g., `feat(auth): add OAuth2 login`). Never write vague commit messages like "fix bug", "update code", or "WIP".
+- Use **Conventional Commits** format (strictly following `@commitlint/config-conventional`): `<type>(<scope>): <description>` (e.g., `feat(auth): add OAuth2 login`). Never write vague commit messages like "fix bug", "update code", or "WIP".
 - Common types:
 
   | Type       | Purpose                            | Example                                     |
@@ -20,7 +20,7 @@
   | `perf`     | Performance optimization           | `perf(cache): use Redis pipelining`         |
   | `build`    | Build system changes               | `build: switch to esbuild`                  |
 
-- Commit messages **MUST** be in **English**. The description must be concise (≤ 72 characters), written in the imperative mood ("add", not "added"):
+- Commit messages **MUST** be in **English**. The description must be concise (≤ 100 characters), written in the imperative mood ("add", not "added"), and **MUST NOT** end with a period (full stop). Note: while the traditional limit is 72, `@commitlint/config-conventional` enforces 100 characters for the header.
 
   ```
   feat(auth): add OAuth2 login with Google provider

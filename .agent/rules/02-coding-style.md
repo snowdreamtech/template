@@ -4,7 +4,7 @@
 
 ## 1. Git Commit Messages
 
-- Follow **[Conventional Commits](https://www.conventionalcommits.org/)** specification.
+- Follow **[Conventional Commits](https://www.conventionalcommits.org/)** specification, strictly adhering to the `@commitlint/config-conventional` standard.
 - Format: `<type>(<scope>): <description>` — e.g., `feat(auth): add refresh token support`
 - Common types:
 
@@ -21,7 +21,7 @@
   | `perf`     | Performance improvement                     |
   | `build`    | Build system or external dependency changes |
 
-- Commit messages MUST be in **English**. Descriptions must be written in the imperative mood: "add" not "added", "fix" not "fixed". Keep the subject line ≤ 72 characters.
+- Commit messages MUST be in **English**. Descriptions must be written in the imperative mood: "add" not "added", "fix" not "fixed". Keep the subject line ≤ 100 characters and **DO NOT** end with a period (full stop).
 - Body (optional): explain **why** the change was made, not what it does — the diff shows what. Separate body from subject with a blank line:
 
   ```
