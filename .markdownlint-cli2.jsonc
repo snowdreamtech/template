@@ -5,8 +5,10 @@
   "ignores": [
     ".git",
     "node_modules",
-    ".venv",
+    ".*",
+    "node_modules",
     "venv",
+    ".venv",
     "env",
     "vendor",
     "dist",
