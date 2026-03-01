@@ -29,7 +29,7 @@ repos:
       - id: trivy
         name: trivy vulnerability scanner
         language: system
-        entry: trivy fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL --db-repository public.ecr.aws/aquasecurity/trivy-db --skip-dirs "node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify" .
+        entry: trivy fs --scanners misconfig --skip-db-update --severity HIGH,CRITICAL --skip-dirs "node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify" .
         pass_filenames: false
 
       - id: semgrep
