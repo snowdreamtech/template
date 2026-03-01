@@ -1,0 +1,25 @@
+# ruff.toml
+# Standard exclusion list for Ruff
+
+extend-exclude = [
+  ".git",
+  "node_modules",
+  ".venv",
+  "venv",
+  "env",
+  "vendor",
+  "dist",
+  "build",
+  "out",
+  "target",
+  ".next",
+  ".nuxt",
+  ".output",
+  "__pycache__",
+  ".specify",
+]
+
+[lint]
+# Enable standard rules
+select = ["E", "F", "W", "I", "N"]
+ignore = []

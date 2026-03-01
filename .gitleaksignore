@@ -1,0 +1,28 @@
+# .gitleaksignore
+# Standard exclusion list for Gitleaks
+
+# Directories
+node_modules/
+.venv/
+venv/
+env/
+vendor/
+dist/
+build/
+out/
+target/
+.next/
+.nuxt/
+.output/
+__pycache__/
+.specify/
+.git/
+
+# Files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+poetry.lock
+composer.lock
+Cargo.lock
+go.sum

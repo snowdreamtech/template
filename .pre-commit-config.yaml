@@ -22,20 +22,20 @@ repos:
       - id: gitleaks
         name: gitleaks
         language: system
-        entry: gitleaks protect --verbose --redact --staged
+        entry: gitleaks protect --verbose --redact --staged --gitleaks-ignore-path .gitleaksignore
         pass_filenames: false
 
       # ── Security & DAOD ────────────────────────────────────────────────────
       - id: trivy
         name: trivy vulnerability scanner
         language: system
-        entry: trivy fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL --db-repository public.ecr.aws/aquasecurity/trivy-db .
+        entry: trivy fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL --db-repository public.ecr.aws/aquasecurity/trivy-db --skip-dirs "node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify" .
         pass_filenames: false
 
       - id: semgrep
         name: semgrep
         language: system
-        entry: semgrep scan --config=auto --error --quiet
+        entry: semgrep scan --config=auto --error --quiet --exclude=".git" --exclude="node_modules" --exclude=".venv" --exclude="venv" --exclude="env" --exclude="vendor" --exclude="dist" --exclude="build" --exclude="out" --exclude="target" --exclude=".next" --exclude=".nuxt" --exclude=".output" --exclude="__pycache__" --exclude=".specify"
         types: [python, javascript, ts, go, ruby, java, c#, php]
 
       # ── YAML ──────────────────────────────────────────────────────────────

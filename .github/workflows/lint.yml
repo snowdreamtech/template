@@ -109,7 +109,7 @@ jobs:
 
       - name: Run Gitleaks
         shell: bash
-        run: gitleaks detect --source . --verbose
+        run: gitleaks detect --source . --verbose --gitleaks-ignore-path .gitleaksignore
 
       - name: Set env variables
         run: |
@@ -489,7 +489,7 @@ jobs:
         run: |
           source .venv/bin/activate
           if command -v semgrep &> /dev/null; then
-            semgrep scan --config=auto --error
+            semgrep scan --config=auto --error --exclude=".git" --exclude="node_modules" --exclude=".venv" --exclude="venv" --exclude="env" --exclude="vendor" --exclude="dist" --exclude="build" --exclude="out" --exclude="target" --exclude=".next" --exclude=".nuxt" --exclude=".output" --exclude="__pycache__" --exclude=".specify"
           else
             echo "Semgrep not installed. Skipping SAST."
           fi
@@ -505,6 +505,7 @@ jobs:
           ignore-unfixed: true
           format: "table"
           severity: "CRITICAL,HIGH"
+          skip-dirs: "node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify"
 
       # Dockerfile linting
       - name: Run hadolint
