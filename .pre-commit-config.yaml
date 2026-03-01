@@ -29,7 +29,7 @@ repos:
       - id: trivy
         name: trivy vulnerability scanner
         language: system
-        entry: trivy fs --scanners vuln,secret,config --severity HIGH,CRITICAL .
+        entry: trivy fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL --db-repository public.ecr.aws/aquasecurity/trivy-db .
         pass_filenames: false
 
       - id: semgrep

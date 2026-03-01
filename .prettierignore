@@ -13,3 +13,4 @@ target
 .output
 __pycache__
 .specify/scripts
+.ansible-lint
