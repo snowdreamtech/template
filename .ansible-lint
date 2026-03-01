@@ -11,6 +11,7 @@ warn_list:
 exclude_paths:
   - .venv/
   - venv/
+  - env/
   - __pycache__/
   - .tox/
   - node_modules/
@@ -19,6 +20,7 @@ exclude_paths:
   - .output/
   - dist/
   - vendor/
+  - out/
   - target/
   - build/
   - .gradle/
@@ -28,7 +30,7 @@ exclude_paths:
   - .git/
   - .idea/
   - .vscode/
-  - .specify/scripts/
+  - .specify/
 
 # List of rules to entirely skip during linting
 skip_list:

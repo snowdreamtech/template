@@ -234,7 +234,7 @@ jobs:
         run: npx prettier --check "**/*.{json,yml,yaml,vue,js,jsx,ts,tsx}"
 
       - name: Run editorconfig-checker
-        run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify/scripts)/.*)|(\.aider\.conf\.yml)"
+        run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify)/.*)|(\.aider\.conf\.yml)"
 
       # Run Spell Checker (CSpell)
       - name: Run CSpell (Spell Checker)
@@ -244,7 +244,7 @@ jobs:
       - name: Run Lychee (Link Checker)
         uses: lycheeverse/lychee-action@v2.8.0
         with:
-          args: --root-dir "${{ github.workspace }}" --verbose --no-progress --exclude "node_modules" --exclude ".venv" '**/*.md'
+          args: --root-dir "${{ github.workspace }}" --verbose --no-progress --exclude "node_modules" --exclude ".venv" --exclude "venv" --exclude "env" --exclude "vendor" --exclude "dist" --exclude "build" --exclude "out" --exclude "target" --exclude ".next" --exclude ".nuxt" --exclude ".output" --exclude "__pycache__" --exclude ".specify" '**/*.md'
           fail: true
 
       # JavaScript / TypeScript linting
@@ -445,13 +445,13 @@ jobs:
       # Shell Scripts linting (excluding dependencies, running native binary)
       - name: Run ShellCheck
         run: |
-          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -exec bash -c 'shellcheck "$@"' _ {} +
+          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/node_modules/*" -not -path "*/vendor/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/out/*" -not -path "*/target/*" -not -path "*/\.next/*" -not -path "*/\.nuxt/*" -not -path "*/\.output/*" -not -path "*/__pycache__/*" -not -path "*/\.git/*" -not -path "*/\.specify/*" -exec bash -c 'shellcheck "$@"' _ {} +
 
       # Shell Scripts formatting (shfmt)
       - name: Run shfmt
         run: |
           sudo apt-get update && sudo apt-get install -y shfmt
-          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -exec shfmt -d {} +
+          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/node_modules/*" -not -path "*/vendor/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/out/*" -not -path "*/target/*" -not -path "*/\.next/*" -not -path "*/\.nuxt/*" -not -path "*/\.output/*" -not -path "*/__pycache__/*" -not -path "*/\.git/*" -not -path "*/\.specify/*" -exec shfmt -d {} +
 
       # PowerShell Scripts linting (using ubuntu runner's pre-installed pwsh)
       - name: Run PSScriptAnalyzer
@@ -459,7 +459,7 @@ jobs:
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module -Name PSScriptAnalyzer -Force -ErrorAction Stop
-          $scripts = Get-ChildItem -Path . -Recurse -Filter "*.ps1" | Where-Object { $_.FullName -notmatch '[/\\](\\.venv|node_modules|venv|env|dist|build|\\.git|\\.specify[/\\]scripts)[/\\]' }
+          $scripts = Get-ChildItem -Path . -Recurse -Filter "*.ps1" | Where-Object { $_.FullName -notmatch '[/\\](\\.venv|venv|env|node_modules|vendor|dist|build|out|target|\\.next|\\.nuxt|\\.output|__pycache__|\\.git|\\.specify)[/\\]' }
           if ($null -eq $scripts -or @($scripts).Count -eq 0) {
             Write-Host "No PowerShell scripts found to analyze."
           } else {
@@ -509,7 +509,7 @@ jobs:
       # Dockerfile linting
       - name: Run hadolint
         run: |
-          find . -type f -name "*Dockerfile*" -not -path "*/\.venv/*" -not -path "*/node_modules/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/\.git/*" -not -path "*/\.specify/scripts/*" -print0 | while IFS= read -r -d '' file; do
+          find . -type f -name "*Dockerfile*" -not -path "*/\.venv/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/node_modules/*" -not -path "*/vendor/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/out/*" -not -path "*/target/*" -not -path "*/\.next/*" -not -path "*/\.nuxt/*" -not -path "*/\.output/*" -not -path "*/__pycache__/*" -not -path "*/\.git/*" -not -path "*/\.specify/*" -print0 | while IFS= read -r -d '' file; do
             echo "Linting $file"
             docker run --rm -i hadolint/hadolint hadolint - < "$file"
           done

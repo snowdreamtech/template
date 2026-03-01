@@ -4,12 +4,19 @@ extends: default
 ignore: |
   .venv/
   venv/
+  env/
   node_modules/
+  vendor/
   dist/
   build/
+  out/
+  target/
+  .next/
+  .nuxt/
+  .output/
   .git/
   **/*.md
-  .specify/scripts/
+  .specify/
 
 rules:
   # Line-length is intentionally disabled. Modern wide screens and YAML's

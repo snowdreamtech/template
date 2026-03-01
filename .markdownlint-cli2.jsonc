@@ -17,6 +17,6 @@
     ".nuxt",
     ".output",
     "__pycache__",
-    ".specify/scripts"
+    ".specify"
   ]
 }
