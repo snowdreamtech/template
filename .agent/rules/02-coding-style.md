@@ -137,16 +137,14 @@
      - Developers and AI Agents MUST proactively run formatters and linters (`eslint --fix`, `shfmt -w`, `prettier --write`, `markdownlint-cli2 --fix`) immediately after modifying or generating code.
      - **Scope:** Restricted to the currently open or heavily modified files to save time and maintain focus.
      - **Goal:** Maximum auto-correction and minimum mental burden. Never leave formatting or linting errors for the next stage.
-  2. **Second Line of Defense: Git Commit Intercept (Shift-Left, Incremental Scope)**
-     - Driven by `pre-commit` hooks configured in `.pre-commit-config.yaml`.
-     - Automatically intercepts `git commit` operations. Supported tools are explicitly configured in **auto-fix mode** (e.g., `eslint --fix`, `shfmt -w -s -l`) to automatically rectify formatting issues and transparently merge them into the user's commit.
-     - **Scope:** Runs _only_ on the files currently staged for commit (incremental).
-     - Unfixable issues (e.g., cspell unknown words, complex shellcheck warnings) will block the commit, forcing the developer/agent to address them locally before the code ever leaves their machine.
-  3. **Third Line of Defense: CI/CD Strict Checks (Strict Gatekeeping, Full Repository Scope)**
+  2. **Second Line of Defense: Git Commit Intercept (Incremental Shift-Left)**
+     - Driven by `pre-commit` hooks.
+     - **Scope Restriction**: MUST scan **only** the files currently staged for commit (`staged`). This ensures the local commit flow remains near-instantaneous (Shift-Left).
+     - **Constraint**: This layer is forbidden from performing full-repository scans to avoid blocking developer velocity.
+  3. **Third Line of Defense: CI/CD Strict Checks (Full-Repo Shift-Right)**
      - Driven by GitHub Actions (e.g., `.github/workflows/lint.yml`).
-     - Runs all linters and formatters strictly in **Check-only / Diff mode** (e.g., `eslint`, `shfmt -d`, `prettier --check`).
-     - **Scope:** Performs a **Full-Repository** scan. This ensures that massive refactors or dependency updates haven't subtly broken formatting or conventions in untouched files, and provides an absolute baseline of quality.
-     - **Goal:** Absolute repository purity. Under no circumstances does the CI pipeline attempt to silently auto-fix and commit code, as CI runners lack (and should lack) the context/permissions to push structural changes back to the user's branch. Any violation at this stage results in a **hard failure (red build)**, blocking pull requests and forcing the contributor to fix the issues locally.
+     - **Scope Requirement**: MUST perform a **Full-Repository** scan. This provides the final authoritative gate for repository-wide quality and detects side-effects from deep refactors.
+     - **Constraint**: This is the only authorized layer for high-latency, comprehensive audits.
 - **Goal: Absolute Synchronization & Strategic Placement (极致同步与战略分层)**
   - Every linting tool MUST strictly and consistently ignore standard dependency/build folders: `node_modules`, `.venv`, `venv`, `env`, `vendor`, `dist`, `build`, `out`, `target`, `.next`, `.nuxt`, `.output`, `__pycache__`, `.specify`.
   - **Shift-Left (Local/Pre-commit)**: Reserved for **lightweight, essential, and high-frequency** checks.
