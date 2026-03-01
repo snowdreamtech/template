@@ -69,7 +69,7 @@ repos:
         entry: editorconfig-checker
         args:
           - -exclude
-          - "(\\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\\.specify/scripts)/.*)|(\\.aider\\.conf\\.yml)"
+          - "(\\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\\.specify)/.*)|(\\.aider\\.conf\\.yml)"
         pass_filenames: false
 
       # ── Spell & Link Checker ───────────────────────────────────────────────
@@ -83,7 +83,7 @@ repos:
       - id: lychee
         name: lychee link checker
         language: system
-        entry: lychee --base . --verbose --no-progress
+        entry: lychee --root-dir . --verbose --no-progress --exclude "node_modules" --exclude ".venv" --exclude "venv" --exclude "env" --exclude "vendor" --exclude "dist" --exclude "build" --exclude "out" --exclude "target" --exclude ".next" --exclude ".nuxt" --exclude ".output" --exclude "__pycache__" --exclude ".specify"
         types: [markdown]
 
       # ── Go ─────────────────────────────────────────────────────────────────
