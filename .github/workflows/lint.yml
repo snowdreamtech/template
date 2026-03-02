@@ -491,30 +491,17 @@ jobs:
           fi
 
       # Trivy SCA / Container Security Scanning
-      # Install via apt repository (official workaround when GitHub Releases is unavailable).
-      # See: https://aquasecurity.github.io/trivy/latest/getting-started/installation/
-      - name: Install Trivy (apt)
-        run: |
-          sudo apt-get install -y wget apt-transport-https gnupg
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key \
-            | gpg --dearmor \
-            | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" \
-            | sudo tee /etc/apt/sources.list.d/trivy.list
-          sudo apt-get update
-          sudo apt-get install -y trivy
-          trivy --version
-
       - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
         env:
           TRIVY_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-db"
           TRIVY_CHECKS_BUNDLE_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-checks"
-        run: |
-          trivy fs . \
-            --ignore-unfixed \
-            --format table \
-            --severity CRITICAL,HIGH \
-            --skip-dirs 'node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify'
+        with:
+          scan-type: "fs"
+          ignore-unfixed: true
+          format: "table"
+          severity: "CRITICAL,HIGH"
+          skip-dirs: "node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify"
 
       # Dockerfile linting
       - name: Run hadolint
