@@ -1,0 +1,49 @@
+---
+# CodeQL analysis configuration.
+#
+# Languages are mapped from the project's existing linters (lint.yml / .pre-commit-config.yaml).
+# Only uncomment a language when source files of that type actually exist in this repository.
+#
+# Languages NOT supported by CodeQL (covered by other linters only):
+#   Rust  → rustfmt / cargo clippy
+#   PHP   → php-cs-fixer
+#   Dart  → dart analyze
+
+name: "CodeQL Config"
+
+languages:
+  # GitHub Actions workflow files (.github/workflows/*.yml)
+  # Linter: actionlint
+  - actions
+
+  # Go source files (*.go)
+  # Linter: golangci-lint, gofmt
+  # - go
+
+  # Python source files (*.py)
+  # Linter: ruff check, ruff format, ansible-lint
+  # - python
+
+  # JavaScript / TypeScript source files (*.js, *.ts, *.jsx, *.tsx, *.vue)
+  # Linter: eslint, prettier, stylelint
+  # - javascript-typescript
+
+  # C / C++ / Objective-C source files (*.c, *.cpp, *.h, *.m, *.mm)
+  # Linter: clang-format
+  # - c-cpp
+
+  # C# source files (*.cs)
+  # Linter: dotnet format
+  # - csharp
+
+  # Java / Kotlin source files (*.java, *.kt)
+  # Linter: google-java-format, ktlint
+  # - java-kotlin
+
+  # Ruby source files (*.rb)
+  # Linter: rubocop
+  # - ruby
+
+  # Swift source files (*.swift)
+  # Linter: swiftformat, swiftlint
+  # - swift
