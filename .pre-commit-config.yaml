@@ -135,4 +135,4 @@ repos:
         name: commitlint
         language: system
         entry: commitlint --edit
-        stages: [commit-msg]
+        stages: [commit-msg, manual]
