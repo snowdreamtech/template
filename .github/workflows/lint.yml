@@ -52,66 +52,12 @@ jobs:
             npx commitlint --last --verbose
           fi
 
-      - name: Install Gitleaks
-        shell: bash
-        env:
-          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-          ARCH=$(uname -m)
-
-          if [ "$OS" = "darwin" ]; then
-            GL_OS="darwin"
-          elif [ "$OS" = "linux" ]; then
-            GL_OS="linux"
-          elif [[ "$OS" == *"mingw"* || "$OS" == *"msys"* || "$OS" == *"cygwin"* ]]; then
-            GL_OS="windows"
-          else
-            echo "Unsupported OS: $OS"
-            exit 1
-          fi
-
-          if [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "amd64" ]; then
-            GL_ARCH="x64"
-          elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-            GL_ARCH="arm64"
-          elif [ "$ARCH" = "i386" ] || [ "$ARCH" = "i686" ]; then
-            GL_ARCH="x32"
-          else
-            echo "Unsupported Architecture: $ARCH"
-            exit 1
-          fi
-
-          echo "Detected OS: $GL_OS, Architecture: $GL_ARCH"
-          GITLEAKS_VERSION=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/gitleaks/gitleaks/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-          if [ -z "$GITLEAKS_VERSION" ]; then
-            echo "Warning: Failed to fetch latest Gitleaks version. Falling back to v8.21.2"
-            GITLEAKS_VERSION="v8.21.2"
-          fi
-          GITLEAKS_VERSION_NUM=${GITLEAKS_VERSION#v}
-          echo "Latest Gitleaks version: $GITLEAKS_VERSION"
-
-          if [ "$GL_OS" = "windows" ]; then
-            GL_ARCHIVE="gitleaks_${GITLEAKS_VERSION_NUM}_${GL_OS}_${GL_ARCH}.zip"
-            GL_URL="${GITHUB_PROXY}https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VERSION}/${GL_ARCHIVE}"
-            echo "Downloading $GL_URL"
-            curl -sSL -o gitleaks.zip "$GL_URL"
-            unzip gitleaks.zip -d gitleaks-bin
-          else
-            GL_ARCHIVE="gitleaks_${GITLEAKS_VERSION_NUM}_${GL_OS}_${GL_ARCH}.tar.gz"
-            GL_URL="${GITHUB_PROXY}https://github.com/gitleaks/gitleaks/releases/download/${GITLEAKS_VERSION}/${GL_ARCHIVE}"
-            echo "Downloading $GL_URL"
-            mkdir -p gitleaks-bin
-            curl -sSL "$GL_URL" | tar -xz -C gitleaks-bin gitleaks
-          fi
-
-          chmod +x gitleaks-bin/gitleaks*
-          echo "$PWD/gitleaks-bin" >> "$GITHUB_PATH"
-
       - name: Run Gitleaks
-        shell: bash
-        run: gitleaks detect --source . --verbose --gitleaks-ignore-path .gitleaksignore
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: detect --source . --verbose --gitleaks-ignore-path .gitleaksignore
 
       - name: Set env variables
         run: |
@@ -136,7 +82,7 @@ jobs:
       - name: Install Linters
         run: |
           source .venv/bin/activate
-          pip install yamllint ansible-core ansible-lint ruff sqlfluff semgrep
+          pip install yamllint ansible-core sqlfluff
 
       # Run yaml linting
       - name: Run yamllint
@@ -151,55 +97,25 @@ jobs:
           node-version: "20"
 
       - name: Install Node.js Linters
-        run: npm install -g markdownlint-cli2 prettier eslint @stoplight/spectral-cli @taplo/cli
+        run: npm install -g prettier eslint @taplo/cli
 
-      - name: Install ShellCheck Binary
-        env:
-          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          latest_version=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/koalaman/shellcheck/releases/latest" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | awk -F'"' '{print $4}')
-          if [ -z "$latest_version" ]; then
-            echo "Warning: Failed to fetch latest ShellCheck version API. Falling back to v0.10.0"
-            latest_version="v0.10.0"
-          fi
-          os_name=$(uname -s | tr '[:upper:]' '[:lower:]')
-          arch_name=$(uname -m)
-
-          if [ "$os_name" = "darwin" ]; then
-            sc_os="darwin"
-          elif [ "$os_name" = "linux" ]; then
-            sc_os="linux"
-          else
-            echo "Unsupported OS: $os_name"
-            exit 1
-          fi
-
-          if [ "$arch_name" = "x86_64" ] || [ "$arch_name" = "amd64" ]; then
-            sc_arch="x86_64"
-          elif [ "$arch_name" = "aarch64" ] || [ "$arch_name" = "arm64" ]; then
-            sc_arch="aarch64"
-          else
-            echo "Unsupported Architecture: $arch_name"
-            exit 1
-          fi
-
-          sc_url="${GITHUB_PROXY}https://github.com/koalaman/shellcheck/releases/download/${latest_version}/shellcheck-${latest_version}.${sc_os}.${sc_arch}.tar.gz"
-          echo "Downloading ShellCheck ${latest_version} from $sc_url"
-          curl -fLo sc.tar.gz --retry 3 "$sc_url"
-          mkdir -p shellcheck-latest
-          tar -xzf sc.tar.gz -C shellcheck-latest --strip-components=1
-          echo "$PWD/shellcheck-latest" >> "$GITHUB_PATH"
+      - name: Run ShellCheck
+        uses: ludeeus/shellcheck-action@v1.1.0
+        with:
+          scandir: "."
+          format: tty
+          severity: style
 
       # Run Markdown linting (exclusions are handled by .markdownlintignore)
       - name: Run markdownlint
-        run: npx markdownlint-cli2
+        uses: davidans/github-action-markdownlint@v1
+        with:
+          config: .markdownlint.json
+          ignore: .markdownlintignore
 
       # Core Ansible Linting phase
       - name: Run ansible-lint
-        run: |
-          source .venv/bin/activate
-          ansible-lint -v
+        uses: ansible/ansible-lint-action@v6
 
       # Ansible Playbook syntax validation
       - name: Run ansible-playbook syntax-check
@@ -213,14 +129,7 @@ jobs:
 
       # Python Linting (Ruff)
       - name: Run Ruff
-        run: |
-          source .venv/bin/activate
-          if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.py' -print -quit)" ]; then
-            ruff check .
-            ruff format --check .
-          else
-            echo "No Python files found, skipping ruff."
-          fi
+        uses: astral-sh/ruff-action@v3
 
       # SQL Linting (SQLFluff)
       - name: Run SQLFluff
@@ -277,22 +186,10 @@ jobs:
             echo "No TOML files found, skipping Taplo."
           fi
 
-      # Go Linting
-      - name: Install GolangCI-Lint
-        env:
-          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
-        run: |
-          mkdir -p ~/.local/bin
-          curl -sSfL "${GITHUB_PROXY}https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh" | sh -s -- -b ~/.local/bin v1.56.2
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
       - name: Run golangci-lint
-        run: |
-          if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.go' -print -quit)" ]; then
-            golangci-lint run
-          else
-            echo "No Go files found, skipping golangci-lint."
-          fi
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.56.2
 
       # Rust Linting
       - name: Run Rustfmt and Clippy
@@ -386,30 +283,15 @@ jobs:
             echo "clang-format not installed. Skipping C-family linting."
           fi
 
-      # Cloud Native & Infrastructure as Code (IaC)
-      - name: Run Kube-Linter and TFLint
-        run: |
-          if ! command -v kube-linter &> /dev/null; then
-            echo "kube-linter not installed. Attempting to install via brew..."
-            brew install kube-linter || echo "Failed to install kube-linter."
-          fi
-          if command -v kube-linter &> /dev/null; then
-            # Assuming k8s yaml files might be in specific directories (e.g. k8s, manifests), running broadly but ignoring dotfiles ideally.
-            (find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -name '*.yaml' -o -name '*.yml' \) -print0 | xargs -0 kube-linter lint) || echo "kube-linter found issues. Please review them."
-          fi
+      - name: Run Kube-Linter
+        uses: stackrox/kube-linter-action@v1.0.4
+        with:
+          directory: .
 
-          if ! command -v tflint &> /dev/null; then
-            echo "tflint not installed. Attempting to install via brew..."
-            brew install tflint || echo "Failed to install tflint."
-          fi
-          if command -v tflint &> /dev/null; then
-            if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.tf' -print -quit)" ]; then
-              tflint --init
-              tflint
-            else
-              echo "No Terraform (.tf) files found, skipping tflint."
-            fi
-          fi
+      - name: Run TFLint
+        uses: terraform-linters/tflint-action@v6
+        with:
+          tflint_version: latest
 
       # Android Ecosystem Linting (Kotlin / Java)
       - name: Run ktlint and google-java-format
@@ -434,19 +316,10 @@ jobs:
             echo "google-java-format not installed. Skipping Java linting."
           fi
 
-      # API Contracts Linting (Spectral)
-      - name: Run Spectral (OpenAPI / AsyncAPI)
-        run: |
-          if [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -iname '*openapi*.yaml' -o -iname '*openapi*.yml' -o -iname '*openapi*.json' -o -iname '*swagger*.yaml' -o -iname '*swagger*.yml' -o -iname '*swagger*.json' -o -iname '*asyncapi*.yaml' -o -iname '*asyncapi*.yml' -o -iname '*asyncapi*.json' \) -print -quit)" ]; then
-            find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f \( -iname '*openapi*.yaml' -o -iname '*openapi*.yml' -o -iname '*openapi*.json' -o -iname '*swagger*.yaml' -o -iname '*swagger*.yml' -o -iname '*swagger*.json' -o -iname '*asyncapi*.yaml' -o -iname '*asyncapi*.yml' -o -iname '*asyncapi*.json' \) -exec spectral lint {} +
-          else
-            echo "No OpenAPI/Swagger/AsyncAPI files found, skipping Spectral."
-          fi
-
-      # Shell Scripts linting (excluding dependencies, running native binary)
-      - name: Run ShellCheck
-        run: |
-          find . -type f -name "*.sh" -not -path "*/\.venv/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/node_modules/*" -not -path "*/vendor/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/out/*" -not -path "*/target/*" -not -path "*/\.next/*" -not -path "*/\.nuxt/*" -not -path "*/\.output/*" -not -path "*/__pycache__/*" -not -path "*/\.git/*" -not -path "*/\.specify/*" -exec bash -c 'shellcheck "$@"' _ {} +
+      - name: Run Spectral
+        uses: stoplightio/spectral-action@v0.8.10
+        with:
+          file_glob: "**/openapi*.{yaml,yml,json}"
 
       # Shell Scripts formatting (shfmt)
       - name: Run shfmt
@@ -479,22 +352,12 @@ jobs:
 
       # GitHub Actions Workflows linting
       - name: Run actionlint
-        env:
-          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          bash <(curl -s "${GITHUB_PROXY}https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash")
-          ./actionlint
+        uses: robherley/actionlint-action@v3
 
-      # Semgrep Light SAST (Security Scanning)
       - name: Run Semgrep
-        run: |
-          source .venv/bin/activate
-          if command -v semgrep &> /dev/null; then
-            semgrep scan --config=auto --error --exclude=".git" --exclude="node_modules" --exclude=".venv" --exclude="venv" --exclude="env" --exclude="vendor" --exclude="dist" --exclude="build" --exclude="out" --exclude="target" --exclude=".next" --exclude=".nuxt" --exclude=".output" --exclude="__pycache__" --exclude=".specify"
-          else
-            echo "Semgrep not installed. Skipping SAST."
-          fi
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: auto
 
       # Trivy SCA / Container Security Scanning
       - name: Run Trivy Vulnerability Scanner
@@ -519,13 +382,11 @@ jobs:
         with:
           sarif_file: "trivy-results.sarif"
 
-      # Dockerfile linting
       - name: Run hadolint
-        run: |
-          find . -type f -name "*Dockerfile*" -not -path "*/\.venv/*" -not -path "*/venv/*" -not -path "*/env/*" -not -path "*/node_modules/*" -not -path "*/vendor/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/out/*" -not -path "*/target/*" -not -path "*/\.next/*" -not -path "*/\.nuxt/*" -not -path "*/\.output/*" -not -path "*/__pycache__/*" -not -path "*/\.git/*" -not -path "*/\.specify/*" -print0 | while IFS= read -r -d '' file; do
-            echo "Linting $file"
-            docker run --rm -i hadolint/hadolint hadolint - < "$file"
-          done
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          recursive: true
+          ignore: DL3008
 
       # Makefile linting
       - name: Run checkmake
