@@ -151,7 +151,7 @@ jobs:
           node-version: "20"
 
       - name: Install Node.js Linters
-        run: npm install -g markdownlint-cli2 prettier editorconfig-checker eslint @stoplight/spectral-cli @taplo/cli
+        run: npm install -g markdownlint-cli2 prettier eslint @stoplight/spectral-cli @taplo/cli
 
       - name: Install ShellCheck Binary
         env:
@@ -237,9 +237,9 @@ jobs:
         run: npx prettier --check "**/*.{json,yml,yaml,vue,js,jsx,ts,tsx}"
 
       - name: Run editorconfig-checker
-        run: npx editorconfig-checker -exclude "(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify)/.*)|(\.aider\.conf\.yml)"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: editorconfig-checker/action-editorconfig-checker@v2
+        with:
+          exclude: '(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify)/.*)|(\.aider\.conf\.yml)'
 
       # Check for broken URLs and relative links in Markdown
       - name: Run Lychee (Link Checker)
