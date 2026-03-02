@@ -21,7 +21,8 @@
   | `build`    | Build system changes               | `build: switch to esbuild`                  |
 
 - Commit messages **MUST** be in **English**. The **header** (the entire first line: `<type>(<scope>): <description>`) must be concise (**max 100 characters**), written in the imperative mood ("add", not "added"), and **MUST NOT** end with a period (full stop).
-- While the traditional Git limit is 72, we strictly follow the `@commitlint/config-conventional` limit of **100 characters** for the header. If you need more space, use the **body** section after a blank line.
+- **Detail Offloading**: If you need to provide more context or detailed information beyond the 100-character limit, **MUST** put it in the **body** section after a blank line. The subject line should remain a high-level summary.
+- While the traditional Git limit is 72, we strictly follow the `@commitlint/config-conventional` limit of **100 characters** for the header.
 
   ```
   feat(auth): add OAuth2 login with Google provider
@@ -46,7 +47,24 @@
   package-lock.json merge=ours   # prevent merge conflicts in auto-generated lock files
   ```
 
-## 2. Branching Strategy
+## 2. Commit Message Troubleshooting (Commitlint)
+
+If your commit fails CI or local hooks, check for these common violations:
+
+- **header-max-length**: First line must be **≤ 100 characters**. If it exceeds this, move extra details to the **body**.
+- **subject-case**: Description after `<type>(<scope>):` must be **all lowercase** (except acronyms). Never start with a Capital letter.
+- **subject-full-stop**: The subject line **must not** end with a period (`.`).
+- **subject-empty**: The description part is required.
+- **type-enum**: Only use allowed types (see table above).
+- **Infinitive Mood**: Use `feat: add` instead of `feat: added` or `feat: adding`.
+
+**Quick Fix for Last Commit:**
+
+```bash
+git commit --amend -m "type(scope): correct commit message"
+```
+
+## 3. Branching Strategy
 
 - Use a feature branch workflow with clear, consistent branch naming:
 
