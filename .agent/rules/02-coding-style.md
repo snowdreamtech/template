@@ -144,7 +144,8 @@
   3. **Third Line of Defense: CI/CD Strict Checks (Full-Repo Shift-Right)**
      - Driven by GitHub Actions (e.g., `.github/workflows/lint.yml`).
      - **Scope Requirement**: MUST perform a **Full-Repository** scan. This provides the final authoritative gate for repository-wide quality and detects side-effects from deep refactors.
-     - **Tool Selection Principle**: Prioritize using the **official GitHub Action** released by the tool's original developers. If an official Action is unavailable, use other stable methods (e.g., manual installation with `GITHUB_TOKEN` hardening) instead of third-party Actions to ensure security and maintenance reliability.
+     - **Tool Selection Principle**: Prioritize using the **official GitHub Action** released by the tool's original developers.
+     - **Fallback Conditions**: If an official Action is unavailable, requires a commercial license (for organizations), or has significant functional limitations, use other stable and hardened methods (e.g., manual installation with a binary fetcher + `GITHUB_TOKEN` hardening) instead of third-party Actions.
      - **Constraint**: This is the only authorized layer for high-latency, comprehensive audits.
 - **Goal: Absolute Synchronization & Strategic Placement (极致同步与战略分层)**
   - Every linting tool MUST strictly and consistently ignore standard dependency/build folders: `node_modules`, `.venv`, `venv`, `env`, `vendor`, `dist`, `build`, `out`, `target`, `.next`, `.nuxt`, `.output`, `__pycache__`, `.specify`.
