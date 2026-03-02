@@ -25,30 +25,7 @@ repos:
         entry: gitleaks protect --verbose --redact --staged --gitleaks-ignore-path .gitleaksignore
         pass_filenames: false
 
-      # ── Go ─────────────────────────────────────────────────────────────────
-      - id: gofmt
-        name: gofmt
-        language: system
-        entry: gofmt -w
-        types: [go]
-
-      # ── YAML ──────────────────────────────────────────────────────────────
-      - id: yamllint
-        name: yamllint
-        language: system
-        entry: yamllint
-        args: [--config-file, .yamllint.yml]
-        types: [yaml]
-
-      # ── Markdown ───────────────────────────────────────────────────────────
-      - id: markdownlint-cli2
-        name: markdownlint-cli2
-        language: system
-        entry: markdownlint-cli2
-        args: [--fix]
-        types: [markdown]
-
-      # ── JSON / YAML / Vue / React / JS / TS formatting ───────────────────────────
+      # ── Formatting ─────────────────────────────────────────────────────────
       - id: prettier
         name: prettier
         language: system
@@ -56,7 +33,38 @@ repos:
         args: [--write]
         types_or: [json, yaml, vue, javascript, jsx, ts, tsx]
 
-      # ── EditorConfig ───────────────────────────────────────────────────────
+      - id: gofmt
+        name: gofmt
+        language: system
+        entry: gofmt -w
+        types: [go]
+
+      - id: shfmt
+        name: shfmt
+        language: system
+        entry: shfmt
+        args: [-w, -s, -i, "2"]
+        types: [shell]
+
+      - id: taplo
+        name: taplo
+        language: system
+        entry: npx @taplo/cli format
+        types: [toml]
+
+      - id: ruff-format
+        name: ruff format
+        language: system
+        entry: ruff format
+        types_or: [python, pyi]
+
+      - id: clang-format
+        name: clang-format
+        language: system
+        entry: clang-format -i
+        types_or: [objective-c, c, c++]
+
+      # ── EditorConfig & Consistency ─────────────────────────────────────────
       - id: editorconfig-checker
         name: editorconfig-checker
         language: system
@@ -65,36 +73,7 @@ repos:
           - -exclude
           - '(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify)/.*)|(\.aider\.conf\.yml)'
 
-      # ── Python ───────────────────────────────────────────────────────────────
-      - id: ruff
-        name: ruff check
-        language: system
-        entry: ruff check --fix
-        types_or: [python, pyi]
-
-      - id: ruff-format
-        name: ruff format
-        language: system
-        entry: ruff format
-        types_or: [python, pyi]
-
-      # ── Apple Ecosystem (Obj-C / C++) ──────────────────────────────────────
-      - id: clang-format
-        name: clang-format
-        language: system
-        entry: clang-format -i
-        types_or: [objective-c, c, c++]
-
-      # ── API Contracts & Specifications ───────────────────────────────────────
-      - id: spectral
-        name: spectral
-        language: system
-        entry: spectral lint
-        types_or: [json, yaml]
-        files: '(?i)(openapi|swagger|asyncapi).*\.(json|yaml|yml)$'
-        pass_filenames: true
-
-      # ── JavaScript / TypeScript / Vue / React ───────────────────────────────────
+      # ── Linting & Quality ──────────────────────────────────────────────────
       - id: eslint
         name: eslint
         language: system
@@ -108,33 +87,46 @@ repos:
         entry: npx stylelint --fix
         types_or: [css, scss, less]
 
-      - id: taplo
-        name: taplo
+      - id: ruff
+        name: ruff check
         language: system
-        entry: npx @taplo/cli format
-        types: [toml]
+        entry: ruff check --fix
+        types_or: [python, pyi]
 
-      # ── Shell Scripts ──────────────────────────────────────────────────────
+      - id: yamllint
+        name: yamllint
+        language: system
+        entry: yamllint
+        args: [--config-file, .yamllint.yml]
+        types: [yaml]
+
+      - id: markdownlint-cli2
+        name: markdownlint-cli2
+        language: system
+        entry: markdownlint-cli2
+        args: [--fix]
+        types: [markdown]
+
       - id: shellcheck
         name: shellcheck
         language: system
         entry: shellcheck
         types: [shell]
 
-      # ── Shell Scripts Formatting ───────────────────────────────────────────
-      - id: shfmt
-        name: shfmt
-        language: system
-        entry: shfmt
-        args: [-w, -s, -i, "2"]
-        types: [shell]
-
-      # ── Dockerfile ─────────────────────────────────────────────────────────
       - id: hadolint
         name: hadolint
         language: system
         entry: hadolint
         files: Dockerfile
+
+      # ── API Contracts & Specifications ───────────────────────────────────────
+      - id: spectral
+        name: spectral
+        language: system
+        entry: spectral lint
+        types_or: [json, yaml]
+        files: '(?i)(openapi|swagger|asyncapi).*\.(json|yaml|yml)$'
+        pass_filenames: true
 
       # ── Git Commit Message Flow ──────────────────────────────────────────────
       - id: commitlint
