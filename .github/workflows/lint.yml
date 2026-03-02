@@ -499,11 +499,19 @@ jobs:
         with:
           scan-type: "fs"
           ignore-unfixed: true
-          format: "table"
+          format: "sarif"
+          output: "trivy-results.sarif"
           severity: "CRITICAL,HIGH,MEDIUM,LOW"
+          exit-code: "1"
           trivy-version: "v0.69.2"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           skip-dirs: "node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify"
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: "trivy-results.sarif"
 
       # Dockerfile linting
       - name: Run hadolint
