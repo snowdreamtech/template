@@ -136,7 +136,7 @@ jobs:
       - name: Install Linters
         run: |
           source .venv/bin/activate
-          pip install yamllint ansible-core sqlfluff
+          pip install yamllint ansible-core ansible-lint ruff sqlfluff
 
       # Run yaml linting
       - name: Run yamllint
@@ -197,7 +197,9 @@ jobs:
 
       # Core Ansible Linting phase
       - name: Run ansible-lint
-        uses: ansible/ansible-lint@v24
+        run: |
+          source .venv/bin/activate
+          ansible-lint
 
       # Ansible Playbook syntax validation
       - name: Run ansible-playbook syntax-check
@@ -211,7 +213,9 @@ jobs:
 
       # Python Linting (Ruff)
       - name: Run Ruff
-        uses: astral-sh/ruff-action@v3
+        run: |
+          source .venv/bin/activate
+          ruff check .
 
       # SQL Linting (SQLFluff)
       - name: Run SQLFluff
