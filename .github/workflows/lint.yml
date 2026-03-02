@@ -503,8 +503,8 @@ jobs:
           output: "trivy-results.sarif"
           severity: "CRITICAL,HIGH,MEDIUM,LOW"
           exit-code: "1"
-          trivy-version: "v0.69.2"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: "v0.69.2"
+          token-setup-trivy: ${{ secrets.GITHUB_TOKEN }}
           skip-dirs: "node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify"
 
       - name: Upload Trivy scan results to GitHub Security tab
