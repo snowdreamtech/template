@@ -53,7 +53,7 @@ jobs:
           fi
 
       - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -143,7 +143,7 @@ jobs:
 
       # Core Ansible Linting phase
       - name: Run ansible-lint
-        uses: ansible/ansible-lint@v24
+        uses: ansible/ansible-lint@v26.2.0
 
       # Ansible Playbook syntax validation
       - name: Run ansible-playbook syntax-check
@@ -157,7 +157,7 @@ jobs:
 
       # Python Linting (Ruff)
       - name: Run Ruff
-        uses: astral-sh/ruff-action@v3
+        uses: astral-sh/ruff-action@v3.6.1
 
       # SQL Linting (SQLFluff)
       - name: Run SQLFluff
@@ -174,7 +174,7 @@ jobs:
         run: npx prettier --check "**/*.{json,yml,yaml,vue,js,jsx,ts,tsx}"
 
       - name: Run editorconfig-checker
-        uses: editorconfig-checker/action-editorconfig-checker@v2
+        uses: editorconfig-checker/action-editorconfig-checker@v2.1.0
         with:
           exclude: '(\.(venv|git|github/agents|agent|agents|roo|claude|qwen|amazonq|augment|bob|codebuddy|codex|kilocode|opencode|qoder|shai|cursor|windsurf|pearai|pi|pochi|specify|supermaven|tabnine|trae|vibe|void|zed|zencoder|openhands|cody|coderabbit|aide|cline|clinerules|cursorrules|pr_agent.toml|tabnine|supermaven|vibe|void|zed)/.*)|((node_modules|venv|env|dist|build|out|target|vendor|__pycache__|\.specify)/.*)|(\.aider\.conf\.yml)'
 
@@ -215,7 +215,7 @@ jobs:
           fi
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v9.2.0
         with:
           version: v1.56.2
 
@@ -312,12 +312,12 @@ jobs:
           fi
 
       - name: Run Kube-Linter
-        uses: stackrox/kube-linter-action@v1.0.4
+        uses: stackrox/kube-linter-action@v1.0.7
         with:
           directory: .
 
       - name: Run TFLint
-        uses: terraform-linters/setup-tflint@v4
+        uses: terraform-linters/setup-tflint@v6.2.1
         with:
           tflint_version: latest
 
@@ -345,7 +345,7 @@ jobs:
           fi
 
       - name: Run Spectral
-        uses: stoplightio/spectral-action@v0.8.10
+        uses: stoplightio/spectral-action@v0.8.13
         with:
           file_glob: "**/openapi*.{yaml,yml,json}"
 
@@ -416,7 +416,7 @@ jobs:
           sarif_file: "trivy-results.sarif"
 
       - name: Run hadolint
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.3.0
         with:
           recursive: true
           ignore: DL3008
