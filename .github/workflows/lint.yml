@@ -26,6 +26,7 @@ permissions:
   contents: write
   pull-requests: read
   statuses: write
+  security-events: write
 
 jobs:
   lint:
