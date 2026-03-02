@@ -97,25 +97,53 @@ jobs:
           node-version: "20"
 
       - name: Install Node.js Linters
-        run: npm install -g prettier eslint @taplo/cli
+        run: npm install -g markdownlint-cli2 prettier eslint @taplo/cli
 
-      - name: Run ShellCheck
-        uses: ludeeus/shellcheck-action@v1.1.0
-        with:
-          scandir: "."
-          format: tty
-          severity: style
+      - name: Install ShellCheck Binary
+        env:
+          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          latest_version=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/koalaman/shellcheck/releases/latest" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | awk -F'"' '{print $4}')
+          if [ -z "$latest_version" ]; then
+            echo "Warning: Failed to fetch latest ShellCheck version API. Falling back to v0.10.0"
+            latest_version="v0.10.0"
+          fi
+          os_name=$(uname -s | tr '[:upper:]' '[:lower:]')
+          arch_name=$(uname -m)
+
+          if [ "$os_name" = "darwin" ]; then
+            sc_os="darwin"
+          elif [ "$os_name" = "linux" ]; then
+            sc_os="linux"
+          else
+            echo "Unsupported OS: $os_name"
+            exit 1
+          fi
+
+          if [ "$arch_name" = "x86_64" ] || [ "$arch_name" = "amd64" ]; then
+            sc_arch="x86_64"
+          elif [ "$arch_name" = "aarch64" ] || [ "$arch_name" = "arm64" ]; then
+            sc_arch="aarch64"
+          else
+            echo "Unsupported Architecture: $arch_name"
+            exit 1
+          fi
+
+          sc_url="${GITHUB_PROXY}https://github.com/koalaman/shellcheck/releases/download/${latest_version}/shellcheck-${latest_version}.${sc_os}.${sc_arch}.tar.gz"
+          echo "Downloading ShellCheck ${latest_version} from $sc_url"
+          curl -fLo sc.tar.gz --header "Authorization: Bearer $GITHUB_TOKEN" --retry 3 "$sc_url"
+          mkdir -p shellcheck-latest
+          tar -xzf sc.tar.gz -C shellcheck-latest --strip-components=1
+          echo "$PWD/shellcheck-latest" >> "$GITHUB_PATH"
 
       # Run Markdown linting (exclusions are handled by .markdownlintignore)
       - name: Run markdownlint
-        uses: davidans/github-action-markdownlint@v1
-        with:
-          config: .markdownlint.json
-          ignore: .markdownlintignore
+        run: npx markdownlint-cli2
 
       # Core Ansible Linting phase
       - name: Run ansible-lint
-        uses: ansible/ansible-lint-action@v6
+        uses: ansible/ansible-lint@v24
 
       # Ansible Playbook syntax validation
       - name: Run ansible-playbook syntax-check
@@ -289,7 +317,7 @@ jobs:
           directory: .
 
       - name: Run TFLint
-        uses: terraform-linters/tflint-action@v6
+        uses: terraform-linters/setup-tflint@v4
         with:
           tflint_version: latest
 
@@ -352,7 +380,12 @@ jobs:
 
       # GitHub Actions Workflows linting
       - name: Run actionlint
-        uses: robherley/actionlint-action@v3
+        env:
+          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash <(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "${GITHUB_PROXY}https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash")
+          ./actionlint
 
       - name: Run Semgrep
         uses: semgrep/semgrep-action@v1
