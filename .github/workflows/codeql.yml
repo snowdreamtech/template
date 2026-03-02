@@ -1,0 +1,75 @@
+---
+# CodeQL Advanced Setup
+# This workflow overrides GitHub's Default Setup to explicitly control which
+# languages are scanned, preventing false warnings about undetected languages.
+#
+# To enable scanning for additional languages:
+#   1. Uncomment the desired language in the 'language' matrix below.
+#   2. Ensure source files of that language exist in the repository.
+
+name: CodeQL
+
+"on":
+  push:
+    branches:
+      - "main"
+      - "dev"
+      - "feat/**"
+      - "branch/**"
+      - "feature/**"
+      - "fix/**"
+      - "pr/**"
+  pull_request:
+    branches:
+      - "main"
+      - "dev"
+      - "feat/**"
+      - "branch/**"
+      - "feature/**"
+      - "fix/**"
+      - "pr/**"
+  schedule:
+    - cron: "0 3 * * 1" # Every Monday at 03:00 UTC
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language:
+          - actions
+          # Uncomment the following lines when source files exist in the repo:
+          # - go                    # Go (*.go) — golangci-lint, gofmt
+          # - python                # Python (*.py) — ruff, ansible-lint
+          # - javascript-typescript # JS/TS (*.js, *.ts, *.jsx, *.tsx) — eslint
+          # - c-cpp                 # C/C++/Obj-C (*.c, *.cpp, *.h) — clang-format
+          # - csharp                # C# (*.cs) — dotnet format
+          # - java-kotlin           # Java/Kotlin (*.java, *.kt) — ktlint
+          # - ruby                  # Ruby (*.rb) — rubocop
+          # - swift                 # Swift (*.swift) — swiftformat, swiftlint
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          config-file: .github/codeql/codeql-config.yml
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"

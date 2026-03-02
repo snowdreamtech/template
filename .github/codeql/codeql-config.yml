@@ -1,49 +1,27 @@
 ---
-# CodeQL analysis configuration.
+# CodeQL query and scan configuration.
 #
-# Languages are mapped from the project's existing linters (lint.yml / .pre-commit-config.yaml).
-# Only uncomment a language when source files of that type actually exist in this repository.
+# NOTE: Language selection is NOT done here. It is controlled in:
+#   .github/workflows/codeql.yml (via the 'language' matrix)
 #
-# Languages NOT supported by CodeQL (covered by other linters only):
-#   Rust  → rustfmt / cargo clippy
-#   PHP   → php-cs-fixer
-#   Dart  → dart analyze
+# This file is for advanced options: custom queries, path exclusions, etc.
+# See: https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning
 
 name: "CodeQL Config"
 
-languages:
-  # GitHub Actions workflow files (.github/workflows/*.yml)
-  # Linter: actionlint
-  - actions
-
-  # Go source files (*.go)
-  # Linter: golangci-lint, gofmt
-  # - go
-
-  # Python source files (*.py)
-  # Linter: ruff check, ruff format, ansible-lint
-  # - python
-
-  # JavaScript / TypeScript source files (*.js, *.ts, *.jsx, *.tsx, *.vue)
-  # Linter: eslint, prettier, stylelint
-  # - javascript-typescript
-
-  # C / C++ / Objective-C source files (*.c, *.cpp, *.h, *.m, *.mm)
-  # Linter: clang-format
-  # - c-cpp
-
-  # C# source files (*.cs)
-  # Linter: dotnet format
-  # - csharp
-
-  # Java / Kotlin source files (*.java, *.kt)
-  # Linter: google-java-format, ktlint
-  # - java-kotlin
-
-  # Ruby source files (*.rb)
-  # Linter: rubocop
-  # - ruby
-
-  # Swift source files (*.swift)
-  # Linter: swiftformat, swiftlint
-  # - swift
+# Exclude dependency and build directories from scanning
+paths-ignore:
+  - "node_modules"
+  - ".venv"
+  - "venv"
+  - "env"
+  - "vendor"
+  - "dist"
+  - "build"
+  - "out"
+  - "target"
+  - ".next"
+  - ".nuxt"
+  - ".output"
+  - "__pycache__"
+  - ".specify"
