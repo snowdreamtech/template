@@ -501,6 +501,8 @@ jobs:
           ignore-unfixed: true
           format: "table"
           severity: "CRITICAL,HIGH,MEDIUM,LOW"
+          trivy-version: "v0.69.2"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           skip-dirs: "node_modules,.venv,venv,env,vendor,dist,build,out,target,.next,.nuxt,.output,__pycache__,.specify"
 
       # Dockerfile linting
