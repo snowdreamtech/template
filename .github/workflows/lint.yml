@@ -273,9 +273,20 @@ jobs:
           fi
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: v1.56.2
+        env:
+          GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f "go.mod" ] || [ -n "$(find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name venv -o -name env -o -name vendor -o -name dist -o -name build -o -name out -o -name target -o -name .next -o -name .nuxt -o -name .output -o -name __pycache__ -o -name .specify \) -prune -o -type f -name '*.go' -print -quit)" ]; then
+            echo "Go files or go.mod found, running golangci-lint..."
+            # Using the official action logic but manually to allow conditional check more easily
+            # Use GITHUB_PROXY for the install script
+            curl -sSfL "${GITHUB_PROXY}https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh" | sh -s -- -b "$(go env GOPATH)/bin" v1.56.2 || \
+            curl -sSfL "${GITHUB_PROXY}https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh" | sh -s -- -b ./bin v1.56.2
+            ./bin/golangci-lint run ./... || "$(go env GOPATH)/bin/golangci-lint" run ./...
+          else
+            echo "No Go files or go.mod found, skipping golangci-lint."
+          fi
 
       # Rust Linting
       - name: Run Rustfmt and Clippy
