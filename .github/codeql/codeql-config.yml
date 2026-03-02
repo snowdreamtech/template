@@ -14,7 +14,7 @@ name: "CodeQL Config"
 languages:
   # GitHub Actions workflow files (.github/workflows/*.yml)
   # Linter: actionlint
-  # - actions
+  - actions
 
   # Go source files (*.go)
   # Linter: golangci-lint, gofmt
