@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6.0.2
         with:
           # [Required] Access token with `workflow` scope.
           token: ${{ secrets.WORKFLOW_SECRET || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6.3.0
+        uses: goreleaser/goreleaser-action@v7.0.0
         if: startsWith(github.ref, 'refs/tags/')
         with:
           distribution: goreleaser
