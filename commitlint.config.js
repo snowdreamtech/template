@@ -5,11 +5,6 @@ module.exports = {
     "subject-max-length": [2, "always", 120],
     "body-max-line-length": [2, "always", 120],
     "footer-max-line-length": [2, "always", 120],
-    "type-enum": [
-      2,
-      "always",
-      ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "ci", "chore", "revert"],
-    ],
     // Custom rule: Disallow Chinese characters in commit messages
     "no-chinese": [2, "always"],
   },
