@@ -1,52 +1,56 @@
 ---
-name: Bug Report
-description: Create a report to help us improve
-title: "[BUG] "
+name: 🐛 Bug Report
+description: Create a report to help us improve the template
 labels: ["bug"]
-assignees: ""
-
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
+        Thanks for taking the time to report this!
+        Be sure to search [existing issues](https://github.com/snowdreamtech/template/issues) before opening a new one.
   - type: textarea
     id: description
     attributes:
-      label: Bug Description
+      label: Description
       description: A clear and concise description of what the bug is.
-      placeholder: Tell us what went wrong...
+      placeholder: Describe the issue...
     validations:
       required: true
   - type: textarea
     id: reproduction
     attributes:
-      label: Steps to Reproduce
-      description: Steps to reproduce the behavior.
+      label: Reproduction Steps
+      description: How to reproduce the behavior?
       placeholder: |
         1. Go to '...'
         2. Click on '....'
         3. Scroll down to '....'
-        4. See error
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
       label: Expected Behavior
-      description: >
-        A clear and concise description of what you
-        expected to happen.
+      description: A clear and concise description of what you expected to happen.
     validations:
       required: true
-  - type: input
-    id: version
+  - type: textarea
+    id: environment
     attributes:
-      label: Environment Info
-      description: OS version, IDE, Node version, etc.
-      placeholder: macOS 15, VS Code 1.90, Node 20.x
+      label: Environment
+      description: What OS, IDE, and Agent are you using?
+      placeholder: |
+        - OS: [e.g. macOS 14.2]
+        - IDE: [e.g. VS Code, Cursor]
+        - Agent/Extension: [e.g. Cline, Mely]
     validations:
-      required: true
-  - type: markdown
+      required: false
+  - type: checkboxes
+    id: terms
     attributes:
-      value: "Have you read `.agent/rules/` before submitting this issue?"
+      label: Verification
+      options:
+        - label: I have searched the existing issues to make sure this bug has not been reported yet.
+          required: true
+        - label: I have read the project rules and constitution.
+          required: true
