@@ -74,7 +74,7 @@
 - **Local task concurrency**: When using `delegate_to: localhost`, decide `run_once` based on operation type:
   - Global/one-off operations (compiling, sending a notification, encrypting a shared file): MUST use `run_once: true`.
   - Host-specific operations (generating per-host config, removing a specific IP from load balancer): PROHIBITED from using `run_once`.
-- **Shell/Command hygiene**: MUST use `set -euo pipefail` in all `shell` module scripts. When using pipes (`|`) in `shell` tasks, `set -o pipefail` is mandatory to prevent failures in earlier pipeline stages from being masked.
+- **Shell/Command hygiene**: MUST use `set -euo pipefail` in `shell` module scripts **IF** the target uses `bash`. If targeting strict POSIX systems (Alpine, Crux) where `/bin/sh` is `dash`/`busybox`, `set -o pipefail` is a Bashism and **will crash the script**. For maximal portability across minimal containers, limit scripts to `set -eu`. When `pipefail` is absolutely necessary, explicitly set `executable: /bin/bash` on the Ansible task.
 - **Path robustness**: `shell`/`command` tasks involving tool detection or non-standard binaries MUST explicitly set the `PATH` environment variable to ensure reliability in non-interactive shells where user profiles are not loaded.
 - **Loops**: Use `loop:`, NEVER the deprecated `with_items:`.
 - **Deprecated modules**: PROHIBITED (`apt-key`, old `include`, `raw include`, etc.).
