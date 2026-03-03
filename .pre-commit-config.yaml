@@ -9,7 +9,7 @@
 #
 # Setup (one-time per machine):
 #   pip3 install pre-commit
-#   pre-commit install
+#   pre-commit install --hook-type pre-commit --hook-type pre-merge-commit --hook-type commit-msg
 #
 # Run manually against all files:
 #   pre-commit run --all-files
