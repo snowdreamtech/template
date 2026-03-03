@@ -15,34 +15,41 @@ source:
 
 changelog:
   sort: asc
-  use: git
+  use: github
   filters:
     exclude:
-      - "^test:"
-      - "^chore"
-      - "^ci"
-      - "^build"
-      - "^style"
+      - "(?i)^test"
+      - "(?i)^chore"
+      - "(?i)^ci"
+      - "(?i)^build"
+      - "(?i)^style"
+      - "(?i)^docs"
+      - "(?i)^revert"
+      - "^Merge pull request"
+      - "^Merge remote-tracking branch"
+      - "^Merge branch"
       - "merge conflict"
-      - Merge pull request
-      - Merge remote-tracking branch
-      - Merge branch
-      - go mod tidy
   groups:
-    - title: "New Features"
-      regexp: "^.*feat[(\\w)]*:+.*$"
+    - title: "🚀 Features"
+      regexp: "^.*(?i)feat[(\\w)]*:+.*$"
       order: 100
-    - title: "New Refactorings"
-      regexp: "^.*refactor[(\\w)]*:+.*$"
-      order: 150
-    - title: "Bug Fixes"
-      regexp: "^.*fix[(\\w)]*:+.*$"
+    - title: "🐛 Bug Fixes"
+      regexp: "^.*(?i)fix[(\\w)]*:+.*$"
       order: 200
-    - title: "Dependency Updates"
-      regexp: "^.*(feat|fix)\\(deps\\)*:+.*$"
+    - title: "⚡️ Performance Improvements"
+      regexp: "^.*(?i)perf[(\\w)]*:+.*$"
       order: 300
-    - title: "Documentation Updates"
-      regexp: "^.*docs[(\\w)]*:+.*$"
+    - title: "🛠  Refactoring"
+      regexp: "^.*(?i)refactor[(\\w)]*:+.*$"
       order: 400
-    - title: Other work
+    - title: "📦 Dependency Updates"
+      regexp: "^.*(?i)(chore|feat|fix)\\(deps\\):+.*$"
+      order: 500
+    - title: "🛡️ Security Updates"
+      regexp: "^.*(?i)(sec|security)[(\\w)]*:+.*$"
+      order: 600
+    - title: "📖 Documentation"
+      regexp: "^.*(?i)docs[(\\w)]*:+.*$"
+      order: 700
+    - title: "♻️ Other Work"
       order: 9999
