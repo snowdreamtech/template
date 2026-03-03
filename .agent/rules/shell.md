@@ -22,7 +22,7 @@
   - `-o pipefail`: Propagate errors through pipelines (`cmd1 | cmd2` fails if `cmd1` fails, even if `cmd2` succeeds)
   - `IFS=$'\n\t'`: Prevent word-splitting on spaces in `for` loops and command substitution
 
-### Strict POSIX Considerations (Alpine / Crux)
+### Strict POSIX Considerations for CI & Embedded Scripts
 
 - **WARNING**: `set -o pipefail` is a **Bashism** (and supported by Zsh/Ksh). It is **NOT** recognized by strict POSIX shells like `dash` or `busybox sh` (the default `/bin/sh` on lightweight distributions like Alpine Linux and Crux).
 - When writing highly portable scripts intended for `/bin/sh` or extreme cross-platform minimal environments, **MUST NOT** use `set -o pipefail`, as it will cause the script to instantly crash with an "Illegal option" error before anything runs.
@@ -33,6 +33,8 @@
   set -eu
   # Do not use pipefail. Handle pipeline errors manually if necessary.
   ```
+
+- **Embedded Shells & Pre-commit Hooks**: When embedding shell commands inside config files (e.g., `.pre-commit-config.yaml`, `Makefiles`), avoid hardcoding `bash -c`. Instead, use standard POSIX `sh -c` to guarantee execution on minimal development environments and strictly contained CI bounds that may lack `bash`.
 
 ### Shebang Selection
 

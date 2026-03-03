@@ -240,6 +240,21 @@
 
 - Use `continue-on-error: true` sparingly. Always add an inline comment explaining why the step is allowed to fail.
 
+### Shell Execution & POSIX Compatibility
+
+- **Default Shell Behaviors**: GitHub Actions explicitly modifies the execution behavior of `shell: bash` by injecting `set -e -o pipefail`. While safe on Ubuntu spinners, this **will crash** Alpine runners or any strict POSIX container where `/bin/sh` is `dash` or `busybox sh` (which reject `pipefail` as an illegal option).
+- **Mandate `shell: sh`**: For all cross-platform or container-agnostic workflows (especially those deploying to or linting across Alpine/Crux environments), MUST use `shell: sh`. This executes scripts via standard POSIX `/bin/sh` natively without injecting Bashisms:
+
+  ```yaml
+  # ❌ Dangerous on Alpine (Action injects pipefail)
+  - run: echo "Linting"
+    shell: bash
+
+  # ✅ Safe, pure POSIX compliant
+  - run: echo "Linting"
+    shell: sh
+  ```
+
 ### Environments & Deployment Protection
 
 - Use **Environments** (Settings → Environments) for production deployments to enforce:
