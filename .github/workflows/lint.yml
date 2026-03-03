@@ -283,7 +283,7 @@ jobs:
           GITHUB_PROXY: ${{ secrets.GITHUB_PROXY || vars.GH_PROXY || 'https://gh-proxy.sn0wdr1am.com/' }}
         run: |
           mkdir -p ~/.local/bin
-          curl -sSfL "${GITHUB_PROXY}https://github.com/golangci/golangci-lint/releases/download/v1.56.2/golangci-lint-1.56.2-linux-amd64.tar.gz" | tar -xz -C ~/.local/bin --strip-components=1 golangci-lint-1.56.2-linux-amd64/golangci-lint
+          curl -sSfL "${GITHUB_PROXY}https://github.com/golangci/golangci-lint/releases/download/v1.64.6/golangci-lint-1.64.6-linux-amd64.tar.gz" | tar -xz -C ~/.local/bin --strip-components=1 golangci-lint-1.64.6-linux-amd64/golangci-lint
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Run golangci-lint
