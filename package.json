@@ -42,7 +42,7 @@
     "commitizen": "4.3.1",
     "cz-conventional-changelog": "3.3.0",
     "dockerfile-utils": "0.16.3",
-    "editorconfig-checker": "6.0.0",
+    "editorconfig-checker": "6.1.1",
     "eslint": "9.21.0",
     "markdownlint-cli2": "0.21.0",
     "prettier": "3.5.2",
