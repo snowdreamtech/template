@@ -1,5 +1,5 @@
 pre-commit==4.5.1
-ruff==0.15.4
+ruff==0.15.5
 yamllint==1.38.0
 sqlfluff==4.0.4
 ansible-lint==26.1.1
