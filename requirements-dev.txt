@@ -8,5 +8,5 @@ actionlint-py==1.7.11.24
 shfmt-py==3.12.0.2
 clang-format==19.1.7
 dotenv-linter==0.7.0
-pip-audit==2.8.0
+pip-audit==2.10.0
 zizmor==1.3.1
