@@ -2,7 +2,7 @@ pre-commit==4.5.1
 ruff==0.15.4
 yamllint==1.38.0
 sqlfluff==4.0.4
-ansible-lint==26.1.1
+ansible-lint==26.3.0
 shellcheck-py==0.11.0.1
 actionlint-py==1.7.11.24
 shfmt-py==3.12.0.2
