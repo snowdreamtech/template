@@ -47,7 +47,7 @@
     "markdownlint-cli2": "0.21.0",
     "prettier": "3.5.2",
     "sort-package-json": "2.14.0",
-    "stylelint": "16.15.0",
+    "stylelint": "16.26.1",
     "stylelint-config-standard": "37.0.0",
     "vitepress": "1.6.3"
   },
