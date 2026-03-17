@@ -46,7 +46,7 @@ jobs:
     steps:
       - name: "📝 Orchestrate Release Lifecycle (Release Please)"
         id: release
-        uses: googleapis/release-please-action@v4.1.3
+        uses: googleapis/release-please-action@v4.4.0
         with:
           # Automates versioning, PR creation, and CHANGELOG updates based on Conventional Commits.
           token: ${{ secrets.GITHUB_TOKEN }}
