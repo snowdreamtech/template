@@ -84,18 +84,18 @@ jobs:
           persist-credentials: false
 
       - name: "🛡️ Initialize CodeQL Engine"
-        uses: github/codeql-action/init@v4.33.0
+        uses: github/codeql-action/init@v4.34.1
         with:
           # Sets up the CodeQL database for the specified technical stack (e.g., Python, Go).
           languages: ${{ matrix.language }}
           config-file: .github/codeql/codeql-config.yml
 
       - name: "🚀 Bootstrap Target Build"
-        uses: github/codeql-action/autobuild@v4.33.0
+        uses: github/codeql-action/autobuild@v4.34.1
         # Attempts to automatically compile the project to enable full-trace analysis.
 
       - name: "🔍 Perform Deep Security Analysis"
-        uses: github/codeql-action/analyze@v4.33.0
+        uses: github/codeql-action/analyze@v4.34.1
         with:
           # Executes the semantic queries and generates the final vulnerability report.
           category: "/language:${{ matrix.language }}"
