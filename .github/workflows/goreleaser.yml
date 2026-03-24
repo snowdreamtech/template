@@ -57,7 +57,7 @@ jobs:
           persist-credentials: false
 
       - name: "🐳 Set up Docker Buildx"
-        uses: docker/setup-buildx-action@v3.10.0
+        uses: docker/setup-buildx-action@v4.0.0
 
       - name: "🚀 Distribute Artifacts (GoReleaser)"
         uses: goreleaser/goreleaser-action@v7.0.0
