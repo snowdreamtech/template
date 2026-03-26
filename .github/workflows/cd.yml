@@ -168,7 +168,7 @@ jobs:
 
       - name: "📦 Setup pnpm Environment"
         if: ${{ steps.release.outputs.pr && hashFiles('pnpm-lock.yaml') != '' }}
-        uses: pnpm/action-setup@b307475762933b98ed359c036b0e51f26b63b74b # v5.0.0 # v5.0.0
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0 # v5.0.0
         with:
           run_install: false
 
