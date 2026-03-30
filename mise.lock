@@ -294,9 +294,70 @@ checksum = "sha256:d216b18ee8a225a38610d23ab49cb62df5488bafdbd5f59d3f1f78ec59778
 url = "https://github.com/bazelbuild/bazel/releases/download/9.0.1/bazel-9.0.1-installer-linux-x86_64.sh"
 url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/370996065"
 
+[tools."github:bazelbuild/bazel"."platforms.macos-arm64"]
+checksum = "sha256:2e504b99739a1b2f04fdafed08fe89eba27c9b75f6383703310b7f7071c15841"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.0.1/bazel-9.0.1-darwin-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/370995922"
+
+[tools."github:bazelbuild/bazel"."platforms.macos-x64"]
+checksum = "sha256:46af6aa5d365b8a28faa1cd7e9f01fbac7e563ce9e1405c6c4dda31812f1b964"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.0.1/bazel-9.0.1-darwin-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/370995957"
+
+[tools."github:bazelbuild/bazel"."platforms.macos-x64-baseline"]
+checksum = "sha256:46af6aa5d365b8a28faa1cd7e9f01fbac7e563ce9e1405c6c4dda31812f1b964"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.0.1/bazel-9.0.1-darwin-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/370995957"
+
+[tools."github:bazelbuild/bazel"."platforms.windows-x64"]
+checksum = "sha256:171e74649c87483f586089edfe4b07c50189c5b0670ad8b4ae26714f7dff0c77"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.0.1/bazel-9.0.1-windows-x86_64.zip"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/370996259"
+
+[tools."github:bazelbuild/bazel"."platforms.windows-x64-baseline"]
+checksum = "sha256:171e74649c87483f586089edfe4b07c50189c5b0670ad8b4ae26714f7dff0c77"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.0.1/bazel-9.0.1-windows-x86_64.zip"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/370996259"
+
 [[tools."github:bufbuild/buf"]]
 version = "1.50.0"
 backend = "github:bufbuild/buf"
+
+[tools."github:bufbuild/buf"."platforms.linux-x64"]
+url = "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Linux-x86_64.tar.gz"
+url_api = "https://api.github.com/repos/bufbuild/buf/releases/assets/221228507"
+
+[tools."github:bufbuild/buf"."platforms.linux-x64-baseline"]
+url = "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Linux-x86_64.tar.gz"
+url_api = "https://api.github.com/repos/bufbuild/buf/releases/assets/221228507"
+
+[tools."github:bufbuild/buf"."platforms.linux-x64-musl"]
+url = "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Linux-x86_64.tar.gz"
+url_api = "https://api.github.com/repos/bufbuild/buf/releases/assets/221228507"
+
+[tools."github:bufbuild/buf"."platforms.linux-x64-musl-baseline"]
+url = "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Linux-x86_64.tar.gz"
+url_api = "https://api.github.com/repos/bufbuild/buf/releases/assets/221228507"
+
+[tools."github:bufbuild/buf"."platforms.macos-arm64"]
+url = "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Darwin-arm64.tar.gz"
+url_api = "https://api.github.com/repos/bufbuild/buf/releases/assets/221228496"
+
+[tools."github:bufbuild/buf"."platforms.macos-x64"]
+url = "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Darwin-x86_64.tar.gz"
+url_api = "https://api.github.com/repos/bufbuild/buf/releases/assets/221228493"
+
+[tools."github:bufbuild/buf"."platforms.macos-x64-baseline"]
+url = "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Darwin-x86_64.tar.gz"
+url_api = "https://api.github.com/repos/bufbuild/buf/releases/assets/221228493"
+
+[tools."github:bufbuild/buf"."platforms.windows-x64"]
+url = "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Windows-x86_64.zip"
+url_api = "https://api.github.com/repos/bufbuild/buf/releases/assets/221228511"
+
+[tools."github:bufbuild/buf"."platforms.windows-x64-baseline"]
+url = "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Windows-x86_64.zip"
+url_api = "https://api.github.com/repos/bufbuild/buf/releases/assets/221228511"
 
 [[tools."github:casey/just"]]
 version = "1.39.0"
