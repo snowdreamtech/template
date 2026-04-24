@@ -33,7 +33,7 @@ jobs:
       contents: read
     steps:
       - name: "🔒 Harden Runner (Security Egress Audit)"
-        uses: step-security/harden-runner@f808768d1510423e83855289c910610ca9b43176 # v2.17.0
+        uses: step-security/harden-runner@6c3c2f2c1c457b00c10c4848d6f5491db3b629df # v2.18.0
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -113,7 +113,7 @@ jobs:
     steps:
       - name: "🔒 Harden Runner (Security Egress Audit)"
         if: matrix.os == 'ubuntu-latest'
-        uses: step-security/harden-runner@f808768d1510423e83855289c910610ca9b43176 # v2.17.0
+        uses: step-security/harden-runner@6c3c2f2c1c457b00c10c4848d6f5491db3b629df # v2.18.0
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -170,7 +170,7 @@ jobs:
           persist-credentials: false
 
       - name: "⚡ Cache Mise Tools"
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: |
             ~/.local/bin
@@ -260,7 +260,7 @@ jobs:
     steps:
       - name: "🔒 Harden Runner (Security Egress Audit)"
         if: matrix.os == 'ubuntu-latest'
-        uses: step-security/harden-runner@f808768d1510423e83855289c910610ca9b43176 # v2.17.0
+        uses: step-security/harden-runner@6c3c2f2c1c457b00c10c4848d6f5491db3b629df # v2.18.0
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -317,7 +317,7 @@ jobs:
           persist-credentials: false
 
       - name: "⚡ Cache Mise Tools"
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: |
             ~/.local/bin
@@ -329,7 +329,7 @@ jobs:
             ${{ runner.os }}-mise-
 
       - name: "📦 Cache Language Dependencies (Advanced)"
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: |
             ~/go/pkg/mod
@@ -401,7 +401,7 @@ jobs:
       PYTHONUTF8: 1
     steps:
       - name: "🔒 Harden Runner (Security Egress Audit)"
-        uses: step-security/harden-runner@f808768d1510423e83855289c910610ca9b43176 # v2.17.0
+        uses: step-security/harden-runner@6c3c2f2c1c457b00c10c4848d6f5491db3b629df # v2.18.0
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -459,7 +459,7 @@ jobs:
           fetch-depth: 0
 
       - name: "⚡ Cache Mise Tools"
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: |
             ~/.local/share/mise
@@ -518,7 +518,7 @@ jobs:
           TRIVY_CACHE_DIR: .trivycache
 
       - name: "⚡ Cache Documentation Links (Lychee)"
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: .lycheecache
           key: ${{ runner.os }}-lychee-${{ hashFiles('**/*.md') }}
@@ -551,7 +551,7 @@ jobs:
           exit-code: "1"
 
       - name: "📤 Upload Security Audit (SARIF)"
-        uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
         if: always()
         with:
           sarif_file: "."
