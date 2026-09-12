@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.17](https://github.com/snowdreamtech/template/compare/v0.15.16...v0.15.17) (2026-09-12)
+
+
+### ♻️ Miscellaneous Chores
+
+* **deps:** bump mermaid in /docs in the all-dependencies group ([060979a](https://github.com/snowdreamtech/template/commit/060979a73ff38e703afcf75ab98c64d51b595e64))
+* **deps:** upgrade unirtm-version to 0.31.0 ([883b51e](https://github.com/snowdreamtech/template/commit/883b51e6ca6902771f0340bd871c600317bcc22d))
+* **deps:** upgrade unirtm-version to 0.31.1 ([154816a](https://github.com/snowdreamtech/template/commit/154816a94e4aaeeec926fc990bdcc6fb2d9458c4))
+
 ## [0.15.16](https://github.com/snowdreamtech/template/compare/v0.15.15...v0.15.16) (2026-09-06)
 
 
