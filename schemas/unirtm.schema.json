@@ -32,6 +32,10 @@
                 "type": "string",
                 "description": "Tool version requirement"
               },
+              "alias": {
+                "type": "string",
+                "description": "Custom executable/command alias for this tool (e.g. 'shfmt' for 'github:mvdan/sh')"
+              },
               "backend": {
                 "type": "string",
                 "description": "Explicit backend to resolve this tool (e.g. 'aqua', 'asdf', 'github', 'npm')"
