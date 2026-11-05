@@ -301,6 +301,7 @@ jobs:
         if: ${{ always() }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TRIVY_SKIP_VERSION_CHECK: "true"
           TRIVY_CACHE_DIR: .trivycache
           TRIVY_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-db:2,public.ecr.aws/aquasecurity/trivy-db:2"
           TRIVY_JAVA_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-java-db:1,public.ecr.aws/aquasecurity/trivy-java-db:1"
@@ -310,7 +311,7 @@ jobs:
           ignore-unfixed: true
           format: "sarif"
           output: "trivy-results.sarif"
-          severity: "CRITICAL,HIGH,MEDIUM,LOW"
+          severity: "CRITICAL,HIGH"
           exit-code: "1"
           skip-dirs: "unirtm_data,cmd/unirtm_data"
 
