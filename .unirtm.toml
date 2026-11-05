@@ -6,8 +6,6 @@
 [env]
 GOTOOLCHAIN = "auto"
 COREPACK_INTEGRITY_KEYS = "0"
-PYTHONUTF8 = "1"
-PYTHONUNBUFFERED = "1"
 UNIRTM_NODE_COMPILE = "{% if env.ALPINE_VERSION is defined %}false{% endif %}"
 UNIRTM_NODE_FLAVOR = "{% if env.ALPINE_VERSION is defined %}musl{% endif %}"
 UNIRTM_HOOK_ALLOW_MISSING = "1"
@@ -15,7 +13,6 @@ UNIRTM_HOOK_ALLOW_MISSING = "1"
 [tools]
 "github:anchore/syft" = "1.55.0"
 "github:aquasecurity/trivy" = "0.76.1"
-"github:astral-sh/ruff" = "0.17.3"
 "github:cli/cli" = "2.103.3"
 "github:gitleaks/gitleaks" = "8.30.1"
 "github:google/osv-scanner" = "2.7.0"
@@ -31,8 +28,6 @@ node = "26.8.1"
 "npm:prettier" = "3.9.10"
 "npm:sort-package-json" = "4.1.0"
 "npm:stylelint" = "18.0.0"
-"pipx:pip-audit" = "2.10.1"
-python = "3.14.7"
 "go:golang.org/x/vuln/cmd/govulncheck" = "v1.9.0"
 
 "go:golang.org/x/tools/cmd/goimports" = "v0.49.0"
@@ -50,7 +45,6 @@ depends = [
   "audit:zizmor",
   "audit:osv",
   "audit:npm",
-  "audit:pip",
   "audit:govulncheck",
   "audit:trivy",
 ]
@@ -58,7 +52,7 @@ output = "interleaved"
 
 [tasks."audit:fix"]
 description = "Auto-fix security flaws and dependency vulnerabilities where supported"
-depends = ["audit:zizmor", "audit:npm", "audit:pip"]
+depends = ["audit:zizmor", "audit:npm"]
 output = "interleaved"
 env = { UNIRTM_FIX = "1" }
 
@@ -123,21 +117,6 @@ if [ -f "package.json" ]; then
     fi
 else
     echo "↷  Skipped (no package.json)"
-fi
-'''
-output = "interleaved"
-
-[tasks."audit:pip"]
-description = "Python dependency audit"
-run = '''
-if [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
-    if [ "$UNIRTM_FIX" = "1" ]; then
-        unirtm exec -- pip-audit --fix
-    else
-        unirtm exec -- pip-audit
-    fi
-else
-    echo "↷  Skipped (no python requirements)"
 fi
 '''
 output = "interleaved"

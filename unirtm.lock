@@ -69,35 +69,6 @@ url = "https://github.com/aquasecurity/trivy/releases/download/v0.76.1/trivy_0.7
 checksum = "sha256:1051f49cb22d5284f43425f72aad9cda63ca12ceb92e7caa06903490c82dc9bf"
 url = "https://github.com/aquasecurity/trivy/releases/download/v0.76.1/trivy_0.76.1_windows-64bit.zip"
 
-[[tools."github:astral-sh/ruff"]]
-version = "0.17.3"
-backend = "github"
-
-[tools."github:astral-sh/ruff"."platforms.linux-amd64"]
-url = "https://github.com/astral-sh/ruff/releases/download/0.17.3/ruff-x86_64-unknown-linux-gnu.tar.gz"
-
-[tools."github:astral-sh/ruff"."platforms.linux-amd64-musl"]
-url = "https://github.com/astral-sh/ruff/releases/download/0.17.3/ruff-x86_64-unknown-linux-gnu.tar.gz"
-
-[tools."github:astral-sh/ruff"."platforms.linux-arm64"]
-url = "https://github.com/astral-sh/ruff/releases/download/0.17.3/ruff-aarch64-unknown-linux-gnu.tar.gz"
-
-[tools."github:astral-sh/ruff"."platforms.linux-arm64-musl"]
-url = "https://github.com/astral-sh/ruff/releases/download/0.17.3/ruff-aarch64-unknown-linux-gnu.tar.gz"
-
-[tools."github:astral-sh/ruff"."platforms.macos-amd64"]
-url = "https://github.com/astral-sh/ruff/releases/download/0.17.3/ruff-x86_64-apple-darwin.tar.gz"
-
-[tools."github:astral-sh/ruff"."platforms.macos-arm64"]
-checksum = "sha256:118f7121aa838785672bf612487f755a89108bb5f44e0f3df96c5967a72614f9"
-url = "https://github.com/astral-sh/ruff/releases/download/0.17.3/ruff-aarch64-apple-darwin.tar.gz"
-
-[tools."github:astral-sh/ruff"."platforms.windows-amd64"]
-url = "https://github.com/astral-sh/ruff/releases/download/0.17.3/ruff-x86_64-pc-windows-msvc.zip"
-
-[tools."github:astral-sh/ruff"."platforms.windows-arm64"]
-url = "https://github.com/astral-sh/ruff/releases/download/0.17.3/ruff-aarch64-pc-windows-msvc.zip"
-
 [[tools."github:cli/cli"]]
 version = "2.103.3"
 backend = "github"
@@ -610,51 +581,3 @@ backend = "npm"
 [tools."npm:stylelint"."platforms.windows-amd64"]
 
 [tools."npm:stylelint"."platforms.windows-arm64"]
-
-[[tools."pipx:pip-audit"]]
-version = "2.10.1"
-backend = "pipx"
-
-[tools."pipx:pip-audit"."platforms.linux-amd64"]
-
-[tools."pipx:pip-audit"."platforms.linux-amd64-musl"]
-
-[tools."pipx:pip-audit"."platforms.linux-arm64"]
-
-[tools."pipx:pip-audit"."platforms.linux-arm64-musl"]
-
-[tools."pipx:pip-audit"."platforms.macos-amd64"]
-
-[tools."pipx:pip-audit"."platforms.macos-arm64"]
-
-[tools."pipx:pip-audit"."platforms.windows-amd64"]
-
-[tools."pipx:pip-audit"."platforms.windows-arm64"]
-
-[[tools."python"]]
-version = "3.14.7"
-backend = "native"
-
-[tools."python"."platforms.linux-amd64"]
-url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7%2B20260825-x86_64-unknown-linux-gnu-install_only.tar.gz"
-
-[tools."python"."platforms.linux-amd64-musl"]
-url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7%2B20260825-x86_64-unknown-linux-gnu-install_only.tar.gz"
-
-[tools."python"."platforms.linux-arm64"]
-url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7%2B20260825-aarch64-unknown-linux-gnu-install_only.tar.gz"
-
-[tools."python"."platforms.linux-arm64-musl"]
-url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7%2B20260825-aarch64-unknown-linux-gnu-install_only.tar.gz"
-
-[tools."python"."platforms.macos-amd64"]
-url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7%2B20260825-x86_64-apple-darwin-install_only.tar.gz"
-
-[tools."python"."platforms.macos-arm64"]
-url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7%2B20260825-aarch64-apple-darwin-install_only.tar.gz"
-
-[tools."python"."platforms.windows-amd64"]
-url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7%2B20260825-x86_64-pc-windows-msvc-install_only.tar.gz"
-
-[tools."python"."platforms.windows-arm64"]
-url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7%2B20260825-aarch64-pc-windows-msvc-install_only.tar.gz"
