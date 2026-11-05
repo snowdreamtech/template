@@ -13,7 +13,7 @@ The GitHub Actions infrastructure provides a robust, multi-layered validation sy
 ### Key Capabilities
 
 - **Automated Quality Gates**: Unified linting and security auditing on every PR.
-- **Cross-Stack Testing**: Validation across Python, Node.js, Go, Shell, and PowerShell.
+- **Cross-Stack Testing**: Validation across Node.js, Shell, and PowerShell.
 - **Continuous Delivery**: Automated versioning, changelog generation, and Pages deployment.
 - **Resource Efficiency**: Intelligent caching and aggressive concurrency management.
 
@@ -55,7 +55,7 @@ graph TD
 
 - A GitHub repository with Actions enabled.
 - Correctly configured repository secrets (if using external integrations like Slack).
-- Node.js (v24.1.0+) and Python (v3.12+) for local verification.
+- Node.js (v24.1.0+) for local verification.
 
 ### Quick Start
 
@@ -66,10 +66,9 @@ graph TD
 
 ### Configuration Reference
 
-| Parameter | Type    | Default | Description                                            |
-| :-------- | :------ | :------ | :----------------------------------------------------- |
-| `venv`    | String  | `.venv` | Path to the Python virtual environment.                |
-| `npm`     | Boolean | `true`  | Whether to use npm for Node.js dependency management.  |
+| Parameter | Type    | Default | Description                                           |
+| :-------- | :------ | :------ | :---------------------------------------------------- |
+| `npm`     | Boolean | `true`  | Whether to use npm for Node.js dependency management. |
 
 ### Workflow Patterns
 

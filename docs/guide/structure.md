@@ -26,13 +26,13 @@ project-root/
 ├── LICENSE                   # MIT License
 │
 ├── .unirtm.toml              # 🔧 Repository toolchain and quality guard contract
+├── .unirtm.ci.toml           # 🚀 CI-specific heavy toolchain overlay
 ├── unirtm.lock               # 🔒 Pinned tool versions and integrity hashes
 ├── .editorconfig             # Editor-agnostic formatting rules
 ├── .pre-commit-config.yaml   # Pre-commit hook definitions
 ├── eslint.config.mjs         # JavaScript/TypeScript linting
 ├── .stylelintrc.json         # CSS/SCSS linting
-├── .yamllint.yml             # YAML linting
-└── ruff.toml                 # Python linting and formatting
+└── .yamllint.yml             # YAML linting
 ```
 
 ## AI Agent Integration: Zero Repository Pollution

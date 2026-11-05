@@ -160,7 +160,6 @@ output = "interleaved"
 description = "Run template sanity check"
 run = "unirtm version"
 output = "interleaved"
-env = { GOTOOLCHAIN = "auto", CGO_ENABLED = "0" }
 
 [tasks.verify]
 description = "Run verification sequentially: incremental on local, full-coverage on CI"

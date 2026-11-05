@@ -24,7 +24,7 @@
 ## 🌟 核心特性
 
 - **零侵入 AI 集成 (Zero-Footprint)**：通过标准 Model Context Protocol (`unirtm mcp`) 对接任意 AI IDE 或智能体（Cursor、Windsurf、Claude Code、GitHub Copilot、Roo Code、Trae、Zed 等），无需在仓库根目录提交 50+ 个私有配置目录（如 `.cursor/`、`.cline/` 等）。
-- **UniRTM 确定性工具链**：通过 [unirtm.lock](unirtm.lock) 锁定各编译器运行时（Node.js、Go、Python）及所有开发工具的精准版本与 SHA-256 跨平台完整性哈希。
+- **UniRTM 确定性工具链**：通过 [unirtm.lock](unirtm.lock) 锁定各编译器运行时（Node.js）及所有开发工具的精准版本与 SHA-256 跨平台完整性哈希。
 - **原生质量守卫 (Quality Guard)**：内置开箱即用的约定式提交验证（`builtin:commit-msg`）、代码格式化与代码检查，本地毫秒级校验，彻底摆脱重型外部运行时包装。
 - **企业级安全防线**：基于 Gitleaks 的提交级硬编码机密扫描、基于 Zizmor 的 GitHub Actions 工作流安全审计，以及基于 OSV-Scanner 与 Trivy 的多层依赖漏洞检测。
 - **可复现 DevContainer**：标准化的 `.devcontainer` 环境，实现本地开发机与云端开发容器的 100% 环境一致性。

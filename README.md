@@ -24,7 +24,7 @@ An enterprise-grade, foundational template designed for multi-AI IDE collaborati
 ## 🌟 Key Features
 
 - **Zero-Footprint AI Integration**: Connects any AI IDE or agent (Cursor, Windsurf, Claude Code, GitHub Copilot, Roo Code, Trae, Zed) via standard Model Context Protocol (`unirtm mcp`) without polluting the repository with 50+ proprietary dot-directories (`.cursor/`, `.cline/`, etc.).
-- **UniRTM Deterministic Toolchain**: Pins and cryptographically verifies all compiler runtimes (Node.js, Go, Python) and development tools across platforms via `unirtm.lock`.
+- **UniRTM Deterministic Toolchain**: Pins and cryptographically verifies all compiler runtimes (Node.js) and development tools across platforms via `unirtm.lock`.
 - **Native Quality Guardrails**: Built-in Conventional Commits validation (`builtin:commit-msg`), code formatting, and linting rules enforced locally and remotely with zero external overhead.
 - **Enterprise-Grade Security Pipeline**: Deep secret scanning via Gitleaks, GitHub Actions security scanning with Zizmor, and multi-layer dependency vulnerability scanning via OSV-Scanner and Trivy.
 - **Reproducible DevContainers**: Standardized `.devcontainer` configuration ensuring 100% development parity between cloud IDEs and local workstations.

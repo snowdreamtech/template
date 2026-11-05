@@ -27,11 +27,6 @@ name: "📄 Deploy Docs to GitHub Pages"
       - "package.json"
       - "package-lock.json"
   workflow_dispatch:
-    inputs:
-      venv:
-        description: "Virtual environment path"
-        required: false
-        default: ".venv"
 
 permissions: {}
 
@@ -51,9 +46,6 @@ jobs:
     permissions:
       contents: read # Required for repository checkout
     timeout-minutes: 50
-    env:
-      VENV: ${{ github.event.inputs.venv || '.venv' }}
-      PYTHONUTF8: 1
 
     steps:
       - name: "📂 Checkout Repository Code"
