@@ -39,7 +39,7 @@ jobs:
           path: |
             ~/.local/share/unirtm
             ~/.cache/unirtm
-          key: ${{ runner.os }}-unirtm-${{ hashFiles('.unirtm.toml', 'unirtm.lock') }}
+          key: ${{ runner.os }}-unirtm-${{ hashFiles('.unirtm.toml', '.unirtm.*.toml', 'unirtm.lock') }}
           restore-keys: |
             ${{ runner.os }}-unirtm-
 

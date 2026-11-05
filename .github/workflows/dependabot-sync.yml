@@ -38,6 +38,7 @@ name: "🤖 Dependabot Smart Sync"
       - "**/devcontainer.json"
       - "Chart.yaml"
       - ".unirtm.toml"
+      - ".unirtm.*.toml"
       - ".github/workflows/dependabot-sync.yml"
   workflow_dispatch:
 
@@ -110,13 +111,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.WORKFLOW_SECRET || secrets.GITHUB_TOKEN }}
           GITHUB_REF: ${{ github.ref }}
         run: |
-          if [ -z "$(git status --porcelain .github/dependabot.yml unirtm.lock .unirtm.toml)" ]; then
+          if [ -z "$(git status --porcelain .github/dependabot.yml unirtm.lock .unirtm.toml .unirtm.*.toml)" ]; then
             echo "✅ No changes detected. Dependabot config and UniRTM toolchain are up-to-date."
           else
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git config commit.gpgsign false
-            git add .github/dependabot.yml unirtm.lock .unirtm.toml
+            git add .github/dependabot.yml unirtm.lock .unirtm.toml .unirtm.*.toml
             git commit --no-gpg-sign --signoff -m "chore(deps): sync dependabot config and unirtm toolchain"
             git push origin HEAD:"$GITHUB_REF"
             echo "✅ Dependabot config and UniRTM toolchain updated and pushed."
