@@ -4,7 +4,6 @@
 
 
 [env]
-GOTOOLCHAIN = "auto"
 COREPACK_INTEGRITY_KEYS = "0"
 UNIRTM_NODE_COMPILE = "{% if env.ALPINE_VERSION is defined %}false{% endif %}"
 UNIRTM_NODE_FLAVOR = "{% if env.ALPINE_VERSION is defined %}musl{% endif %}"
@@ -17,22 +16,16 @@ UNIRTM_HOOK_ALLOW_MISSING = "1"
 "github:gitleaks/gitleaks" = "8.30.1"
 "github:google/osv-scanner" = "2.7.0"
 "github:koalaman/shellcheck" = "0.11.0"
-"go:mvdan.cc/sh/v3/cmd/shfmt" = "v3.14.0"
+"github:mvdan/sh" = "3.14.1"
 "github:rhysd/actionlint" = "1.7.12"
 "github:zizmorcore/zizmor" = "1.31.1"
 "github:goreleaser/goreleaser" = "2.19.0"
-go = "1.27.3"
 node = "26.8.1"
 "npm:@taplo/cli" = "0.7.0"
 "npm:eslint" = "10.14.0"
 "npm:prettier" = "3.9.10"
 "npm:sort-package-json" = "4.1.0"
 "npm:stylelint" = "18.0.0"
-"go:golang.org/x/vuln/cmd/govulncheck" = "v1.9.0"
-
-"go:golang.org/x/tools/cmd/goimports" = "v0.49.0"
-"go:github.com/golangci/golangci-lint/v2/cmd/golangci-lint" = "v2.13.2"
-"go:github.com/securego/gosec/v2/cmd/gosec" = "v2.29.0"
 
 [guard]
 enabled = true
@@ -45,7 +38,6 @@ depends = [
   "audit:zizmor",
   "audit:osv",
   "audit:npm",
-  "audit:govulncheck",
   "audit:trivy",
 ]
 output = "interleaved"
@@ -117,22 +109,6 @@ if [ -f "package.json" ]; then
     fi
 else
     echo "↷  Skipped (no package.json)"
-fi
-'''
-output = "interleaved"
-
-[tasks."audit:govulncheck"]
-description = "Go dependency audit"
-run = '''
-if [ -f "go.mod" ]; then
-    # In local development, skip external Go vulnerability network scan unless explicitly requested.
-    if [ "${CI:-}" != "true" ] && [ "${GITHUB_ACTIONS:-}" != "true" ] && [ "${RUN_GOVULNCHECK_LOCAL:-}" != "1" ]; then
-        echo "↷  Skipped govulncheck online vulnerability scan locally (deferred to CI runner)."
-        exit 0
-    fi
-    unirtm exec -- govulncheck ./...
-else
-    echo "↷  Skipped (no go.mod)"
 fi
 '''
 output = "interleaved"
