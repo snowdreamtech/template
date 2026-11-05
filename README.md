@@ -74,7 +74,7 @@ graph TD
 
 ### Prerequisites
 
-- **[UniRTM](https://github.com/snowdreamtech/UniRTM) (>= 0.39.0)**: Global universal runtime and task manager.
+- **[UniRTM](https://github.com/snowdreamtech/UniRTM)**: Global universal runtime and task manager.
 - **Git**: Configured with user email and signing key (recommended).
 
 ### Bootstrap Workflow

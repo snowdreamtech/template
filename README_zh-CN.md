@@ -74,7 +74,7 @@ graph TD
 
 ### 前置要求
 
-- **[UniRTM](https://github.com/snowdreamtech/UniRTM) (>= 0.39.0)**：全局统一运行时与任务管理工具。
+- **[UniRTM](https://github.com/snowdreamtech/UniRTM)**：全局统一运行时与任务管理工具。
 - **Git**：建议配置好提交用户邮箱与 GPG 签名密钥。
 
 ### 引导流程
