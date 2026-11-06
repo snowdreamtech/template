@@ -99,9 +99,9 @@ description = "Node.js dependency audit"
 run = '''
 if [ -f "package.json" ]; then
     if [ "$UNIRTM_FIX" = "1" ]; then
-        unirtm exec -- npm audit fix --registry=https://registry.npmjs.org
+        unirtm exec -- npm audit fix --audit-level=high --registry=https://registry.npmjs.org
     else
-        unirtm exec -- npm audit --registry=https://registry.npmjs.org
+        unirtm exec -- npm audit --audit-level=high --registry=https://registry.npmjs.org
     fi
 else
     echo "↷  Skipped (no package.json)"

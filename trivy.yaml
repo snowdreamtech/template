@@ -6,3 +6,7 @@ scan:
   skip-dirs:
     - "unirtm_data"
     - "cmd/unirtm_data"
+
+severity:
+  - CRITICAL
+  - HIGH
