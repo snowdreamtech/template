@@ -37,29 +37,43 @@ START_TIME=$(date +%s)
 
 log_info() {
   echo "${BLUE}ℹ $*${NC}"
-  [ -n "$LOG_FILE" ] && echo "INFO: $*" >>"$LOG_FILE" || true
+  if [ -n "$LOG_FILE" ]; then
+    echo "INFO: $*" >>"$LOG_FILE" || true
+  fi
 }
 log_success() {
   echo "${GREEN}✓ $*${NC}"
-  [ -n "$LOG_FILE" ] && echo "SUCCESS: $*" >>"$LOG_FILE" || true
+  if [ -n "$LOG_FILE" ]; then
+    echo "SUCCESS: $*" >>"$LOG_FILE" || true
+  fi
 }
 log_step() {
   echo "${GREEN}$*${NC}"
-  [ -n "$LOG_FILE" ] && echo "STEP: $*" >>"$LOG_FILE" || true
+  if [ -n "$LOG_FILE" ]; then
+    echo "STEP: $*" >>"$LOG_FILE" || true
+  fi
 }
 log_warning() {
   echo "${YELLOW}⚠ $*${NC}"
   WARNINGS=$((WARNINGS + 1))
-  [ -n "$LOG_FILE" ] && echo "WARN: $*" >>"$LOG_FILE" || true
+  if [ -n "$LOG_FILE" ]; then
+    echo "WARN: $*" >>"$LOG_FILE" || true
+  fi
 }
 log_error() {
   echo "${RED}✗ $*${NC}"
   ERRORS=$((ERRORS + 1))
-  [ -n "$LOG_FILE" ] && echo "ERROR: $*" >>"$LOG_FILE" || true
+  if [ -n "$LOG_FILE" ]; then
+    echo "ERROR: $*" >>"$LOG_FILE" || true
+  fi
 }
 log_detail() {
-  [ "$VERBOSE" -eq 1 ] && echo "${YELLOW}  $*${NC}" || true
-  [ -n "$LOG_FILE" ] && echo "DETAIL: $*" >>"$LOG_FILE" || true
+  if [ "$VERBOSE" -eq 1 ]; then
+    echo "${YELLOW}  $*${NC}"
+  fi
+  if [ -n "$LOG_FILE" ]; then
+    echo "DETAIL: $*" >>"$LOG_FILE" || true
+  fi
 }
 
 echo "${BLUE}=== Initializing Devcontainer ===${NC}"
